@@ -108,18 +108,18 @@
 
 
 
-  <meta name="description" content="@[toc]1. 前言Java程序启动, 经常会遇到需要指定外部依赖jar包的情况, 在学校开发的时候, 不需要考虑那么多, 一般是通过修改配置文件实现的, 但是这种做法是可能会对服务器上运行的其他程序造成影响的, 所以写这篇博客, 记录一下常用做法.">
+  <meta name="description" content="[TOC]  1. 前言Java程序启动, 经常会遇到需要指定外部依赖jar包的情况, 在学校开发的时候, 不需要考虑那么多, 一般是通过修改配置文件实现的, 但是这种做法是可能会对服务器上运行的其他程序造成影响的, 所以写这篇博客, 记录一下常用做法.">
 <meta name="keywords" content="computer science">
 <meta property="og:type" content="article">
 <meta property="og:title" content="tags">
 <meta property="og:url" content="http://ganlu19940318.github.io/2018/09/21/tags/index.html">
 <meta property="og:site_name" content="glennlgan的个人博客">
-<meta property="og:description" content="@[toc]1. 前言Java程序启动, 经常会遇到需要指定外部依赖jar包的情况, 在学校开发的时候, 不需要考虑那么多, 一般是通过修改配置文件实现的, 但是这种做法是可能会对服务器上运行的其他程序造成影响的, 所以写这篇博客, 记录一下常用做法.">
+<meta property="og:description" content="[TOC]  1. 前言Java程序启动, 经常会遇到需要指定外部依赖jar包的情况, 在学校开发的时候, 不需要考虑那么多, 一般是通过修改配置文件实现的, 但是这种做法是可能会对服务器上运行的其他程序造成影响的, 所以写这篇博客, 记录一下常用做法.">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2018-09-22T01:47:33.014Z">
+<meta property="og:updated_time" content="2018-09-22T03:39:40.191Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="tags">
-<meta name="twitter:description" content="@[toc]1. 前言Java程序启动, 经常会遇到需要指定外部依赖jar包的情况, 在学校开发的时候, 不需要考虑那么多, 一般是通过修改配置文件实现的, 但是这种做法是可能会对服务器上运行的其他程序造成影响的, 所以写这篇博客, 记录一下常用做法.">
+<meta name="twitter:description" content="[TOC]  1. 前言Java程序启动, 经常会遇到需要指定外部依赖jar包的情况, 在学校开发的时候, 不需要考虑那么多, 一般是通过修改配置文件实现的, 但是这种做法是可能会对服务器上运行的其他程序造成影响的, 所以写这篇博客, 记录一下常用做法.">
 
 
 
@@ -227,14 +227,6 @@
           <li class="menu-item menu-item-home">
     <a href="/" rel="section">
       <i class="menu-item-icon fa fa-fw fa-home"></i> <br />首页</a>
-  </li>
-        
-        
-        
-          
-          <li class="menu-item menu-item-about">
-    <a href="/about/" rel="section">
-      <i class="menu-item-icon fa fa-fw fa-user"></i> <br />关于</a>
   </li>
         
         
@@ -399,7 +391,7 @@
                 
                   <span class="post-meta-item-text">更新于</span>
                 
-                <time title="修改时间：2018-09-22 09:47:33" itemprop="dateModified" datetime="2018-09-22T09:47:33+08:00">2018-09-22</time>
+                <time title="修改时间：2018-09-22 11:39:40" itemprop="dateModified" datetime="2018-09-22T11:39:40+08:00">2018-09-22</time>
               
             
           </span>
@@ -432,7 +424,9 @@
       
 
       
-        <h2 id="toc"><a href="#toc" class="headerlink" title="@[toc]"></a>@[toc]</h2><h1 id="1-前言"><a href="#1-前言" class="headerlink" title="1. 前言"></a>1. 前言</h1><p>Java程序启动, 经常会遇到需要指定外部依赖jar包的情况, 在学校开发的时候, 不需要考虑那么多, 一般是通过修改配置文件实现的, 但是这种做法是可能会对服务器上运行的其他程序造成影响的, 所以写这篇博客, 记录一下常用做法.<br><a id="more"></a></p>
+        <p>[TOC]</p>
+<hr>
+<h1 id="1-前言"><a href="#1-前言" class="headerlink" title="1. 前言"></a>1. 前言</h1><p>Java程序启动, 经常会遇到需要指定外部依赖jar包的情况, 在学校开发的时候, 不需要考虑那么多, 一般是通过修改配置文件实现的, 但是这种做法是可能会对服务器上运行的其他程序造成影响的, 所以写这篇博客, 记录一下常用做法.<br><a id="more"></a></p>
 <h1 id="2-常用做法"><a href="#2-常用做法" class="headerlink" title="2. 常用做法"></a>2. 常用做法</h1><h2 id="2-1-方法一-使用Bootstrap-Classloader来加载"><a href="#2-1-方法一-使用Bootstrap-Classloader来加载" class="headerlink" title="2.1 方法一: 使用Bootstrap Classloader来加载"></a>2.1 方法一: 使用Bootstrap Classloader来加载</h2><p>我们可以在运行时使用如下参数：</p>
 <p>-Xbootclasspath:完全取代系统Java classpath.最好不用.<br>-Xbootclasspath/a: 在系统class加载后加载. 一般用这个.<br>-Xbootclasspath/p: 在系统class加载前加载,注意使用, 和系统类冲突就不好了.</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">java -Xbootclasspath/a: some.jar:some2.jar: -jar test.jar</span><br></pre></td></tr></table></figure>
@@ -592,6 +586,20 @@
           
 
           
+            <div class="links-of-author motion-element">
+              
+                <span class="links-of-author-item">
+                  <a href="https://github.com/ganlu19940318" target="_blank" title="GitHub"><i class="fa fa-fw fa-github"></i>GitHub</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="mailto:274671731@qq.com" target="_blank" title="E-Mail"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  
+                </span>
+              
+            </div>
+          
 
           
           
@@ -617,7 +625,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#toc"><span class="nav-number">1.</span> <span class="nav-text">@[toc]</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#1-前言"><span class="nav-number"></span> <span class="nav-text">1. 前言</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#2-常用做法"><span class="nav-number"></span> <span class="nav-text">2. 常用做法</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#2-1-方法一-使用Bootstrap-Classloader来加载"><span class="nav-number">1.</span> <span class="nav-text">2.1 方法一: 使用Bootstrap Classloader来加载</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-2-方法二-使用Extension-Classloader来加载"><span class="nav-number">2.</span> <span class="nav-text">2.2 方法二: 使用Extension Classloader来加载</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#3-说明"><span class="nav-number"></span> <span class="nav-text">3. 说明</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#4-参考链接"><span class="nav-number"></span> <span class="nav-text">4. 参考链接</span></a></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#1-前言"><span class="nav-text">1. 前言</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#2-常用做法"><span class="nav-text">2. 常用做法</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#2-1-方法一-使用Bootstrap-Classloader来加载"><span class="nav-text">2.1 方法一: 使用Bootstrap Classloader来加载</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-2-方法二-使用Extension-Classloader来加载"><span class="nav-text">2.2 方法二: 使用Extension Classloader来加载</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#3-说明"><span class="nav-text">3. 说明</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#4-参考链接"><span class="nav-text">4. 参考链接</span></a></li></ol></div>
             
 
           </div>
