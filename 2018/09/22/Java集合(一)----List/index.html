@@ -1,0 +1,1224 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-CN">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=6.4.1" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=6.4.1">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=6.4.1">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=6.4.1">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=6.4.1" color="#222">
+
+
+
+
+
+
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '6.4.1',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="keywords" content="Java,基础储备">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Java集合(一)----List">
+<meta property="og:url" content="http://ganlu19940318.github.io/2018/09/22/Java集合(一)----List/index.html">
+<meta property="og:site_name" content="glennlgan的个人博客">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="http://ganlu19940318.github.io/2018/09/22/Java集合(一)----List/pictures/Java集合(一">
+<meta property="og:image" content="https://img-blog.csdn.net/2018090321442811?watermark/2/text/aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L0JyYXZlTG9zZXI=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70">
+<meta property="og:image" content="https://mmbiz.qpic.cn/mmbiz_png/j0ROiac4adEvxvj298hmQzvPGRHbHFkZtC3htVpzWuUN5c0ODFpl6Y7fbsLibibbKgoQ9721JPNlQgPCTUqJt2BRQ/640?wx_fmt=png&tp=webp&wxfrom=5&wx_lazy=1&wx_co=1">
+<meta property="og:image" content="https://mmbiz.qpic.cn/mmbiz_png/j0ROiac4adEvxvj298hmQzvPGRHbHFkZt8ltNtVNib63ZBz53kSIZuXjTWEPiajRia0wzplGBhqJZOePK1pknkvzRQ/640?wx_fmt=png&tp=webp&wxfrom=5&wx_lazy=1&wx_co=1">
+<meta property="og:image" content="https://mmbiz.qpic.cn/mmbiz_jpg/j0ROiac4adEvxvj298hmQzvPGRHbHFkZtaOdlqDKJw2JPR2VaToUtnLyL8mDbcXTRGk10D7L7GA9YmNIFOgRPAw/640?wx_fmt=jpeg&tp=webp&wxfrom=5&wx_lazy=1&wx_co=1">
+<meta property="og:updated_time" content="2018-09-22T06:28:10.796Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Java集合(一)----List">
+<meta name="twitter:image" content="http://ganlu19940318.github.io/2018/09/22/Java集合(一)----List/pictures/Java集合(一">
+
+
+
+
+
+
+  <link rel="canonical" href="http://ganlu19940318.github.io/2018/09/22/Java集合(一)----List/"/>
+
+
+
+<script type="text/javascript" id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>Java集合(一)----List | glennlgan的个人博客</title>
+  
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style type="text/css">
+    .use-motion .motion-element,
+    .use-motion .brand,
+    .use-motion .menu-item,
+    .sidebar-inner,
+    .use-motion .post-block,
+    .use-motion .pagination,
+    .use-motion .comments,
+    .use-motion .post-header,
+    .use-motion .post-body,
+    .use-motion .collection-title { opacity: initial; }
+
+    .use-motion .logo,
+    .use-motion .site-title,
+    .use-motion .site-subtitle {
+      opacity: initial;
+      top: initial;
+    }
+
+    .use-motion {
+      .logo-line-before i { left: initial; }
+      .logo-line-after i { right: initial; }
+    }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">glennlgan的个人博客</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+      
+        <p class="site-subtitle">记录学习点滴</p>
+      
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="切换导航栏">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-home">
+    <a href="/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-home"></i> <br />首页</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+    <a href="/archives/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />归档</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-categories">
+    <a href="/categories/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-th"></i> <br />分类</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-tags">
+    <a href="/tags/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />标签</a>
+  </li>
+
+      
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />搜索</a>
+        </li>
+      
+    </ul>
+  
+
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off"
+             placeholder="搜索..." spellcheck="false"
+             type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+            
+
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://ganlu19940318.github.io/2018/09/22/Java集合(一)----List/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="glennlgan">
+      <meta itemprop="description" content="不积跬步无以至千里">
+      <meta itemprop="image" content="/uploads/glennlgan.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="glennlgan的个人博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Java集合(一)----List
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2018-09-22 13:19:29 / 修改时间：14:28:10" itemprop="dateCreated datePublished" datetime="2018-09-22T13:19:29+08:00">2018-09-22</time>
+            
+
+            
+              
+
+              
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/Java基础/" itemprop="url" rel="index"><span itemprop="name">Java基础</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <hr>
+<a id="more"></a>
+<h1 id="1-前言"><a href="#1-前言" class="headerlink" title="1. 前言"></a>1. 前言</h1><p>集合是Java基础中非常重要的一部分, 也是日常中用到非常多的类, 这篇博客主要记录集合List相关的知识.</p>
+<font color="red">特别声明: 大部分内容并非原创, 引用自参考链接.</font>
+
+<h1 id="2-Java集合"><a href="#2-Java集合" class="headerlink" title="2. Java集合"></a>2. Java集合</h1><p>相比于数组(Array)来说, 集合类的长度可变, 更加适合于现代开发需求;<br>在程序运行时, Java集合可以动态的进行扩展, 随着元素的增加而扩大.<br>在Java中, 集合类通常存在于java.util包中.<br>Java集合主要由2大体系构成, 分别是Collection体系和Map体系, 其中Collection和Map分别是2大体系中的顶层接口.<br>Collection主要有三个子接口, 分别为List(列表), Set(集), Queue(队列). 其中, List, Queue中的元素有序可重复, 而Set中的元素无序不可重复;<br>List中主要有ArrayList, LinkedList两个实现类; Set中则是有HashSet实现类; 而Queue是在JDK1.5后才出现的新集合, 主要以数组和链表两种形式存在.<br>Map同属于java.util包中, 是集合的一部分,但与Collection是相互独立的, 没有任何关系. Map中都是以key-value的形式存在, 其中key必须唯一, 主要有HashMap, Hashtable, TreeMap三个实现类.<br><img src="/2018/09/22/Java集合(一)----List/pictures/Java集合(一" alt="Collection">—-List/01.png)<br><img src="https://img-blog.csdn.net/2018090321442811?watermark/2/text/aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L0JyYXZlTG9zZXI=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70" alt="Map"></p>
+<h1 id="3-List"><a href="#3-List" class="headerlink" title="3. List"></a>3. List</h1><p>在Collection中, List集合是有序的, Developer可对其中每个元素的插入位置进行精确地控制, 可以通过索引来访问元素, 遍历元素.<br>在List集合中, 我们常用到ArrayList和LinkedList这两个类.</p>
+<h2 id="3-1-初识ArrayList"><a href="#3-1-初识ArrayList" class="headerlink" title="3.1 初识ArrayList"></a>3.1 初识ArrayList</h2><p>其中, ArrayList底层通过数组实现, 随着元素的增加而动态扩容. 而LinkedList底层通过链表来实现, 随着元素的增加不断向链表的后端增加节点.<br>ArrayList是Java集合框架中使用最多的一个类, 是一个数组队列, 线程不安全集合.<br>它继承于AbstractList, 实现了List, RandomAccess, Cloneable, Serializable接口.<br>(1)ArrayList实现List, 得到了List集合框架基础功能;<br>(2)ArrayList实现RandomAccess, 获得了快速随机访问存储元素的功能, RandomAccess是一个标记接口, 没有任何方法;<br>(3)ArrayList实现Cloneable, 得到了clone()方法, 可以实现克隆功能;<br>(4)ArrayList实现Serializable, 表示可以被序列化, 通过序列化去传输, 典型的应用就是hessian协议.<br>它具有如下特点:<br>(1)容量不固定, 随着容量的增加而动态扩容(阈值基本不会达到)<br>(2)有序集合(插入的顺序==输出的顺序)<br>(3)插入的元素可以为null<br>(4)增删改查效率更高(相对于LinkedList来说)<br>(5)线程不安全.<br>数据结构:<br><img src="https://mmbiz.qpic.cn/mmbiz_png/j0ROiac4adEvxvj298hmQzvPGRHbHFkZtC3htVpzWuUN5c0ODFpl6Y7fbsLibibbKgoQ9721JPNlQgPCTUqJt2BRQ/640?wx_fmt=png&amp;tp=webp&amp;wxfrom=5&amp;wx_lazy=1&amp;wx_co=1" alt="ArrayList数据结构"></p>
+<h2 id="3-2-初识LinkedList"><a href="#3-2-初识LinkedList" class="headerlink" title="3.2 初识LinkedList"></a>3.2 初识LinkedList</h2><p>LinkedList是一个双向链表, 每一个节点都拥有指向前后节点的引用. 相比于ArrayList来说, LinkedList的随机访问效率更低.<br>它继承AbstractSequentialList, 实现了List, Deque, Cloneable, Serializable接口.<br>(1)LinkedList实现List, 得到了List集合框架基础功能;<br>(2)LinkedList实现Deque, Deque 是一个双向队列, 也就是既可以先入先出, 又可以先入后出,说 简单些就是既可以在头部添加元素, 也可以在尾部添加元素;<br>(3)LinkedList实现Cloneable, 得到了clone()方法, 可以实现克隆功能;<br>(4)LinkedList实现Serializable, 表示可以被序列化, 通过序列化去传输, 典型的应用就是hessian协议.<br>数据结构:<br><img src="https://mmbiz.qpic.cn/mmbiz_png/j0ROiac4adEvxvj298hmQzvPGRHbHFkZt8ltNtVNib63ZBz53kSIZuXjTWEPiajRia0wzplGBhqJZOePK1pknkvzRQ/640?wx_fmt=png&amp;tp=webp&amp;wxfrom=5&amp;wx_lazy=1&amp;wx_co=1" alt="LinkedList数据结构"></p>
+<h2 id="3-3-List常用方法"><a href="#3-3-List常用方法" class="headerlink" title="3.3 List常用方法"></a>3.3 List常用方法</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line">A:添加功能</span><br><span class="line">boolean add(E e):向集合中添加一个元素</span><br><span class="line">void add(int index, E element):在指定位置添加元素</span><br><span class="line">boolean addAll(Collection&lt;? extends E&gt; c)：向集合中添加一个集合的元素。</span><br><span class="line"></span><br><span class="line">B:删除功能</span><br><span class="line">void clear()：删除集合中的所有元素</span><br><span class="line">E remove(int index)：根据指定索引删除元素，并把删除的元素返回</span><br><span class="line">boolean remove(Object o)：从集合中删除指定的元素</span><br><span class="line">boolean removeAll(Collection&lt;?&gt; c):从集合中删除一个指定的集合元素。</span><br><span class="line"></span><br><span class="line">C:修改功能</span><br><span class="line">E set(int index, E element):把指定索引位置的元素修改为指定的值，返回修改前的值。</span><br><span class="line"></span><br><span class="line">D:获取功能</span><br><span class="line">E get(int index)：获取指定位置的元素</span><br><span class="line">Iterator iterator():就是用来获取集合中每一个元素。</span><br><span class="line"></span><br><span class="line">E:判断功能</span><br><span class="line">boolean isEmpty()：判断集合是否为空。</span><br><span class="line">boolean contains(Object o)：判断集合中是否存在指定的元素。</span><br><span class="line">boolean containsAll(Collection&lt;?&gt; c)：判断集合中是否存在指定的一个集合中的元素。</span><br><span class="line"></span><br><span class="line">F:长度功能</span><br><span class="line">int size():获取集合中的元素个数。</span><br><span class="line"></span><br><span class="line">G:把集合转换成数组</span><br><span class="line">Object[] toArray():把集合变成数组。</span><br></pre></td></tr></table></figure>
+<h2 id="3-4-ArrayList和LinkedList性能比较"><a href="#3-4-ArrayList和LinkedList性能比较" class="headerlink" title="3.4 ArrayList和LinkedList性能比较"></a>3.4 ArrayList和LinkedList性能比较</h2><h3 id="3-4-1-元素新增"><a href="#3-4-1-元素新增" class="headerlink" title="3.4.1 元素新增"></a>3.4.1 元素新增</h3><p>从直观上看, 在新增操作时, ArrayList效率不如LinkedList, 因为ArrayList底层是数组实现, 在动态扩容时, 性能有所损耗, 而LinkedList不存在数组扩容机制, 所以LinkedList效率更高.<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line">public class ListTest &#123;</span><br><span class="line">    //迭代次数</span><br><span class="line">    public static int ITERATION_NUM = 100000;</span><br><span class="line">    public static void main(String[] agrs) &#123;</span><br><span class="line">        insertPerformanceCompare();</span><br><span class="line">    &#125;</span><br><span class="line">    //新增性能比较：</span><br><span class="line">    public static void insertPerformanceCompare() &#123;</span><br><span class="line">        System.out.println(&quot;LinkedList新增测试开始&quot;);</span><br><span class="line">        long start = System.nanoTime();</span><br><span class="line">        List&lt;Integer&gt; linkedList = new LinkedList&lt;Integer&gt;();</span><br><span class="line">        for (int x = 0; x &lt; ITERATION_NUM; x++) &#123;</span><br><span class="line">            linkedList.add(x);</span><br><span class="line">        &#125;</span><br><span class="line">        long end = System.nanoTime();</span><br><span class="line">        System.out.println(end - start);</span><br><span class="line">        System.out.println(&quot;ArrayList新增测试开始&quot;);</span><br><span class="line">        start = System.nanoTime();</span><br><span class="line">        List&lt;Integer&gt; arrayList = new ArrayList&lt;Integer&gt;();</span><br><span class="line">        for (int x = 0; x &lt; ITERATION_NUM; x++) &#123;</span><br><span class="line">            arrayList.add(x);</span><br><span class="line">        &#125;</span><br><span class="line">        end = System.nanoTime();</span><br><span class="line">        System.out.println(end - start);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>结果:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">第一组:</span><br><span class="line">LinkedList新增测试开始</span><br><span class="line">7609993</span><br><span class="line">ArrayList新增测试开始</span><br><span class="line">6071437</span><br><span class="line"></span><br><span class="line">第二组:</span><br><span class="line">LinkedList新增测试开始</span><br><span class="line">12317919</span><br><span class="line">ArrayList新增测试开始</span><br><span class="line">5754172</span><br><span class="line"></span><br><span class="line">第三组:</span><br><span class="line">LinkedList新增测试开始</span><br><span class="line">8291202</span><br><span class="line">ArrayList新增测试开始</span><br><span class="line">5320576</span><br></pre></td></tr></table></figure></p>
+<p>结果与预想的有些不太一样, ArrayList的新增性能并不低.<br>究其原因, 可能是经过JDK近几年的更新发展, 对于数组复制的实现进行了优化, 以至于ArrayList的性能也得到了提高.</p>
+<p><font color="red">也可能是由于, LinkedList每次add操作都需要创建一个node对象, 这会产生额外开销, 而ArrayList只有在扩容的时候才需要数组的复制, 不扩容的时候, 没有额外开销.</font></p>
+<h3 id="3-4-2-元素获取"><a href="#3-4-2-元素获取" class="headerlink" title="3.4.2 元素获取"></a>3.4.2 元素获取</h3><p>由于LinkedList是链表结构, 没有角标的概念, 没有实现RandomAccess接口, 不具备随机元素访问功能, 所以在get方面表现的差强人意, ArrayList再一次完胜.<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line">public class ListTest &#123;</span><br><span class="line">    //迭代次数，集合大小：</span><br><span class="line">    public static int ITERATION_NUM = 100000;</span><br><span class="line">    public static void main(String[] agrs) &#123;</span><br><span class="line">        getPerformanceCompare();</span><br><span class="line">    &#125;</span><br><span class="line">    //获取性能比较：</span><br><span class="line">    public static void getPerformanceCompare() &#123;</span><br><span class="line">        //填充ArrayList集合：</span><br><span class="line">        List&lt;Integer&gt; arrayList = new ArrayList&lt;Integer&gt;();</span><br><span class="line">        for (int x = 0; x &lt; ITERATION_NUM; x++) &#123;</span><br><span class="line">            arrayList.add(x);</span><br><span class="line">        &#125;</span><br><span class="line">        //填充LinkedList集合：</span><br><span class="line">        List&lt;Integer&gt; linkedList = new LinkedList&lt;Integer&gt;();</span><br><span class="line">        for (int x = 0; x &lt; ITERATION_NUM; x++) &#123;</span><br><span class="line">            linkedList.add(x);</span><br><span class="line">        &#125;</span><br><span class="line">        //创建随机数对象：</span><br><span class="line">        Random random = new Random();</span><br><span class="line">        System.out.println(&quot;LinkedList获取测试开始&quot;);</span><br><span class="line">        long start = System.nanoTime();</span><br><span class="line">        for (int x = 0; x &lt; ITERATION_NUM; x++) &#123;</span><br><span class="line">            int j = random.nextInt(x + 1);</span><br><span class="line">            int k = linkedList.get(j);</span><br><span class="line">        &#125;</span><br><span class="line">        long end = System.nanoTime();</span><br><span class="line">        System.out.println(end - start);</span><br><span class="line">        System.out.println(&quot;ArrayList获取测试开始&quot;);</span><br><span class="line">        start = System.nanoTime();</span><br><span class="line">        for (int x = 0; x &lt; ITERATION_NUM; x++) &#123;</span><br><span class="line">            int j = random.nextInt(x + 1);</span><br><span class="line">            int k = arrayList.get(j);</span><br><span class="line">        &#125;</span><br><span class="line">        end = System.nanoTime();</span><br><span class="line">        System.out.println(end - start);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>结果:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">第一组:</span><br><span class="line">LinkedList获取测试开始</span><br><span class="line">6193992452</span><br><span class="line">ArrayList获取测试开始</span><br><span class="line">9773597</span><br><span class="line"></span><br><span class="line">第二组:</span><br><span class="line">LinkedList获取测试开始</span><br><span class="line">6920119875</span><br><span class="line">ArrayList获取测试开始</span><br><span class="line">4026352</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">第三组:</span><br><span class="line">LinkedList获取测试开始</span><br><span class="line">5559676521</span><br><span class="line">ArrayList获取测试开始</span><br><span class="line">10468298</span><br></pre></td></tr></table></figure>
+<p>从结果中可以看到, ArrayList在随机访问方面表现的十分优秀, 比LinkedList强了很多, 基本上保持在500-1000倍.<br>LinkedList为什么这么慢呢?这主要是LinkedList的代码实现所致, 每一次获取都是从头开始遍历, 一个个节点去查找, 每查找一次就遍历一次, 所以性能自然得不到提升.</p>
+<h2 id="3-5-ArrayList源码分析-基于JDK1-7-0-45"><a href="#3-5-ArrayList源码分析-基于JDK1-7-0-45" class="headerlink" title="3.5 ArrayList源码分析(基于JDK1.7.0_45)"></a>3.5 ArrayList源码分析(基于JDK1.7.0_45)</h2><p>接下来, 我们几对ArrayList的源码进行一个解析, 主要从以下几个问题出发.<br>(1)ArrayList构造<br>(2)增删改查实现<br>(3)迭代器-modCount<br>(4)为什么数组对象要使用transient修饰符<br>(5)System.arraycopy()参数含义 和 Arrays.copyOf()参数含义<br>我们通过这这几个问题, 来一步步的学习ArrayList.</p>
+<h3 id="3-5-1-ArrayList构造器"><a href="#3-5-1-ArrayList构造器" class="headerlink" title="3.5.1 ArrayList构造器"></a>3.5.1 ArrayList构造器</h3><p>在JDK1.7版本中, ArrayList的无参构造方法并没有生成容量为10的数组;<br>elementData对象是ArrayList集合底层保存元素的实现;<br>size属性记录了ArrayList集合中实际元素的个数;<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line">public class ArrayList&lt;E&gt; extends AbstractList&lt;E&gt;</span><br><span class="line">        implements List&lt;E&gt;, RandomAccess, Cloneable, java.io.Serializable &#123;</span><br><span class="line">    //实现Serializable接口，生成的序列版本号：</span><br><span class="line">    private static final long serialVersionUID = 8683452581122892189L;</span><br><span class="line">    //ArrayList初始容量大小：在无参构造中不使用了</span><br><span class="line">    private static final int DEFAULT_CAPACITY = 10;</span><br><span class="line">    //空数组对象：初始化中默认赋值给elementData</span><br><span class="line">    private static final Object[] EMPTY_ELEMENTDATA = &#123;&#125;;</span><br><span class="line">    //ArrayList中实际存储元素的数组：</span><br><span class="line">    private transient Object[] elementData;</span><br><span class="line">    //集合实际存储元素长度：</span><br><span class="line">    private int size;</span><br><span class="line">    //ArrayList有参构造：容量大小</span><br><span class="line">    public ArrayList(int initialCapacity) &#123;</span><br><span class="line">        //即父类构造：protected AbstractList() &#123;&#125;空方法</span><br><span class="line">        super();</span><br><span class="line">        //如果传递的初始容量小于0 ，抛出异常</span><br><span class="line">        if (initialCapacity &lt; 0)</span><br><span class="line">            throw new IllegalArgumentException(&quot;Illegal Capacity: &quot;+ initialCapacity);</span><br><span class="line">        //初始化数据：创建Object数组</span><br><span class="line">        this.elementData = new Object[initialCapacity];</span><br><span class="line">    &#125;</span><br><span class="line">    //ArrayList无参构造：</span><br><span class="line">    public ArrayList() &#123;</span><br><span class="line">        //即父类构造：protected AbstractList() &#123;&#125;空方法</span><br><span class="line">        super();</span><br><span class="line">        //初始化数组：空数组，容量为0</span><br><span class="line">        this.elementData = EMPTY_ELEMENTDATA;</span><br><span class="line">    &#125;</span><br><span class="line">    //ArrayList有参构造：Java集合</span><br><span class="line">    public ArrayList(Collection&lt;? extends E&gt; c) &#123;</span><br><span class="line">        //将集合转换为数组：</span><br><span class="line">        elementData = c.toArray();</span><br><span class="line">        //设置数组的长度：</span><br><span class="line">        size = elementData.length;</span><br><span class="line">        if (elementData.getClass() != Object[].class)</span><br><span class="line">            elementData = Arrays.copyOf(elementData, size, Object[].class);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h3 id="3-5-2-add"><a href="#3-5-2-add" class="headerlink" title="3.5.2 add()"></a>3.5.2 add()</h3><p>ArrayList增加元素的方法事关重要, 我们都知道ArrayList底层是由数组, 可以随着元素的增加而扩容, 那么具体是如何实现的呢?<br>在JDK1.7当中, 当第一个元素添加时, ensureCapacityInternal()方法会计算ArrayList的扩容大小, 默认为10;<br>其中grow()方法最为重要, 如果需要扩容, 那么扩容后的大小是原来的1.5倍, 实际上最终调用了Arrays.copyOf()方法得以实现;<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br></pre></td><td class="code"><pre><span class="line">//添加元素e</span><br><span class="line">public boolean add(E e) &#123;</span><br><span class="line">    ensureCapacityInternal(size + 1);</span><br><span class="line">    //将对应角标下的元素赋值为e：</span><br><span class="line">    elementData[size++] = e;</span><br><span class="line">    return true;</span><br><span class="line">&#125;</span><br><span class="line">//得到最小扩容量</span><br><span class="line">private void ensureCapacityInternal(int minCapacity) &#123;</span><br><span class="line">    //如果此时ArrayList是空数组,则将最小扩容大小设置为10：</span><br><span class="line">    if (elementData == EMPTY_ELEMENTDATA) &#123;</span><br><span class="line">        minCapacity = Math.max(DEFAULT_CAPACITY, minCapacity);</span><br><span class="line">    &#125;</span><br><span class="line">    //判断是否需要扩容：</span><br><span class="line">    ensureExplicitCapacity(minCapacity);</span><br><span class="line">&#125;</span><br><span class="line">//判断是否需要扩容</span><br><span class="line">private void ensureExplicitCapacity(int minCapacity) &#123;</span><br><span class="line">    //操作数+1</span><br><span class="line">    modCount++;</span><br><span class="line">    //判断最小扩容容量-数组大小是否大于0：</span><br><span class="line">    if (minCapacity - elementData.length &gt; 0)</span><br><span class="line">        //扩容：</span><br><span class="line">        grow(minCapacity);</span><br><span class="line">&#125;</span><br><span class="line">//ArrayList动态扩容的核心方法:</span><br><span class="line">private void grow(int minCapacity) &#123;</span><br><span class="line">    //获取现有数组大小：</span><br><span class="line">    int oldCapacity = elementData.length;</span><br><span class="line">    //位运算，得到新的数组容量大小，为原有的1.5倍：</span><br><span class="line">    int newCapacity = oldCapacity + (oldCapacity &gt;&gt; 1);</span><br><span class="line">    //如果新扩容的大小依旧小于传入的容量值，那么将传入的值设为新容器大小：</span><br><span class="line">    if (newCapacity - minCapacity &lt; 0)</span><br><span class="line">        newCapacity = minCapacity;</span><br><span class="line">    //如果新容器大小，大于ArrayList最大长度：</span><br><span class="line">    if (newCapacity - MAX_ARRAY_SIZE &gt; 0)</span><br><span class="line">        //计算出最大容量值：</span><br><span class="line">        newCapacity = hugeCapacity(minCapacity);</span><br><span class="line">    //数组复制：</span><br><span class="line">    elementData = Arrays.copyOf(elementData, newCapacity);</span><br><span class="line">&#125;</span><br><span class="line">//计算ArrayList最大容量：</span><br><span class="line">private static int hugeCapacity(int minCapacity) &#123;</span><br><span class="line">    if (minCapacity &lt; 0)</span><br><span class="line">        throw new OutOfMemoryError();</span><br><span class="line">    //如果新的容量大于MAX_ARRAY_SIZE。将会调用hugeCapacity将int的最大值赋给newCapacity:</span><br><span class="line">    return (minCapacity &gt; MAX_ARRAY_SIZE) ?</span><br><span class="line">            Integer.MAX_VALUE :</span><br><span class="line">            MAX_ARRAY_SIZE;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h3 id="3-5-3-remove"><a href="#3-5-3-remove" class="headerlink" title="3.5.3 remove()"></a>3.5.3 remove()</h3><p>remove(int index)是针对于角标来进行删除, 不需要去遍历整个集合, 效率更高;<br>而remove(Object o)是针对于对象来进行删除, 需要遍历整个集合进行equals()方法比对, 所以效率较低;<br>不过, 无论是哪种形式的删除, 最终都会调用System.arraycopy()方法进行数组复制操作, 所以效率都会受到影响;<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br></pre></td><td class="code"><pre><span class="line">//在ArrayList的移除index位置的元素</span><br><span class="line">public E remove(int index) &#123;</span><br><span class="line">    //检查角标是否合法：不合法抛异常</span><br><span class="line">    rangeCheck(index);</span><br><span class="line">    //操作数+1：</span><br><span class="line">    modCount++;</span><br><span class="line">    //获取当前角标的value:</span><br><span class="line">    E oldValue = elementData(index);</span><br><span class="line">    //获取需要删除元素 到最后一个元素的长度，也就是删除元素后，后续元素移动的个数；</span><br><span class="line">    int numMoved = size - index - 1;</span><br><span class="line">    //如果移动元素个数大于0 ，也就是说删除的不是最后一个元素：</span><br><span class="line">    if (numMoved &gt; 0)</span><br><span class="line">        // 将elementData数组index+1位置开始拷贝到elementData从index开始的空间</span><br><span class="line">        System.arraycopy(elementData, index+1, elementData, index, numMoved);</span><br><span class="line">    //size减1，并将最后一个元素置为null</span><br><span class="line">    elementData[--size] = null;</span><br><span class="line">    //返回被删除的元素：</span><br><span class="line">    return oldValue;</span><br><span class="line">&#125;</span><br><span class="line">//在ArrayList的移除对象为O的元素，不返回被删除的元素：</span><br><span class="line">public boolean remove(Object o) &#123;</span><br><span class="line">    //如果o==null，则遍历集合，判断哪个元素为null：</span><br><span class="line">    if (o == null) &#123;</span><br><span class="line">        for (int index = 0; index &lt; size; index++)</span><br><span class="line">            if (elementData[index] == null) &#123;</span><br><span class="line">                //快速删除，和前面的remove（index）一样的逻辑</span><br><span class="line">                fastRemove(index);</span><br><span class="line">                return true;</span><br><span class="line">            &#125;</span><br><span class="line">    &#125; else &#123;</span><br><span class="line">        //同理：</span><br><span class="line">        for (int index = 0; index &lt; size; index++)</span><br><span class="line">            if (o.equals(elementData[index])) &#123;</span><br><span class="line">                fastRemove(index);</span><br><span class="line">                return true;</span><br><span class="line">            &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    return false;</span><br><span class="line">&#125;</span><br><span class="line">//快速删除：</span><br><span class="line">private void fastRemove(int index) &#123;</span><br><span class="line">    //操作数+1</span><br><span class="line">    modCount++;</span><br><span class="line">    //获取需要删除元素 到最后一个元素的长度，也就是删除元素后，后续元素移动的个数；</span><br><span class="line">    int numMoved = size - index - 1;</span><br><span class="line">    //如果移动元素个数大于0 ，也就是说删除的不是最后一个元素：</span><br><span class="line">    if (numMoved &gt; 0)</span><br><span class="line">        // 将elementData数组index+1位置开始拷贝到elementData从index开始的空间</span><br><span class="line">        System.arraycopy(elementData, index+1, elementData, index, numMoved);</span><br><span class="line">    //size减1，并将最后一个元素置为null</span><br><span class="line">    elementData[--size] = null;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h3 id="3-5-4-set"><a href="#3-5-4-set" class="headerlink" title="3.5.4 set()"></a>3.5.4 set()</h3><p>由于ArrayList实现了RandomAccess, 所以具备了随机访问特性, 调用elementData()可以获取到对应元素的值；<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">//设置index位置的元素值了element，返回该位置的之前的值</span><br><span class="line">public E set(int index, E element) &#123;</span><br><span class="line">    //检查index是否合法：判断index是否大于size</span><br><span class="line">    rangeCheck(index);</span><br><span class="line">    //获取该index原来的元素：</span><br><span class="line">    E oldValue = elementData(index);</span><br><span class="line">    //替换成新的元素：</span><br><span class="line">    elementData[index] = element;</span><br><span class="line">    //返回旧的元素：</span><br><span class="line">    return oldValue;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h3 id="3-5-5-get"><a href="#3-5-5-get" class="headerlink" title="3.5.5 get()"></a>3.5.5 get()</h3><p>通过elementData()方法获取对应角标元素, 在返回时候进行类型转换;<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">//获取index位置的元素</span><br><span class="line">public E get(int index) &#123;</span><br><span class="line">    //检查index是否合法：</span><br><span class="line">    rangeCheck(index);</span><br><span class="line">    //获取元素：</span><br><span class="line">    return elementData(index);</span><br><span class="line">&#125;</span><br><span class="line">//获取数组index位置的元素：返回时类型转换</span><br><span class="line">E elementData(int index) &#123;</span><br><span class="line">    return (E) elementData[index];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h3 id="3-5-6-modCount含义"><a href="#3-5-6-modCount含义" class="headerlink" title="3.5.6 modCount含义"></a>3.5.6 modCount含义</h3><p>在Itr迭代器初始化时,将ArrayList的modCount属性的值赋值给了expectedModCount.<br>通过上面的例子中, 我们可以知道当进行增删改时, modCount会随着每一次的操作而+1, modCount记录了ArrayList内发生改变的次数.<br>当迭代器在迭代时, 会判断expectedModCount的值是否还与modCount的值保持一致, 如果不一致则抛出异常.<br>AbstractList类当中定义的变量:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">protected transient int modCount = 0;</span><br></pre></td></tr></table></figure></p>
+<p>ArrayList获取迭代器对象:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">//返回一个Iterator对象，Itr为ArrayList的一个内部类，其实现了Iterator&lt;E&gt;接口</span><br><span class="line">public Iterator&lt;E&gt; iterator() &#123;</span><br><span class="line">    return new java.util.ArrayList.Itr();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>迭代器实现:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br></pre></td><td class="code"><pre><span class="line">//Itr实现了Iterator接口，是ArrayList集合的迭代器对象</span><br><span class="line">private class Itr implements Iterator&lt;E&gt; &#123;</span><br><span class="line">    //类似游标，指向迭代器下一个值的位置</span><br><span class="line">    int cursor; </span><br><span class="line">    //迭代器最后一次取出的元素的位置。</span><br><span class="line">    int lastRet = -1; </span><br><span class="line">    //Itr初始化时候ArrayList的modCount的值。</span><br><span class="line">    int expectedModCount = modCount;</span><br><span class="line">    //利用游标，与size之前的比较，判断迭代器是否还有下一个元素</span><br><span class="line">    public boolean hasNext() &#123;</span><br><span class="line">        return cursor != size;</span><br><span class="line">    &#125;</span><br><span class="line">    //迭代器获取下一个元素：</span><br><span class="line">    public E next() &#123;</span><br><span class="line">        //检查modCount是否改变：</span><br><span class="line">        checkForComodification();</span><br><span class="line">        int i = cursor;</span><br><span class="line">        //游标不会大于等于集合的长度：</span><br><span class="line">        if (i &gt;= size)</span><br><span class="line">            throw new NoSuchElementException();</span><br><span class="line">        Object[] elementData = java.util.ArrayList.this.elementData;</span><br><span class="line">        //游标不会大于集合中数组的长度：</span><br><span class="line">        if (i &gt;= elementData.length)</span><br><span class="line">            throw new ConcurrentModificationException();</span><br><span class="line">        //游标+1</span><br><span class="line">        cursor = i + 1;</span><br><span class="line">        //取出元素：</span><br><span class="line">        return (E) elementData[lastRet = i];</span><br><span class="line">    &#125;</span><br><span class="line">    public void remove() &#123;</span><br><span class="line">        if (lastRet &lt; 0)</span><br><span class="line">            throw new IllegalStateException();</span><br><span class="line">        //检查modCount是否改变：防止并发操作集合</span><br><span class="line">        checkForComodification();</span><br><span class="line">        try &#123;</span><br><span class="line">            //删除这个元素：</span><br><span class="line">            java.util.ArrayList.this.remove(lastRet);</span><br><span class="line">            //删除后，重置游标，和当前指向元素的角标 lastRet</span><br><span class="line">            cursor = lastRet;</span><br><span class="line">            lastRet = -1;</span><br><span class="line">            //重置expectedModCount：</span><br><span class="line">            expectedModCount = modCount;</span><br><span class="line">        &#125; catch (IndexOutOfBoundsException ex) &#123;</span><br><span class="line">            throw new ConcurrentModificationException();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    //并发检查：</span><br><span class="line">    final void checkForComodification() &#123;</span><br><span class="line">        if (modCount != expectedModCount)</span><br><span class="line">            throw new ConcurrentModificationException();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h3 id="3-5-7-transient"><a href="#3-5-7-transient" class="headerlink" title="3.5.7 transient"></a>3.5.7 transient</h3><p>transient修饰符是什么含义?<br>当我们序列化对象时, 如果对象中某个属性不进行序列化操作, 那么在该属性前添加transient修饰符即可实现; 例如:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">private transient Object[] elementData;</span><br></pre></td></tr></table></figure></p>
+<p>那么, 为什么ArrayList不想对elementData属性进行序列化呢? elementData可是集合中保存元素的数组啊, 如果不序列化elementData属性, 那么在反序列化时候, 岂不是丢失了原先的元素?<br>ArrayList在添加元素时, 可能会对elementData数组进行扩容操作, 而扩容后的数组可能并没有全部保存元素.<br>例如: 我们创建了new Object[10]数组对象, 但是我们只向其中添加了1个元素, 而剩余的9个位置并没有添加元素. 当我们进行序列化时, 并不会只序列化其中一个元素, 而是将整个数组进行序列化操作, 那些没有被元素填充的位置也进行了序列化操作, 间接的浪费了磁盘的空间, 以及程序的性能.<br>所以, ArrayList才会在elementData属性前加上transient修饰符.<br>接下来, 我们来看下ArrayList的writeObject(), readObject():<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">//序列化写入：</span><br><span class="line">private void writeObject(java.io.ObjectOutputStream s) throws java.io.IOException&#123;</span><br><span class="line">    int expectedModCount = modCount;</span><br><span class="line">    s.defaultWriteObject();</span><br><span class="line">    s.writeInt(size);</span><br><span class="line">    for (int i=0; i&lt;size; i++) &#123;</span><br><span class="line">        s.writeObject(elementData[i]);</span><br><span class="line">    &#125;</span><br><span class="line">    if (modCount != expectedModCount) &#123;</span><br><span class="line">        throw new ConcurrentModificationException();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">// 序列化读取：</span><br><span class="line">private void readObject(java.io.ObjectInputStream s) throws java.io.IOException, ClassNotFoundException &#123;</span><br><span class="line">    elementData = EMPTY_ELEMENTDATA;</span><br><span class="line">    s.defaultReadObject();</span><br><span class="line">    s.readInt();</span><br><span class="line">    if (size &gt; 0) &#123;</span><br><span class="line">        ensureCapacityInternal(size);</span><br><span class="line">        Object[] a = elementData;</span><br><span class="line">        for (int i=0; i&lt;size; i++) &#123;</span><br><span class="line">            a[i] = s.readObject();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>ArrayList在序列化时会调用writeObject(), 直接将elementData写入ObjectOutputStream;<br>而反序列化时则调用readObject(), 从ObjectInputStream获取elementData;</p>
+<h3 id="3-5-8-Arrays-copyOf"><a href="#3-5-8-Arrays-copyOf" class="headerlink" title="3.5.8 Arrays.copyOf()"></a>3.5.8 Arrays.copyOf()</h3><p>该方法在内部创建了一个新数组, 底层实现是调用System.arraycopy();<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">public static &lt;T,U&gt; T[] copyOf(U[] original, int newLength, Class&lt;? extends T[]&gt; newType) &#123;</span><br><span class="line">    T[] copy = ((Object)newType == (Object)Object[].class)</span><br><span class="line">        ? (T[]) new Object[newLength]</span><br><span class="line">        : (T[]) Array.newInstance(newType.getComponentType(), newLength);</span><br><span class="line">    System.arraycopy(original, 0, copy, 0,</span><br><span class="line">                     Math.min(original.length, newLength));</span><br><span class="line">    return copy;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>original - 要复制的数组<br>newLength - 要返回的副本的长度<br>newType - 要返回的副本的类型</p>
+<h3 id="3-5-9-System-arraycopy"><a href="#3-5-9-System-arraycopy" class="headerlink" title="3.5.9 System.arraycopy()"></a>3.5.9 System.arraycopy()</h3><p>该方法是用了native关键字, 调用的为C++编写的底层函数.<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">public static native void arraycopy(Object src,  int  srcPos,</span><br><span class="line">                                    Object dest, int destPos,</span><br><span class="line">                                    int length);</span><br></pre></td></tr></table></figure></p>
+<p>src - 源数组<br>srcPos - 源数组中的起始位置<br>dest - 目标数组<br>destPos - 目标数据中的起始位置<br>length - 要复制的数组元素的数量</p>
+<h2 id="3-6-LinkedList源码分析-基于JDK1-7-0-45"><a href="#3-6-LinkedList源码分析-基于JDK1-7-0-45" class="headerlink" title="3.6 LinkedList源码分析(基于JDK1.7.0_45)"></a>3.6 LinkedList源码分析(基于JDK1.7.0_45)</h2><p>发现很多文章在介绍的时候, 都说LinkedList是一个环形链表结构, 头尾相连. 但, 当我开始看源码的时候, 发现并不是环形链表, 是一个直线型链表结构. 这是因为JDK1.7之前的版本是环形链表, 而到了JDK1.7以后进行了优化, 变成了直线型链表结构;</p>
+<h3 id="3-6-1-LinkedList基础结构"><a href="#3-6-1-LinkedList基础结构" class="headerlink" title="3.6.1 LinkedList基础结构"></a>3.6.1 LinkedList基础结构</h3><p>在LinkedList中, 内部类Node对象最为重要, 它组成了LinkedList集合的整个链表, 分别指向上一个点, 下一个结点, 存储着集合中的元素;<br>成员变量中, first表明是头结点, last表明是尾结点;<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line">public class LinkedList&lt;E&gt;</span><br><span class="line">        extends AbstractSequentialList&lt;E&gt;</span><br><span class="line">        implements List&lt;E&gt;, Deque&lt;E&gt;, Cloneable, java.io.Serializable &#123;</span><br><span class="line">    //LinkedList的元素个数：</span><br><span class="line">    transient int size = 0;</span><br><span class="line">    //LinkedList的头结点：Node内部类</span><br><span class="line">    transient java.util.LinkedList.Node&lt;E&gt; first;</span><br><span class="line">    //LinkedList尾结点：Node内部类</span><br><span class="line">    transient java.util.LinkedList.Node&lt;E&gt; last;</span><br><span class="line">    //空实现：头尾结点均为null，链表不存在</span><br><span class="line">    public LinkedList() &#123;</span><br><span class="line">    &#125;</span><br><span class="line">    //调用添加方法：</span><br><span class="line">    public LinkedList(Collection&lt;? extends E&gt; c) &#123;</span><br><span class="line">        this();</span><br><span class="line">        addAll(c);</span><br><span class="line">    &#125;</span><br><span class="line">    //节点的数据结构，包含前后节点的引用和当前节点</span><br><span class="line">    private static class Node&lt;E&gt; &#123;</span><br><span class="line">        //结点元素：</span><br><span class="line">        E item;</span><br><span class="line">        //结点后指针</span><br><span class="line">        java.util.LinkedList.Node&lt;E&gt; next;</span><br><span class="line">        //结点前指针</span><br><span class="line">        java.util.LinkedList.Node&lt;E&gt; prev;</span><br><span class="line">        Node(java.util.LinkedList.Node&lt;E&gt; prev, E element, java.util.LinkedList.Node&lt;E&gt; next) &#123;</span><br><span class="line">            this.item = element;</span><br><span class="line">            this.next = next;</span><br><span class="line">            this.prev = prev;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h3 id="3-6-2-add"><a href="#3-6-2-add" class="headerlink" title="3.6.2 add()"></a>3.6.2 add()</h3><p>LinkedList的添加方法, 主要分为2种, 一是直接添加一个元素, 二是在指定角标下添加一个元素;<br>add(E e)底层调用linkLast(E e)方法, 就是在链表的最后面插入一个元素;<br>add(int index, E element), 插入的角标如果==size, 则插入到链表最后; 否则, 按照角标大小插入到对应位置;.<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br></pre></td><td class="code"><pre><span class="line">//添加元素：添加到最后一个结点；</span><br><span class="line">public boolean add(E e) &#123;</span><br><span class="line">    linkLast(e);</span><br><span class="line">    return true;</span><br><span class="line">&#125;</span><br><span class="line">//last节点插入新元素：</span><br><span class="line">void linkLast(E e) &#123;</span><br><span class="line">    //将尾结点赋值个体L:</span><br><span class="line">    final java.util.LinkedList.Node&lt;E&gt; l = last;</span><br><span class="line">    //创建新的结点，将新节点的前指针指向l:</span><br><span class="line">    final java.util.LinkedList.Node&lt;E&gt; newNode = new java.util.LinkedList.Node&lt;&gt;(l, e, null);</span><br><span class="line">    //新节点置为尾结点：</span><br><span class="line">    last = newNode;</span><br><span class="line">    //如果尾结点l为null：则是空集合新插入</span><br><span class="line">    if (l == null)</span><br><span class="line">        //头结点也置为 新节点：</span><br><span class="line">        first = newNode;</span><br><span class="line">    else</span><br><span class="line">        //l节点的后指针指向新节点：</span><br><span class="line">        l.next = newNode;</span><br><span class="line">    //长度+1</span><br><span class="line">    size++;</span><br><span class="line">    //操作数+1</span><br><span class="line">    modCount++;</span><br><span class="line">&#125;</span><br><span class="line">//向对应角标添加元素：</span><br><span class="line">public void add(int index, E element) &#123;</span><br><span class="line">    //检查传入的角标 是否正确：</span><br><span class="line">    checkPositionIndex(index);</span><br><span class="line">    //如果插入角标==集合长度，则插入到集合的最后面：</span><br><span class="line">    if (index == size)</span><br><span class="line">        linkLast(element);</span><br><span class="line">    else</span><br><span class="line">        //插入到对应角标的位置：获取此角标下的元素先</span><br><span class="line">        linkBefore(element, node(index));</span><br><span class="line">&#125;</span><br><span class="line">//在succ前插入 新元素e：</span><br><span class="line">void linkBefore(E e, java.util.LinkedList.Node&lt;E&gt; succ) &#123;</span><br><span class="line">    //获取被插入元素succ的前指针元素：</span><br><span class="line">    final java.util.LinkedList.Node&lt;E&gt; pred = succ.prev;</span><br><span class="line">    //创建新增元素节点，前指针 和 后指针分别指向对应元素：</span><br><span class="line">    final java.util.LinkedList.Node&lt;E&gt; newNode = new java.util.LinkedList.Node&lt;&gt;(pred, e, succ);</span><br><span class="line">    succ.prev = newNode;</span><br><span class="line">    //succ的前指针元素可能为null，为null的话说明succ是头结点，则把新建立的结点置为头结点：</span><br><span class="line">    if (pred == null)</span><br><span class="line">        first = newNode;</span><br><span class="line">    else</span><br><span class="line">        //succ前指针不为null，则将前指针的结点的后指针指向新节点：</span><br><span class="line">        pred.next = newNode;</span><br><span class="line">    //长度+1</span><br><span class="line">    size++;</span><br><span class="line">    //操作数+1</span><br><span class="line">    modCount++;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>对于LinkedList集合增加元素来说, 可以简单的概括为以下几点:<br>将添加的元素转换为LinkedList的Node对象节点;<br>增加该Node节点的前后引用, 即该Node节点的prev, next属性, 让其分别指向哪一个节点);<br>修改该Node节点的前后Node节点中pre/next属性, 使其指向该节点.<br><img src="https://mmbiz.qpic.cn/mmbiz_jpg/j0ROiac4adEvxvj298hmQzvPGRHbHFkZtaOdlqDKJw2JPR2VaToUtnLyL8mDbcXTRGk10D7L7GA9YmNIFOgRPAw/640?wx_fmt=jpeg&amp;tp=webp&amp;wxfrom=5&amp;wx_lazy=1&amp;wx_co=1" alt="add操作"></p>
+<h3 id="3-6-3-remove"><a href="#3-6-3-remove" class="headerlink" title="3.6.3 remove()"></a>3.6.3 remove()</h3><p>LinkedList的删除也提供了2种形式, 其一是通过角标删除元素, 其二就是通过对象删除元素; 不过, 无论哪种删除, 最终调用的都是unlink来实现的;<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br></pre></td><td class="code"><pre><span class="line">//删除对应角标的元素：</span><br><span class="line">public E remove(int index) &#123;</span><br><span class="line">    checkElementIndex(index);</span><br><span class="line">    //node()方法通过角标获取对应的元素，在后面介绍</span><br><span class="line">    return unlink(node(index));</span><br><span class="line">&#125;</span><br><span class="line">//删除LinkedList中的元素，可以删除为null的元素，逐个遍历LinkedList的元素，重复元素只删除第一个：</span><br><span class="line">public boolean remove(Object o) &#123;</span><br><span class="line">    //如果删除元素为null：</span><br><span class="line">    if (o == null) &#123;</span><br><span class="line">        for (java.util.LinkedList.Node&lt;E&gt; x = first; x != null; x = x.next) &#123;</span><br><span class="line">            if (x.item == null) &#123;</span><br><span class="line">                unlink(x);</span><br><span class="line">                return true;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125; else &#123;</span><br><span class="line">        //如果删除元素不为null：</span><br><span class="line">        for (java.util.LinkedList.Node&lt;E&gt; x = first; x != null; x = x.next) &#123;</span><br><span class="line">            if (o.equals(x.item)) &#123;</span><br><span class="line">                unlink(x);</span><br><span class="line">                return true;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    return false;</span><br><span class="line">&#125;</span><br><span class="line">//移除LinkedList结点：remove()方法中调用</span><br><span class="line">E unlink(java.util.LinkedList.Node&lt;E&gt; x) &#123;</span><br><span class="line">    //获取被删除结点的元素E：</span><br><span class="line">    final E element = x.item;</span><br><span class="line">    //获取被删除元素的后指针结点：</span><br><span class="line">    final java.util.LinkedList.Node&lt;E&gt; next = x.next;</span><br><span class="line">    //获取被删除元素的前指针结点：</span><br><span class="line">    final java.util.LinkedList.Node&lt;E&gt; prev = x.prev;</span><br><span class="line">    //被删除结点的 前结点为null的话：</span><br><span class="line">    if (prev == null) &#123;</span><br><span class="line">        //将后指针指向的结点置为头结点</span><br><span class="line">        first = next;</span><br><span class="line">    &#125; else &#123;</span><br><span class="line">        //前置结点的  尾结点指向被删除的next结点；</span><br><span class="line">        prev.next = next;</span><br><span class="line">        //被删除结点前指针置为null:</span><br><span class="line">        x.prev = null;</span><br><span class="line">    &#125;</span><br><span class="line">    //对尾结点同样处理：</span><br><span class="line">    if (next == null) &#123;</span><br><span class="line">        last = prev;</span><br><span class="line">    &#125; else &#123;</span><br><span class="line">        next.prev = prev;</span><br><span class="line">        x.next = null;</span><br><span class="line">    &#125;</span><br><span class="line">    x.item = null;</span><br><span class="line">    size--;</span><br><span class="line">    modCount++;</span><br><span class="line">    return element;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h3 id="3-6-4-set"><a href="#3-6-4-set" class="headerlink" title="3.6.4 set()"></a>3.6.4 set()</h3><p>LinkedList的set(int index, E element)方法与add(int index,E element)的设计思路基本一致, 都是创建新Node节点, 插入到对应的角标下, 修改前后节点的prev, next属性;<br>其中, node(int index)方法至关重要, 通过对应角标获取到对应的集合元素.<br>可以看到, node()中是根据角标的大小是选择从前遍历还是从后遍历整个集合. 也可以间接的说明, LinkedList在随机获取元素时性能很低, 每次的获取都得从头或者从尾遍历半个集合.<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line">//设置对应角标的元素：</span><br><span class="line">public E set(int index, E element) &#123;</span><br><span class="line">    checkElementIndex(index);</span><br><span class="line">    //通过node()方法，获取到对应角标的元素：</span><br><span class="line">    java.util.LinkedList.Node&lt;E&gt; x = node(index);</span><br><span class="line">    E oldVal = x.item;</span><br><span class="line">    x.item = element;</span><br><span class="line">    return oldVal;</span><br><span class="line">&#125;</span><br><span class="line">//获取对应角标所属于的结点：</span><br><span class="line">java.util.LinkedList.Node&lt;E&gt; node(int index) &#123;</span><br><span class="line">    //位运算：如果位置索引小于列表长度的一半，则从头开始遍历；否则，从后开始遍历；</span><br><span class="line">    if (index &lt; (size &gt;&gt; 1)) &#123;</span><br><span class="line">        java.util.LinkedList.Node&lt;E&gt; x = first;</span><br><span class="line">        //从头结点开始遍历：遍历的长度就是index的长度，获取对应的index的元素</span><br><span class="line">        for (int i = 0; i &lt; index; i++)</span><br><span class="line">            x = x.next;</span><br><span class="line">        return x;</span><br><span class="line">    &#125; else &#123;</span><br><span class="line">        //从集合尾结点遍历：</span><br><span class="line">        java.util.LinkedList.Node&lt;E&gt; x = last;</span><br><span class="line">        //同样道理：</span><br><span class="line">        for (int i = size - 1; i &gt; index; i--)</span><br><span class="line">            x = x.prev;</span><br><span class="line">        return x;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h3 id="3-6-5-get"><a href="#3-6-5-get" class="headerlink" title="3.6.5 get()"></a>3.6.5 get()</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">get(int index)</span><br></pre></td></tr></table></figure>
+<p>终于到了最后一个方法, 也是开发中最常用的方法. 其中, 核心方法node(int index)在上面已经介绍过.<br>在通过node(int index)获取到对应节点后, 返回节点中的item属性, 该属性就是我们所保存的元素.<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">//获取相应角标的元素：</span><br><span class="line">public E get(int index) &#123;</span><br><span class="line">    //检查角标是否正确：</span><br><span class="line">    checkElementIndex(index);</span><br><span class="line">    //获取角标所属结点的 元素值：</span><br><span class="line">    return node(index).item;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h1 id="4-参考链接"><a href="#4-参考链接" class="headerlink" title="4. 参考链接"></a>4. 参考链接</h1><p><a href="https://mp.weixin.qq.com/s?__biz=MzI5ODI5NDkxMw==&amp;mid=2247486782&amp;idx=1&amp;sn=67ad4a2e45dfcefc6df5e77d8a94e572&amp;chksm=eca946d0dbdecfc6ee491c600e8899da6f05141ba839f49bae450f08f7118c9a5b8637a55c19&amp;scene=21#wechat_redirect" target="_blank" rel="noopener">https://mp.weixin.qq.com/s?__biz=MzI5ODI5NDkxMw==&amp;mid=2247486782&amp;idx=1&amp;sn=67ad4a2e45dfcefc6df5e77d8a94e572&amp;chksm=eca946d0dbdecfc6ee491c600e8899da6f05141ba839f49bae450f08f7118c9a5b8637a55c19&amp;scene=21#wechat_redirect</a><br><a href="https://mp.weixin.qq.com/s?__biz=MzI5ODI5NDkxMw==&amp;mid=2247486812&amp;idx=1&amp;sn=204a8f8a2c6d1c224f94454c20f8988a&amp;chksm=eca946b2dbdecfa4bd0818a4a7fea354107012ad8a0884aedcb6a1e424f50041fe0dbd387145&amp;scene=21#wechat_redirect" target="_blank" rel="noopener">https://mp.weixin.qq.com/s?__biz=MzI5ODI5NDkxMw==&amp;mid=2247486812&amp;idx=1&amp;sn=204a8f8a2c6d1c224f94454c20f8988a&amp;chksm=eca946b2dbdecfa4bd0818a4a7fea354107012ad8a0884aedcb6a1e424f50041fe0dbd387145&amp;scene=21#wechat_redirect</a></p>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      <div>
+        <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+  <div>谢谢你请我吃糖果!</div>
+  <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+    <span>打赏</span>
+  </button>
+  <div id="QR" style="display: none;">
+
+    
+
+    
+
+    
+      <div id="bitcoin" style="display: inline-block">
+        <img id="bitcoin_qr" src="/uploads/bonus.png" alt="glennlgan 打赏"/>
+        <p>打赏</p>
+      </div>
+    
+
+  </div>
+</div>
+
+      </div>
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Java/" rel="tag"># Java</a>
+          
+            <a href="/tags/基础储备/" rel="tag"># 基础储备</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/09/22/个人收藏/" rel="next" title="个人收藏">
+                <i class="fa fa-chevron-left"></i> 个人收藏
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+  </div>
+
+
+          </div>
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/uploads/glennlgan.jpg"
+                alt="glennlgan" />
+            
+              <p class="site-author-name" itemprop="name">glennlgan</p>
+              <p class="site-description motion-element" itemprop="description">不积跬步无以至千里</p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">2</span>
+                    <span class="site-state-item-name">日志</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  <a href="/categories/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">2</span>
+                    <span class="site-state-item-name">分类</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  <a href="/tags/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">3</span>
+                    <span class="site-state-item-name">标签</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+            <div class="links-of-author motion-element">
+              
+                <span class="links-of-author-item">
+                  <a href="https://github.com/ganlu19940318" target="_blank" title="GitHub"><i class="fa fa-fw fa-github"></i>GitHub</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="mailto:274671731@qq.com" target="_blank" title="E-Mail"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  
+                </span>
+              
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#1-前言"><span class="nav-text">1. 前言</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#2-Java集合"><span class="nav-text">2. Java集合</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#3-List"><span class="nav-text">3. List</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#3-1-初识ArrayList"><span class="nav-text">3.1 初识ArrayList</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-2-初识LinkedList"><span class="nav-text">3.2 初识LinkedList</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-3-List常用方法"><span class="nav-text">3.3 List常用方法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-4-ArrayList和LinkedList性能比较"><span class="nav-text">3.4 ArrayList和LinkedList性能比较</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#3-4-1-元素新增"><span class="nav-text">3.4.1 元素新增</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-4-2-元素获取"><span class="nav-text">3.4.2 元素获取</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-5-ArrayList源码分析-基于JDK1-7-0-45"><span class="nav-text">3.5 ArrayList源码分析(基于JDK1.7.0_45)</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#3-5-1-ArrayList构造器"><span class="nav-text">3.5.1 ArrayList构造器</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-5-2-add"><span class="nav-text">3.5.2 add()</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-5-3-remove"><span class="nav-text">3.5.3 remove()</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-5-4-set"><span class="nav-text">3.5.4 set()</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-5-5-get"><span class="nav-text">3.5.5 get()</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-5-6-modCount含义"><span class="nav-text">3.5.6 modCount含义</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-5-7-transient"><span class="nav-text">3.5.7 transient</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-5-8-Arrays-copyOf"><span class="nav-text">3.5.8 Arrays.copyOf()</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-5-9-System-arraycopy"><span class="nav-text">3.5.9 System.arraycopy()</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-6-LinkedList源码分析-基于JDK1-7-0-45"><span class="nav-text">3.6 LinkedList源码分析(基于JDK1.7.0_45)</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#3-6-1-LinkedList基础结构"><span class="nav-text">3.6.1 LinkedList基础结构</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-6-2-add"><span class="nav-text">3.6.2 add()</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-6-3-remove"><span class="nav-text">3.6.3 remove()</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-6-4-set"><span class="nav-text">3.6.4 set()</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-6-5-get"><span class="nav-text">3.6.5 get()</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#4-参考链接"><span class="nav-text">4. 参考链接</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2018</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">glennlgan</span>
+
+  
+
+  
+</div>
+
+
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动 v3.7.1</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 – <a class="theme-link" target="_blank" href="https://theme-next.org">NexT.Pisces</a> v6.4.1</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+	
+    
+
+    
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=6.4.1"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=6.4.1"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=6.4.1"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=6.4.1"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=6.4.1"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=6.4.1"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=6.4.1"></script>
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
