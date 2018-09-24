@@ -16,7 +16,7 @@
   <entry>
     <title><![CDATA[Linux常用命令]]></title>
     <url>%2F2018%2F09%2F24%2FLinux%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4%2F</url>
-    <content type="text"><![CDATA[1. 前言后台开发过程中, Linux的熟练使用有助于提高开发效率, 自动化部署等. 这篇文章主要是记录工作中会遇到的一些有用的命令, 持续更新. 2. 常用命令2.1 网络流量监控1dstat -nf 2.2 查看端口被占用1lsof -i:8080 2.3 生成指定大小的文件12// 生成100M的文件dd if=/dev/zero of=filename bs=1M count=100]]></content>
+    <content type="text"><![CDATA[1. 前言后台开发过程中, Linux的熟练使用有助于提高开发效率, 自动化部署等. 这篇文章主要是记录工作中会遇到的一些有用的命令, 持续更新. 2. 常用命令2.1 网络流量监控1dstat -nf 2.2 查看端口被占用方法一: 1lsof -i:8080 方法二: 1netstat -anlp | grep 8080 2.3 生成指定大小的文件12// 生成100M的文件dd if=/dev/zero of=filename bs=1M count=100]]></content>
       <categories>
         <category>后台开发</category>
       </categories>
