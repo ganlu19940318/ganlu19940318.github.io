@@ -1,6 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title><![CDATA[Maven实战(三)--Maven仓库]]></title>
+    <url>%2F2018%2F10%2F12%2FMaven%E5%AE%9E%E6%88%98(%E4%B8%89)--Maven%E4%BB%93%E5%BA%93%2F</url>
+    <content type="text"><![CDATA[1. 前言Java开发过程中, 使用Maven管理依赖. 这是Maven系列文章, 主要记录&lt;&lt;Maven实战&gt;&gt;的学习过程和一些重要知识点, 以方便自己查阅. 2. 仓库概述Maven坐标是一个构件的逻辑表示, 构件的物理表示是文件, Maven通过仓库来统一管理这些文件. 得益于坐标机制, Maven项目能够以统一的方式来使用任何构件, 在此基础上, Maven可以在某个位置统一存储所有Maven项目共享的构建, 这个统一位置就是仓库. 3. 仓库分类Maven中的仓库分为: 本地仓库和远程仓库. Maven根据坐标寻找构件时, 先查看本地仓库是否存在该构件, 存在则直接使用; 否则就查找远程仓库, 找到之后就下载到本地仓库; 本地和远程都没找到, 直接报错. 中央仓库是Maven核心自带的远程仓库, 含绝大多数开源的构件; 私服是在局域网搭建的仓库服务器, 用于代理外部的远程仓库, 可以节省带宽和时间, 内部的项目还能部署到私服供其他项目使用; 使用私服可以加速Maven构建以及提高稳定性, 内网访问不需要依赖于网络. 其他公共服, 如阿里云等. 本地仓库: 通过修改settings.xml来配置, 默认是${user.home}/.m2/repository. 12345&lt;!-- localRepository | The path to the local repository maven will use to store artifacts | Default: $&#123;user.home&#125;/.m2/repository&lt;localRepository&gt;/path/to/local/repo&lt;/localRepository&gt;--&gt; 构件进入本地仓库有两种方式: Maven从远程仓库下载到本地仓库; 通过在项目执行mvn install安装到本地. 对Maven而言, 用户的本地仓库只有一个, 但可以配置访问很多远程仓库. 而中央仓库是默认的远程仓库, 在$M2_HOME/lib/maven-model-builder-{version}.jar的org/apache/maven/model/pom-4.0.0.xml文件定义了, 该POM也被称为超级POM. 4. 仓库的布局构件在Maven仓库里的存储路径为:{groupId}/{artifactId}/{version}/{artifactId-version.packaging} 5. 远程仓库的配置通过POM文件可以配置远程仓库. 1234567891011121314&lt;repositories&gt; &lt;repository&gt; &lt;id&gt;jboss&lt;/id&gt; &lt;name&gt;jboss repository&lt;/name&gt; &lt;url&gt;http://repository.jboss.com/maven2/&lt;/url&gt; &lt;releases&gt; &lt;enabled&gt;true&lt;/enabled&gt; &lt;/releases&gt; &lt;snapshots&gt; &lt;enabled&gt;false&lt;/enabled&gt; &lt;/snapshots&gt; &lt;layout&gt;default&lt;/layout&gt; &lt;/repository&gt;&lt;/repositories&gt; 仓库id必须唯一!!!不唯一则会覆盖!!!release的enable值为true表示开启JBoss仓库的发布版本下载支持.snapshots的enable值为false表示关闭JBoos仓库的快照版本下载支持.layout元素值为default,表示仓库的布局是Maven2和Maven3的默认布局, 而不是Maven1的布局. 对于release和snapshot来说, 除了enable, 它们还包括另外两个子元素updatePolicy和checksumPolicy. 12345&lt;snapshots&gt; &lt;enabled&gt;true&lt;/enabled&gt; &lt;updatePolicy&gt;daily&lt;/updatePolicy&gt; &lt;checksumPolicy&gt;ignore&lt;/checksumPolicy&gt;&lt;/snapshots&gt; updatePolicy配置Maven从远程仓库检查更新的频率,默认是daily.checksumPolicy配置Maven检查检验和文件的策略. 5.1 远程仓库认证通过修改settings.xml配置远程仓库认证. 123456789101112&lt;settings&gt; ... &lt;!--配置远程仓库认证信息--&gt; &lt;servers&gt; &lt;server&gt; &lt;id&gt;jboss&lt;/id&gt; &lt;username&gt;admin&lt;/username&gt; &lt;password&gt;admin123&lt;/password&gt; &lt;/server&gt; &lt;/servers&gt; ...&lt;/settings&gt; 6. 部署构件至远程仓库123456789101112&lt;distributionManagement&gt; &lt;repository&gt; &lt;id&gt;releases&lt;/id&gt; &lt;name&gt;public&lt;/name&gt; &lt;url&gt;http://127.0.0.1:8081/nexus/content/repositories/releases&lt;/url&gt; &lt;/repository&gt; &lt;snapshotRepository&gt; &lt;id&gt;snapshots&lt;/id&gt; &lt;name&gt;Snapshots&lt;/name&gt; &lt;url&gt;http://127.0.0.1:8081/nexus/content/repositories/snapshots&lt;/url&gt; &lt;/snapshotRepository&gt;&lt;/distributionManagement&gt; distributionManagement包含repository和snapshotRepository子元素, 前者表示发布版本(稳定版本)构件的仓库,后者表示快照版本(开发测试版本)的仓库. 这两个元素都需要配置id, name和url, id为远程仓库的唯一标识, name是为了方便人阅读, 关键的url表示该仓库的地址. 往远程仓库部署构件的时候, 往往需要认证, 配置认证的方式同上. 配置正确后, 运行命令mvn clean deploy, Maven就会将项目构建输出的构件部署到配置对应的远程仓库, 如果项目当前的版本是快照版本, 则部署到快照版本的仓库地址, 否则就部署到发布版本的仓库地址. Maven会根据模块的版本号(pom文件中的version)中是否带有-SNAPSHOT来判断是快照版本还是正式版本. 7. 从仓库解析依赖的机制当本地仓库没有依赖构件的时候, maven会自动从远程仓库下载; 当依赖版本为快照版本的时候Maven会自动找到最新的快照. 这背后的依赖解析机制可以概括如下: 当依赖的范围是system的时候Maven直接从本地文件系统解析构件. 根据依赖坐标计算仓库路径后, 尝试直接从本地仓库寻找构件, 如果发现相应构件则解析成功. 在本地仓库不存在相应构件的情况下, 如果依赖的版本显示的发布版本构件, 如1.2,2.1-beta-1等, 则遍历所有的远程仓库, 发现后下载并解析使用. 如果依赖的版本是RELEASE或者LATEST, 则基于更新策略读取所有远程仓库的元数据groupId/artifactId/maven-metadata.xml,将其与本地仓库对应元数据合并后计算出RELEASE或者LATEST真实的值, 然后基于这个真实的值检查本地和远程仓库如步骤2和3. 如果依赖的版本是SNAPSHOT, 则基于更新策略读取所有远程仓库的元数据groupId/artifactId/version/maven-metadata.xml, 将其与本地仓库对应元数据合并后得到最新快照版本的值, 然后基于该值检查本地仓库或者从远程仓库下载. 如果最后解析得到的构件版本时间是时间戳格式的快照, 如1.4.1-20091104.121450-121, 则复制其时间戳格式的文件至非时间戳格式, 如SNAPSHOT, 并使用该非时间戳格式的构件. 8. 镜像如果仓库X可以提供仓库Y存储的所有内容, 那么就可以认为X是Y的一个镜像. 换句话说, 任何一个可以从仓库Y获得的构件, 都能够从它的镜像中获取. 举个例子, http://maven.oschina.net/content/groups/public/ 是中央仓库http://repo1.maven.org/maven2/ 在中国的镜像, 由于地理位置的因素, 该镜像往往能够提供比中央仓库更快的服务. 因此, 可以配置Maven使用该镜像来替代中央仓库, 编辑settings.xml, 代码如下: 12345678&lt;mirrors&gt; &lt;mirror&gt; &lt;id&gt;maven.oschina.net&lt;/id&gt; &lt;name&gt;maven mirror in China&lt;/name&gt; &lt;url&gt;http://maven.oschina.net/content/groups/public/&lt;/url&gt; &lt;mirrorOf&gt;central&lt;/mirrorOf&gt; &lt;/mirror&gt;&lt;/mirrors&gt; 该例中, mirrorOf的值为central, 表示该配置为中央仓库的镜像, 任何对于中央仓库的请求都会转至该镜像, 用户也可以使用同样的方法配置其他仓库的镜像.id表示镜像的唯一标识符, name表示镜像的名称, url表示镜像的地址. 关于镜像的一个更为常见的用法是结合私服. 由于私服可以代理任何外部的公共仓库(包括中央仓库), 因此, 对于组织内部的Maven用户来说, 使用一个私服地址就等于使用了所有需要的外部仓库, 这可以将配置集中到私服, 从而简化Maven本身的配置. 在这种情况下, 任何需要的构件都可以从私服获得, 私服就是所有仓库的镜像. 这时, 可以配置这样的一个镜像: 123456789&lt;!--配置私服镜像--&gt;&lt;mirrors&gt; &lt;mirror&gt; &lt;id&gt;nexus&lt;/id&gt; &lt;name&gt;internal nexus repository&lt;/name&gt; &lt;url&gt;http://192.168.0.1:8081/nexus/content/groups/public/&lt;/url&gt; &lt;mirrorOf&gt;*&lt;/mirrorOf&gt; &lt;/mirror&gt; &lt;/mirrors&gt; 8.1 特别强调需要注意的是, 由于镜像仓库完全屏蔽了被镜像仓库, 当镜像仓库不稳定或者停止服务的时候, Maven仍将无法访问被镜像仓库, 因而将无法下载构件. 9. 参考链接&lt;&lt;Maven实战&gt;&gt;(许晓斌)]]></content>
+      <categories>
+        <category>Maven基础</category>
+      </categories>
+      <tags>
+        <tag>基础储备</tag>
+        <tag>Maven</tag>
+      </tags>
+  </entry>
+  <entry>
     <title><![CDATA[Maven实战(二)--Maven坐标和依赖]]></title>
     <url>%2F2018%2F10%2F11%2FMaven%E5%AE%9E%E6%88%98(%E4%BA%8C)--Maven%E5%9D%90%E6%A0%87%E5%92%8C%E4%BE%9D%E8%B5%96%2F</url>
     <content type="text"><![CDATA[1. 前言Java开发过程中, 使用Maven管理依赖. 这是Maven系列文章, 主要记录&lt;&lt;Maven实战&gt;&gt;的学习过程和一些重要知识点, 以方便自己查阅. 2. 坐标详解1234&lt;groupId&gt;com.hust.schedule&lt;/groupId&gt;&lt;artifactId&gt;schedule-calculation&lt;/artifactId&gt;&lt;version&gt;1.0-SNAPSHOT&lt;/version&gt;&lt;packaging&gt;jar&lt;/packaging&gt; groupId: 定义当前Maven项目隶属的实际项目, 比如com.hust.schedule就是指华中科技大学的一个schedule项目. artifactId: 该元素定义实际项目中的一个Maven项目(模块), 比如schedule-calculation就是schedule项目中的calculation模块. artifactId的规范的做法是使用项目名作为前缀,模块名作为后缀, 用-分割. version: 定义Maven项目当前所处的版本. packaging: 定义Maven项目的打包方式. 3. 依赖配置123456789101112131415&lt;dependencies&gt; &lt;dependency&gt; &lt;groupId&gt;...&lt;/groupId&gt; &lt;artifactId&gt;...&lt;/artifactId&gt; &lt;version&gt;...&lt;/version&gt; &lt;type&gt;...&lt;/type&gt; &lt;scope&gt;...&lt;/scope&gt; &lt;optional&gt;...&lt;/optional&gt; &lt;exclusions&gt; &lt;exclusion&gt; ... &lt;exclusion&gt; &lt;exclusions&gt; &lt;/dependency&gt;&lt;/dependencies&gt; groupId, artifactId, version: 作为依赖的基本坐标, 用于定位依赖type: 依赖的类型, 对应于packaging, 默认为jarscope: 依赖的范围optional: 标记依赖是否可选exclusions: 用来排除传递性依赖 4. 依赖范围 Maven在编译项目主代码的时候需要使用一套classpath; Maven在编译和执行测试的时候, 会使用另外一套classpath. 实际运行Maven项目的时候, 又会使用一套classpath. 依赖范围就是用来控制依赖与这三种classpath(编译classpath, 测试classpath, 运行classpath)的关系. 依赖的范围通过scope指定. 4.1 Maven依赖范围compile: 编译依赖范围, 默认值. 使用此依赖范围的依赖对于编译, 测试, 运行三种classpath都有效.test: 测试依赖范围, 使用此依赖范围的依赖只对于测试classpath有效. 典型的就是Junit依赖一般声明为测试依赖范围.provided: 已提供依赖范围, 使用此依赖范围的依赖, 对于编译和测试classpath有效, 但在运行时无效, 典型的例子是servlet-api, 编译和测试的时候需要, 但运行时由容器提供.runtime: 运行时依赖范围, 使用此依赖范围的依赖, 对于测试和运行classpath有效, 但在编译主代码是无效. 典型的例子是JDBC驱动实现, 项目主代码的编译仅需要JDK的JDBC接口, 只有在测试和运行时才需要实现.system: 系统依赖范围, 该依赖与三种classpath的关系与provided依赖范围完全一致, 但是使用system依赖范围的依赖必须通过systemPath元素显式的指定依赖文件的路径.由于此类依赖不是通过Maven仓库解析, 而且往往与本机系统绑定, 因此需要谨慎使用. 比如 1234567&lt;dependency&gt; &lt;groupId&gt;javax.sql&lt;/groupId&gt; &lt;artifactId&gt;jdbc-stdext&lt;/artifactId&gt; &lt;version&gt;2.0&lt;/version&gt; &lt;scope&gt;system&lt;/scope&gt; &lt;systemPath&gt;$&#123;java.home&#125;/lib/rt.jar&lt;/systemPath&gt;&lt;/dependency&gt; import: 导入依赖范围, 该依赖范围不会对三种classpath产生实际影响. 这里具体看依赖管理. 5. 传递性依赖Maven的传递性依赖是指不需要考虑你依赖的库文件所需要依赖的库文件, 能够将依赖模块的依赖自动的引入. 依赖的范围不仅可以控制依赖与三种classpath的关系, 还会对传递性依赖产生影响. 假设A依赖于B, B依赖于C, 则说A对于B是第一直接依赖, B对C是第二直接依赖, A对于C是传递依赖. 第一直接依赖范围和第二直接依赖范围决定了传递性依赖的范围, 其结果如下: 6. 依赖调解一般情况下, 只关心项目的直接依赖, 而不关心直接依赖引入的传递性依赖, 但当传递性依赖出现问题时, 需要知道该传递性依赖是怎么引进来的. Maven依赖调解第一原则: 路径最近者优先, 如：A-&gt;B-&gt;C-&gt;X(1.0), A-&gt;D-X(2.0), 则X的2.0版本会被解析使用;Maven依赖调解第二原则: 第一声明者优先, 如: A-&gt;B-&gt;X(1.0)、A-&gt;D-&gt;X(2.0), 若B的依赖声明在D之前, 则使用X的1.0版本, 否则使用X的2.0版本. 7. 可选依赖假设有下面的依赖关系:A-&gt;B、B-&gt;X(可选), B-&gt;Y(可选), 由于X和Y是可选的, 所以依赖不会传递, X和Y不会对A有任何影响. 可选依赖的必要性:项目B实现2种特性, 特性一依赖于X, 特性二依赖于Y, 而且这两个特性是互斥的, 用户不可能同时适用这两个特性, 这时候可选依赖就有用了. 原则上说, 是不应该使用可选依赖的, 根据面向对象的单一职责性原则, 该原则同样适用于Maven项目的规划. 8. 最佳实践8.1 排除依赖传递性依赖会给项目隐式的引入很多依赖, 这极大的简化了项目依赖的管理, 但是有时某些依赖会带来问题, 这时需要把带来问题的依赖排除掉. 12345678910111213&lt;dependencies&gt; &lt;dependency&gt; &lt;groupId&gt;com.cc.maven&lt;/groupId&gt; &lt;artifactId&gt;project-b&lt;/artifactId&gt; &lt;version&gt;1.0.0&lt;/version&gt; &lt;exclusions&gt; &lt;exclusion&gt; &lt;groupId&gt;com.cc.maven&lt;/groupId&gt; &lt;artifactId&gt;project-c&lt;/artifactId&gt; &lt;/exclusion&gt; &lt;/exclusions&gt; &lt;/dependency&gt;&lt;/dependencies&gt; 8.2 归类依赖来自同一个项目的不同模块, 其版本号应该是相同的, 如springframework项目有spring-core、spring-beans模块, 对这些模块的版本号通过属性定义, 再进行引用, 这样可以进行版本的整体升级: 123456789101112131415&lt;properties&gt; &lt;springframework.version&gt;4.3.13.RELEASE&lt;/springframework.version&gt;&lt;/properties&gt;&lt;dependencies&gt; &lt;dependency&gt; &lt;groupId&gt;org.springframework&lt;/groupId&gt; &lt;artifactId&gt;spring-core&lt;/artifactId&gt; &lt;version&gt;$&#123;springframework.version&#125;&lt;/version&gt; &lt;/dependency&gt; &lt;dependency&gt; &lt;groupId&gt;org.springframework&lt;/groupId&gt; &lt;artifactId&gt;spring-beans&lt;/artifactId&gt; &lt;version&gt;$&#123;springframework.version&#125;&lt;/version&gt; &lt;/dependency&gt;&lt;/dependencies&gt; 8.3 优化依赖去掉多余的依赖, 显示声明某些必要的依赖.通过mvn dependency:list 查看项目已解析的依赖通过mvn dependency:tree 查看项目的依赖树通过mvn dependency:analyze工具可以帮助分析当前项目的依赖 9. 参考链接&lt;&lt;Maven实战&gt;&gt;(许晓斌)Maven的排除依赖、归类依赖、优化依赖Maven实战读书笔记（三）：Maven依赖]]></content>
@@ -58,21 +70,9 @@
         <category>后台开发</category>
       </categories>
       <tags>
-        <tag>Java</tag>
         <tag>基础储备</tag>
+        <tag>Java</tag>
         <tag>解决方案</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title><![CDATA[Java本地方法]]></title>
-    <url>%2F2018%2F09%2F24%2FJava%E6%9C%AC%E5%9C%B0%E6%96%B9%E6%B3%95%2F</url>
-    <content type="text"><![CDATA[1. 前言之前在公司开发的时候, 需要用到内部的组件, 尽管提供了jar包, 但是jar包底层是通过Java本地方法实现的, 所以仅仅导入jar包并不能正常使用, 还需要安装内部组件的环境. 所以写这篇文章记录Java本地方法的使用, 帮助自己熟悉这块的使用. 2. 基础使用基于Linux环境, 这个章节简单介绍如何实现一个Java本地方法. 第一步: 建立一个普通的java类, 添加一个方法, 在方法返回值前加 native 1234public class ClassMethod &#123; //本地方法可以是静态的也可以是非静态的； public static native void greeting();&#125; 第二步: 编译这个java类, 得到ClassMethod.class文件 1javac ClassMethod.java 第三步: 找到当前类编译的.class文件, 使用命令行生成.h文件 1javah ClassMethod 第四步: 查看ClassMethod.h 123456789101112131415161718192021/* DO NOT EDIT THIS FILE - it is machine generated */#include &lt;jni.h&gt;/* Header for class ClassMethod */#ifndef _Included_ClassMethod#define _Included_ClassMethod#ifdef __cplusplusextern "C" &#123;#endif/* * Class: ClassMethod * Method: greeting * Signature: ()V */JNIEXPORT void JNICALL Java_ClassMethod_greeting (JNIEnv *, jclass);#ifdef __cplusplus&#125;#endif#endif 第五步: 新建cpp文件, 并写逻辑代码(我这边命名为main.cpp,其实是可以随意命名的) 12345#include "ClassMethod.h"#include &lt;stdio.h&gt;JNIEXPORT void JNICALL Java_ClassMethod_greeting(JNIEnv *, jclass)&#123; printf("hello world!");&#125; 第六步: 将main.cpp文件和ClassMethod.h放到一个目录下, 并执行指令生成动态链接库.so文件 1gcc -fPIC -I /home/ganlu/java/jdk1.8.0_144/include/ -I /home/ganlu/java/jdk1.8.0_144/include/linux/ -shared -o libHello.so main.cpp 第七步: 将动态链接库复制到java项目中 123456789101112public class ClassMethod &#123; static &#123; System.load("/home/ganlu/java/workplace/libHello.so"); &#125; //本地方法可以是静态的也可以是非静态的； public static native void greeting(); public static void main(String args[])&#123; greeting(); &#125;&#125; 第八步: 重新编译ClassMethod.java并执行 12javac ClassMethod.javajava ClassMethod 运行结果: 1hello world! 3. 几个问题3.1 动态链接库我这边动态链接库的加载是通过绝对路径的指定来实现的, 而实际中, 这种绝对路径的指定肯定是不好的. 1System.load("/home/ganlu/java/workplace/libHello.so"); 网上流传比较多的一种做法是如下(这里要注意, .so文件的命名一定要规范, 以lib开头, 以.so结尾): 1System.loadLibrary("Hello"); 但是用这种方法直接运行, 会报错. 12345Exception in thread "main" java.lang.UnsatisfiedLinkError: no Hello in java.library.path at java.lang.ClassLoader.loadLibrary(ClassLoader.java:1867) at java.lang.Runtime.loadLibrary0(Runtime.java:870) at java.lang.System.loadLibrary(System.java:1122) at ClassMethod.&lt;clinit&gt;(ClassMethod.java:4) 3.1.1 解决方法一:通过Java运行参数指定java.library.path1java -Djava.library.path=. ClassMethod 3.1.2 解决方法二:通过配置 LD_LIBRARY_PATH 环境变量123sudo gedit /etc/profileexport LD_LIBRARY_PATH=/home/ganlu/java/workplace 3.2 工作流程图 3.3 常见异常如果出现以下异常, 则说明.so文件不对, 是因为java 程序在调用.so时候, 不能找到native method 方法的实现.主要是因为在.so中, 可能xxx.h头文件中的接口名和xxx.cpp源文件中的实现函数名不一致导致的. 123Exception in thread "main" java.lang.UnsatisfiedLinkError: test.ClassMethod.greeting()V at test.ClassMethod.greeting(Native Method) at test.ClassMethod.main(ClassMethod.java:11) 4. 参考链接Java native 本地方法调用java 本地方法（JNI）Exception in thread “main” java.lang.UnsatisfiedLinkError: xxx()V]]></content>
-      <categories>
-        <category>Java基础</category>
-      </categories>
-      <tags>
-        <tag>Java</tag>
-        <tag>基础储备</tag>
       </tags>
   </entry>
   <entry>
@@ -83,8 +83,20 @@
         <category>Java基础</category>
       </categories>
       <tags>
-        <tag>Java</tag>
         <tag>基础储备</tag>
+        <tag>Java</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[Java本地方法]]></title>
+    <url>%2F2018%2F09%2F24%2FJava%E6%9C%AC%E5%9C%B0%E6%96%B9%E6%B3%95%2F</url>
+    <content type="text"><![CDATA[1. 前言之前在公司开发的时候, 需要用到内部的组件, 尽管提供了jar包, 但是jar包底层是通过Java本地方法实现的, 所以仅仅导入jar包并不能正常使用, 还需要安装内部组件的环境. 所以写这篇文章记录Java本地方法的使用, 帮助自己熟悉这块的使用. 2. 基础使用基于Linux环境, 这个章节简单介绍如何实现一个Java本地方法. 第一步: 建立一个普通的java类, 添加一个方法, 在方法返回值前加 native 1234public class ClassMethod &#123; //本地方法可以是静态的也可以是非静态的； public static native void greeting();&#125; 第二步: 编译这个java类, 得到ClassMethod.class文件 1javac ClassMethod.java 第三步: 找到当前类编译的.class文件, 使用命令行生成.h文件 1javah ClassMethod 第四步: 查看ClassMethod.h 123456789101112131415161718192021/* DO NOT EDIT THIS FILE - it is machine generated */#include &lt;jni.h&gt;/* Header for class ClassMethod */#ifndef _Included_ClassMethod#define _Included_ClassMethod#ifdef __cplusplusextern "C" &#123;#endif/* * Class: ClassMethod * Method: greeting * Signature: ()V */JNIEXPORT void JNICALL Java_ClassMethod_greeting (JNIEnv *, jclass);#ifdef __cplusplus&#125;#endif#endif 第五步: 新建cpp文件, 并写逻辑代码(我这边命名为main.cpp,其实是可以随意命名的) 12345#include "ClassMethod.h"#include &lt;stdio.h&gt;JNIEXPORT void JNICALL Java_ClassMethod_greeting(JNIEnv *, jclass)&#123; printf("hello world!");&#125; 第六步: 将main.cpp文件和ClassMethod.h放到一个目录下, 并执行指令生成动态链接库.so文件 1gcc -fPIC -I /home/ganlu/java/jdk1.8.0_144/include/ -I /home/ganlu/java/jdk1.8.0_144/include/linux/ -shared -o libHello.so main.cpp 第七步: 将动态链接库复制到java项目中 123456789101112public class ClassMethod &#123; static &#123; System.load("/home/ganlu/java/workplace/libHello.so"); &#125; //本地方法可以是静态的也可以是非静态的； public static native void greeting(); public static void main(String args[])&#123; greeting(); &#125;&#125; 第八步: 重新编译ClassMethod.java并执行 12javac ClassMethod.javajava ClassMethod 运行结果: 1hello world! 3. 几个问题3.1 动态链接库我这边动态链接库的加载是通过绝对路径的指定来实现的, 而实际中, 这种绝对路径的指定肯定是不好的. 1System.load("/home/ganlu/java/workplace/libHello.so"); 网上流传比较多的一种做法是如下(这里要注意, .so文件的命名一定要规范, 以lib开头, 以.so结尾): 1System.loadLibrary("Hello"); 但是用这种方法直接运行, 会报错. 12345Exception in thread "main" java.lang.UnsatisfiedLinkError: no Hello in java.library.path at java.lang.ClassLoader.loadLibrary(ClassLoader.java:1867) at java.lang.Runtime.loadLibrary0(Runtime.java:870) at java.lang.System.loadLibrary(System.java:1122) at ClassMethod.&lt;clinit&gt;(ClassMethod.java:4) 3.1.1 解决方法一:通过Java运行参数指定java.library.path1java -Djava.library.path=. ClassMethod 3.1.2 解决方法二:通过配置 LD_LIBRARY_PATH 环境变量123sudo gedit /etc/profileexport LD_LIBRARY_PATH=/home/ganlu/java/workplace 3.2 工作流程图 3.3 常见异常如果出现以下异常, 则说明.so文件不对, 是因为java 程序在调用.so时候, 不能找到native method 方法的实现.主要是因为在.so中, 可能xxx.h头文件中的接口名和xxx.cpp源文件中的实现函数名不一致导致的. 123Exception in thread "main" java.lang.UnsatisfiedLinkError: test.ClassMethod.greeting()V at test.ClassMethod.greeting(Native Method) at test.ClassMethod.main(ClassMethod.java:11) 4. 参考链接Java native 本地方法调用java 本地方法（JNI）Exception in thread “main” java.lang.UnsatisfiedLinkError: xxx()V]]></content>
+      <categories>
+        <category>Java基础</category>
+      </categories>
+      <tags>
+        <tag>基础储备</tag>
+        <tag>Java</tag>
       </tags>
   </entry>
   <entry>
@@ -95,8 +107,8 @@
         <category>后台开发</category>
       </categories>
       <tags>
-        <tag>Java</tag>
         <tag>基础储备</tag>
+        <tag>Java</tag>
         <tag>解决方案</tag>
       </tags>
   </entry>
@@ -119,8 +131,8 @@
         <category>计算机基础</category>
       </categories>
       <tags>
-        <tag>Java</tag>
         <tag>基础储备</tag>
+        <tag>Java</tag>
         <tag>JVM</tag>
       </tags>
   </entry>
@@ -203,8 +215,8 @@
         <category>Java基础</category>
       </categories>
       <tags>
-        <tag>Java</tag>
         <tag>基础储备</tag>
+        <tag>Java</tag>
         <tag>JVM</tag>
       </tags>
   </entry>
@@ -216,8 +228,8 @@
         <category>Java基础</category>
       </categories>
       <tags>
-        <tag>Java</tag>
         <tag>基础储备</tag>
+        <tag>Java</tag>
         <tag>JVM</tag>
       </tags>
   </entry>
@@ -229,8 +241,8 @@
         <category>Java基础</category>
       </categories>
       <tags>
-        <tag>Java</tag>
         <tag>基础储备</tag>
+        <tag>Java</tag>
         <tag>JVM</tag>
       </tags>
   </entry>
@@ -242,8 +254,8 @@
         <category>Java基础</category>
       </categories>
       <tags>
-        <tag>Java</tag>
         <tag>基础储备</tag>
+        <tag>Java</tag>
         <tag>JVM</tag>
       </tags>
   </entry>
@@ -255,8 +267,8 @@
         <category>Java基础</category>
       </categories>
       <tags>
-        <tag>Java</tag>
         <tag>基础储备</tag>
+        <tag>Java</tag>
       </tags>
   </entry>
   <entry>
@@ -267,8 +279,8 @@
         <category>Java基础</category>
       </categories>
       <tags>
-        <tag>Java</tag>
         <tag>基础储备</tag>
+        <tag>Java</tag>
         <tag>JVM</tag>
       </tags>
   </entry>
@@ -280,8 +292,8 @@
         <category>Java基础</category>
       </categories>
       <tags>
-        <tag>Java</tag>
         <tag>基础储备</tag>
+        <tag>Java</tag>
       </tags>
   </entry>
   <entry>
@@ -292,8 +304,8 @@
         <category>Java基础</category>
       </categories>
       <tags>
-        <tag>Java</tag>
         <tag>基础储备</tag>
+        <tag>Java</tag>
       </tags>
   </entry>
   <entry>
@@ -304,8 +316,8 @@
         <category>Java基础</category>
       </categories>
       <tags>
-        <tag>Java</tag>
         <tag>基础储备</tag>
+        <tag>Java</tag>
       </tags>
   </entry>
   <entry>
@@ -316,8 +328,8 @@
         <category>Java基础</category>
       </categories>
       <tags>
-        <tag>Java</tag>
         <tag>基础储备</tag>
+        <tag>Java</tag>
       </tags>
   </entry>
   <entry>
@@ -328,8 +340,8 @@
         <category>Java基础</category>
       </categories>
       <tags>
-        <tag>Java</tag>
         <tag>基础储备</tag>
+        <tag>Java</tag>
       </tags>
   </entry>
   <entry>
@@ -340,8 +352,8 @@
         <category>Java基础</category>
       </categories>
       <tags>
-        <tag>Java</tag>
         <tag>基础储备</tag>
+        <tag>Java</tag>
       </tags>
   </entry>
   <entry>
@@ -352,8 +364,8 @@
         <category>Java基础</category>
       </categories>
       <tags>
-        <tag>Java</tag>
         <tag>基础储备</tag>
+        <tag>Java</tag>
       </tags>
   </entry>
   <entry>
@@ -364,8 +376,8 @@
         <category>Java基础</category>
       </categories>
       <tags>
-        <tag>Java</tag>
         <tag>基础储备</tag>
+        <tag>Java</tag>
       </tags>
   </entry>
   <entry>
@@ -376,8 +388,8 @@
         <category>Java基础</category>
       </categories>
       <tags>
-        <tag>Java</tag>
         <tag>基础储备</tag>
+        <tag>Java</tag>
       </tags>
   </entry>
   <entry>
@@ -388,8 +400,8 @@
         <category>Java基础</category>
       </categories>
       <tags>
-        <tag>Java</tag>
         <tag>基础储备</tag>
+        <tag>Java</tag>
       </tags>
   </entry>
   <entry>

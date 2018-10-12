@@ -108,25 +108,24 @@
 
 
 
-  <meta name="keywords" content="基础储备,Java">
+  <meta name="keywords" content="基础储备,Maven">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Java本地方法">
-<meta property="og:url" content="http://ganlu19940318.github.io/2018/09/24/Java本地方法/index.html">
+<meta property="og:title" content="Maven实战(三)--Maven仓库">
+<meta property="og:url" content="http://ganlu19940318.github.io/2018/10/12/Maven实战(三)--Maven仓库/index.html">
 <meta property="og:site_name" content="glennlgan的个人博客">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:image" content="https://blogpictures-1257055754.cos.ap-guangzhou.myqcloud.com/20180911210045539.png">
-<meta property="og:image" content="https://blogpictures-1257055754.cos.ap-guangzhou.myqcloud.com/654185-20170113182657025-932017676.png">
-<meta property="og:updated_time" content="2018-09-24T09:20:01.587Z">
+<meta property="og:image" content="https://blogpictures-1257055754.cos.ap-guangzhou.myqcloud.com/6875230-6bf26fb0b4190a62.png">
+<meta property="og:updated_time" content="2018-10-12T03:38:28.373Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Java本地方法">
-<meta name="twitter:image" content="https://blogpictures-1257055754.cos.ap-guangzhou.myqcloud.com/20180911210045539.png">
+<meta name="twitter:title" content="Maven实战(三)--Maven仓库">
+<meta name="twitter:image" content="https://blogpictures-1257055754.cos.ap-guangzhou.myqcloud.com/6875230-6bf26fb0b4190a62.png">
 
 
 
 
 
 
-  <link rel="canonical" href="http://ganlu19940318.github.io/2018/09/24/Java本地方法/"/>
+  <link rel="canonical" href="http://ganlu19940318.github.io/2018/10/12/Maven实战(三)--Maven仓库/"/>
 
 
 
@@ -136,7 +135,7 @@
   };
 </script>
 
-  <title>Java本地方法 | glennlgan的个人博客</title>
+  <title>Maven实战(三)--Maven仓库 | glennlgan的个人博客</title>
   
 
 
@@ -332,7 +331,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://ganlu19940318.github.io/2018/09/24/Java本地方法/">
+    <link itemprop="mainEntityOfPage" href="http://ganlu19940318.github.io/2018/10/12/Maven实战(三)--Maven仓库/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="glennlgan">
@@ -349,7 +348,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">Java本地方法
+          <h1 class="post-title" itemprop="name headline">Maven实战(三)--Maven仓库
               
             
           </h1>
@@ -374,7 +373,7 @@
                 
               
 
-              <time title="创建时间：2018-09-24 15:40:39 / 修改时间：17:20:01" itemprop="dateCreated datePublished" datetime="2018-09-24T15:40:39+08:00">2018-09-24</time>
+              <time title="创建时间：2018-10-12 10:24:24 / 修改时间：11:38:28" itemprop="dateCreated datePublished" datetime="2018-10-12T10:24:24+08:00">2018-10-12</time>
             
 
             
@@ -396,7 +395,7 @@
                 <span class="post-meta-item-text">分类于</span>
               
               
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/Java基础/" itemprop="url" rel="index"><span itemprop="name">Java基础</span></a></span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/Maven基础/" itemprop="url" rel="index"><span itemprop="name">Maven基础</span></a></span>
 
                 
                 
@@ -432,39 +431,56 @@
       
         <hr>
 <a id="more"></a>
-<h1 id="1-前言"><a href="#1-前言" class="headerlink" title="1. 前言"></a>1. 前言</h1><p>之前在公司开发的时候, 需要用到内部的组件, 尽管提供了jar包, 但是jar包底层是通过Java本地方法实现的, 所以仅仅导入jar包并不能正常使用, 还需要安装内部组件的环境. 所以写这篇文章记录Java本地方法的使用, 帮助自己熟悉这块的使用.</p>
-<h1 id="2-基础使用"><a href="#2-基础使用" class="headerlink" title="2. 基础使用"></a>2. 基础使用</h1><p>基于Linux环境, 这个章节简单介绍如何实现一个Java本地方法.</p>
-<p>第一步: 建立一个普通的java类, 添加一个方法, 在方法返回值前加 native</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ClassMethod</span> </span>&#123;</span><br><span class="line">    <span class="comment">//本地方法可以是静态的也可以是非静态的；</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">native</span> <span class="keyword">void</span> <span class="title">greeting</span><span class="params">()</span></span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>第二步: 编译这个java类, 得到ClassMethod.class文件</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">javac ClassMethod.java</span><br></pre></td></tr></table></figure>
-<p>第三步: 找到当前类编译的.class文件, 使用命令行生成.h文件</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">javah ClassMethod</span><br></pre></td></tr></table></figure>
-<p>第四步: 查看ClassMethod.h</p>
-<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/* DO NOT EDIT THIS FILE - it is machine generated */</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;jni.h&gt;</span></span></span><br><span class="line"><span class="comment">/* Header for class ClassMethod */</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="meta-keyword">ifndef</span> _Included_ClassMethod</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> _Included_ClassMethod</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">ifdef</span> __cplusplus</span></span><br><span class="line"><span class="keyword">extern</span> <span class="string">"C"</span> &#123;</span><br><span class="line"><span class="meta">#<span class="meta-keyword">endif</span></span></span><br><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment"> * Class:     ClassMethod</span></span><br><span class="line"><span class="comment"> * Method:    greeting</span></span><br><span class="line"><span class="comment"> * Signature: ()V</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line">JNIEXPORT <span class="keyword">void</span> JNICALL Java_ClassMethod_greeting</span><br><span class="line">  (JNIEnv *, jclass);</span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="meta-keyword">ifdef</span> __cplusplus</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="meta">#<span class="meta-keyword">endif</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">endif</span></span></span><br></pre></td></tr></table></figure>
-<p>第五步: 新建cpp文件, 并写逻辑代码(我这边命名为main.cpp,其实是可以随意命名的)</p>
-<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">"ClassMethod.h"</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="function">JNIEXPORT <span class="keyword">void</span> JNICALL <span class="title">Java_ClassMethod_greeting</span><span class="params">(JNIEnv *, jclass)</span></span>&#123;</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">"hello world!"</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>第六步: 将main.cpp文件和ClassMethod.h放到一个目录下, 并执行指令生成动态链接库.so文件</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">gcc -fPIC -I /home/ganlu/java/jdk1.8.0_144/include/ -I /home/ganlu/java/jdk1.8.0_144/include/linux/ -shared -o libHello.so main.cpp</span><br></pre></td></tr></table></figure>
-<p>第七步: 将动态链接库复制到java项目中</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ClassMethod</span> </span>&#123;</span><br><span class="line">    <span class="keyword">static</span></span><br><span class="line">    &#123;</span><br><span class="line">        System.load(<span class="string">"/home/ganlu/java/workplace/libHello.so"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">//本地方法可以是静态的也可以是非静态的；</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">native</span> <span class="keyword">void</span> <span class="title">greeting</span><span class="params">()</span></span>;</span><br><span class="line">    </span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String args[])</span></span>&#123;</span><br><span class="line">	greeting();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>第八步: 重新编译ClassMethod.java并执行</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">javac ClassMethod.java</span><br><span class="line">java ClassMethod</span><br></pre></td></tr></table></figure>
-<p>运行结果:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hello world!</span><br></pre></td></tr></table></figure>
-<p><img src="https://blogpictures-1257055754.cos.ap-guangzhou.myqcloud.com/20180911210045539.png" alt="Java本地方法"></p>
-<h1 id="3-几个问题"><a href="#3-几个问题" class="headerlink" title="3. 几个问题"></a>3. 几个问题</h1><h2 id="3-1-动态链接库"><a href="#3-1-动态链接库" class="headerlink" title="3.1 动态链接库"></a>3.1 动态链接库</h2><p>我这边动态链接库的加载是通过绝对路径的指定来实现的, 而实际中, 这种绝对路径的指定肯定是不好的.</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">System.load(<span class="string">"/home/ganlu/java/workplace/libHello.so"</span>);</span><br></pre></td></tr></table></figure>
-<p>网上流传比较多的一种做法是如下(这里要注意, .so文件的命名一定要规范, 以lib开头, 以.so结尾):</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">System.loadLibrary(<span class="string">"Hello"</span>);</span><br></pre></td></tr></table></figure>
-<p>但是用这种方法直接运行, 会报错.</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">Exception in thread <span class="string">"main"</span> java.lang.UnsatisfiedLinkError: no Hello in java.library.path</span><br><span class="line">	at java.lang.ClassLoader.loadLibrary(ClassLoader.java:<span class="number">1867</span>)</span><br><span class="line">	at java.lang.Runtime.loadLibrary0(Runtime.java:<span class="number">870</span>)</span><br><span class="line">	at java.lang.System.loadLibrary(System.java:<span class="number">1122</span>)</span><br><span class="line">	at ClassMethod.&lt;clinit&gt;(ClassMethod.java:<span class="number">4</span>)</span><br></pre></td></tr></table></figure>
-<h3 id="3-1-1-解决方法一-通过Java运行参数指定java-library-path"><a href="#3-1-1-解决方法一-通过Java运行参数指定java-library-path" class="headerlink" title="3.1.1 解决方法一:通过Java运行参数指定java.library.path"></a>3.1.1 解决方法一:通过Java运行参数指定java.library.path</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">java -Djava.library.path=. ClassMethod</span><br></pre></td></tr></table></figure>
-<h3 id="3-1-2-解决方法二-通过配置-LD-LIBRARY-PATH-环境变量"><a href="#3-1-2-解决方法二-通过配置-LD-LIBRARY-PATH-环境变量" class="headerlink" title="3.1.2 解决方法二:通过配置 LD_LIBRARY_PATH 环境变量"></a>3.1.2 解决方法二:通过配置 LD_LIBRARY_PATH 环境变量</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">sudo gedit /etc/profile</span><br><span class="line"></span><br><span class="line">export LD_LIBRARY_PATH=/home/ganlu/java/workplace</span><br></pre></td></tr></table></figure>
-<h2 id="3-2-工作流程图"><a href="#3-2-工作流程图" class="headerlink" title="3.2 工作流程图"></a>3.2 工作流程图</h2><p><img src="https://blogpictures-1257055754.cos.ap-guangzhou.myqcloud.com/654185-20170113182657025-932017676.png" alt="工作流程图"></p>
-<h2 id="3-3-常见异常"><a href="#3-3-常见异常" class="headerlink" title="3.3 常见异常"></a>3.3 常见异常</h2><p>如果出现以下异常, 则说明.so文件不对, 是因为java 程序在调用.so时候, 不能找到native method 方法的实现.<br>主要是因为在.so中, 可能xxx.h头文件中的接口名和xxx.cpp源文件中的实现函数名不一致导致的.</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Exception in thread <span class="string">"main"</span> java.lang.UnsatisfiedLinkError: test.ClassMethod.greeting()V</span><br><span class="line">	at test.ClassMethod.greeting(Native Method)</span><br><span class="line">	at test.ClassMethod.main(ClassMethod.java:<span class="number">11</span>)</span><br></pre></td></tr></table></figure>
-<h1 id="4-参考链接"><a href="#4-参考链接" class="headerlink" title="4. 参考链接"></a>4. 参考链接</h1><p><a href="https://blog.csdn.net/qq_31105311/article/details/51255479" target="_blank" rel="noopener">Java native 本地方法调用</a><br><a href="https://www.cnblogs.com/zh1164/p/6283831.html" target="_blank" rel="noopener">java 本地方法（JNI）</a><br><a href="https://blog.csdn.net/missingu1314/article/details/12650725" target="_blank" rel="noopener">Exception in thread “main” java.lang.UnsatisfiedLinkError: xxx()V</a></p>
+<h1 id="1-前言"><a href="#1-前言" class="headerlink" title="1. 前言"></a>1. 前言</h1><p>Java开发过程中, 使用Maven管理依赖. 这是Maven系列文章, 主要记录&lt;&lt;Maven实战&gt;&gt;的学习过程和一些重要知识点, 以方便自己查阅.</p>
+<h1 id="2-仓库概述"><a href="#2-仓库概述" class="headerlink" title="2. 仓库概述"></a>2. 仓库概述</h1><p>Maven坐标是一个构件的逻辑表示, 构件的物理表示是文件, Maven通过仓库来统一管理这些文件.</p>
+<p>得益于坐标机制, Maven项目能够以统一的方式来使用任何构件, 在此基础上, Maven可以在某个位置统一存储所有Maven项目共享的构建, 这个统一位置就是仓库.</p>
+<h1 id="3-仓库分类"><a href="#3-仓库分类" class="headerlink" title="3. 仓库分类"></a>3. 仓库分类</h1><p>Maven中的仓库分为: 本地仓库和远程仓库.</p>
+<p>Maven根据坐标寻找构件时, 先查看本地仓库是否存在该构件, 存在则直接使用; 否则就查找远程仓库, 找到之后就下载到本地仓库; 本地和远程都没找到, 直接报错.</p>
+<p><img src="https://blogpictures-1257055754.cos.ap-guangzhou.myqcloud.com/6875230-6bf26fb0b4190a62.png" alt="仓库分类"></p>
+<p>中央仓库是Maven核心自带的远程仓库, 含绝大多数开源的构件;</p>
+<p>私服是在局域网搭建的仓库服务器, 用于代理外部的远程仓库, 可以节省带宽和时间, 内部的项目还能部署到私服供其他项目使用; 使用私服可以加速Maven构建以及提高稳定性, 内网访问不需要依赖于网络.</p>
+<p>其他公共服, 如阿里云等.</p>
+<p>本地仓库: 通过修改settings.xml来配置, 默认是${user.home}/.m2/repository.</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">&lt;!-- localRepository</span></span><br><span class="line"><span class="comment"> | The path to the local repository maven will use to store artifacts</span></span><br><span class="line"><span class="comment"> | Default: $&#123;user.home&#125;/.m2/repository</span></span><br><span class="line"><span class="comment">&lt;localRepository&gt;/path/to/local/repo&lt;/localRepository&gt;</span></span><br><span class="line"><span class="comment">--&gt;</span></span><br></pre></td></tr></table></figure>
+<p>构件进入本地仓库有两种方式: Maven从远程仓库下载到本地仓库; 通过在项目执行mvn install安装到本地.</p>
+<p>对Maven而言, 用户的本地仓库只有一个, 但可以配置访问很多远程仓库. 而中央仓库是默认的远程仓库, 在$M2_HOME/lib/maven-model-builder-{version}.jar的org/apache/maven/model/pom-4.0.0.xml文件定义了, 该POM也被称为超级POM.</p>
+<h1 id="4-仓库的布局"><a href="#4-仓库的布局" class="headerlink" title="4. 仓库的布局"></a>4. 仓库的布局</h1><p>构件在Maven仓库里的存储路径为:{groupId}/{artifactId}/{version}/{artifactId-version.packaging}</p>
+<h1 id="5-远程仓库的配置"><a href="#5-远程仓库的配置" class="headerlink" title="5. 远程仓库的配置"></a>5. 远程仓库的配置</h1><p>通过POM文件可以配置远程仓库.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">&lt;repositories&gt;</span><br><span class="line">    &lt;repository&gt;</span><br><span class="line">        &lt;id&gt;jboss&lt;/id&gt;</span><br><span class="line">        &lt;name&gt;jboss repository&lt;/name&gt;</span><br><span class="line">        &lt;url&gt;http://repository.jboss.com/maven2/&lt;/url&gt;</span><br><span class="line">        &lt;releases&gt;</span><br><span class="line">            &lt;enabled&gt;true&lt;/enabled&gt;</span><br><span class="line">        &lt;/releases&gt;</span><br><span class="line">        &lt;snapshots&gt;</span><br><span class="line">            &lt;enabled&gt;false&lt;/enabled&gt;</span><br><span class="line">        &lt;/snapshots&gt;</span><br><span class="line">        &lt;layout&gt;default&lt;/layout&gt;</span><br><span class="line">    &lt;/repository&gt;</span><br><span class="line">&lt;/repositories&gt;</span><br></pre></td></tr></table></figure>
+<p>仓库id必须唯一!!!不唯一则会覆盖!!!<br>release的enable值为true表示开启JBoss仓库的发布版本下载支持.<br>snapshots的enable值为false表示关闭JBoos仓库的快照版本下载支持.<br>layout元素值为default,表示仓库的布局是Maven2和Maven3的默认布局, 而不是Maven1的布局.</p>
+<p>对于release和snapshot来说, 除了enable, 它们还包括另外两个子元素updatePolicy和checksumPolicy.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&lt;snapshots&gt;</span><br><span class="line">    &lt;enabled&gt;true&lt;/enabled&gt;</span><br><span class="line">    &lt;updatePolicy&gt;daily&lt;/updatePolicy&gt;</span><br><span class="line">    &lt;checksumPolicy&gt;ignore&lt;/checksumPolicy&gt;</span><br><span class="line">&lt;/snapshots&gt;</span><br></pre></td></tr></table></figure>
+<p>updatePolicy配置Maven从远程仓库检查更新的频率,默认是daily.<br>checksumPolicy配置Maven检查检验和文件的策略.</p>
+<h2 id="5-1-远程仓库认证"><a href="#5-1-远程仓库认证" class="headerlink" title="5.1 远程仓库认证"></a>5.1 远程仓库认证</h2><p>通过修改settings.xml配置远程仓库认证.</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">settings</span>&gt;</span></span><br><span class="line">    ...</span><br><span class="line">    <span class="comment">&lt;!--配置远程仓库认证信息--&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">servers</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">server</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">id</span>&gt;</span>jboss<span class="tag">&lt;/<span class="name">id</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">username</span>&gt;</span>admin<span class="tag">&lt;/<span class="name">username</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">password</span>&gt;</span>admin123<span class="tag">&lt;/<span class="name">password</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">server</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">servers</span>&gt;</span></span><br><span class="line">    ...</span><br><span class="line"><span class="tag">&lt;/<span class="name">settings</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<h1 id="6-部署构件至远程仓库"><a href="#6-部署构件至远程仓库" class="headerlink" title="6. 部署构件至远程仓库"></a>6. 部署构件至远程仓库</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">&lt;distributionManagement&gt;</span><br><span class="line">    &lt;repository&gt;</span><br><span class="line">        &lt;id&gt;releases&lt;/id&gt;</span><br><span class="line">        &lt;name&gt;public&lt;/name&gt;</span><br><span class="line">        &lt;url&gt;http://127.0.0.1:8081/nexus/content/repositories/releases&lt;/url&gt;</span><br><span class="line">    &lt;/repository&gt;</span><br><span class="line">    &lt;snapshotRepository&gt;</span><br><span class="line">        &lt;id&gt;snapshots&lt;/id&gt;</span><br><span class="line">        &lt;name&gt;Snapshots&lt;/name&gt;</span><br><span class="line">        &lt;url&gt;http://127.0.0.1:8081/nexus/content/repositories/snapshots&lt;/url&gt;</span><br><span class="line">    &lt;/snapshotRepository&gt;</span><br><span class="line">&lt;/distributionManagement&gt;</span><br></pre></td></tr></table></figure>
+<p>distributionManagement包含repository和snapshotRepository子元素, 前者表示发布版本(稳定版本)构件的仓库,后者表示快照版本(开发测试版本)的仓库. 这两个元素都需要配置id, name和url, id为远程仓库的唯一标识, name是为了方便人阅读, 关键的url表示该仓库的地址.</p>
+<p>往远程仓库部署构件的时候, 往往需要认证, 配置认证的方式同上.</p>
+<p>配置正确后, 运行命令mvn clean deploy, Maven就会将项目构建输出的构件部署到配置对应的远程仓库, 如果项目当前的版本是快照版本, 则部署到快照版本的仓库地址, 否则就部署到发布版本的仓库地址.</p>
+<p>Maven会根据模块的版本号(pom文件中的version)中是否带有-SNAPSHOT来判断是快照版本还是正式版本.</p>
+<h1 id="7-从仓库解析依赖的机制"><a href="#7-从仓库解析依赖的机制" class="headerlink" title="7. 从仓库解析依赖的机制"></a>7. 从仓库解析依赖的机制</h1><p>当本地仓库没有依赖构件的时候, maven会自动从远程仓库下载; 当依赖版本为快照版本的时候Maven会自动找到最新的快照. 这背后的依赖解析机制可以概括如下:</p>
+<ol>
+<li><p>当依赖的范围是system的时候Maven直接从本地文件系统解析构件.</p>
+</li>
+<li><p>根据依赖坐标计算仓库路径后, 尝试直接从本地仓库寻找构件, 如果发现相应构件则解析成功.</p>
+</li>
+<li><p>在本地仓库不存在相应构件的情况下, 如果依赖的版本显示的发布版本构件, 如1.2,2.1-beta-1等, 则遍历所有的远程仓库, 发现后下载并解析使用.</p>
+</li>
+<li><p>如果依赖的版本是RELEASE或者LATEST, 则基于更新策略读取所有远程仓库的元数据groupId/artifactId/maven-metadata.xml,将其与本地仓库对应元数据合并后计算出RELEASE或者LATEST真实的值, 然后基于这个真实的值检查本地和远程仓库如步骤2和3.</p>
+</li>
+<li><p>如果依赖的版本是SNAPSHOT, 则基于更新策略读取所有远程仓库的元数据groupId/artifactId/version/maven-metadata.xml, 将其与本地仓库对应元数据合并后得到最新快照版本的值, 然后基于该值检查本地仓库或者从远程仓库下载.</p>
+</li>
+<li><p>如果最后解析得到的构件版本时间是时间戳格式的快照, 如1.4.1-20091104.121450-121, 则复制其时间戳格式的文件至非时间戳格式, 如SNAPSHOT, 并使用该非时间戳格式的构件.</p>
+</li>
+</ol>
+<h1 id="8-镜像"><a href="#8-镜像" class="headerlink" title="8. 镜像"></a>8. 镜像</h1><p>如果仓库X可以提供仓库Y存储的所有内容, 那么就可以认为X是Y的一个镜像. 换句话说, 任何一个可以从仓库Y获得的构件, 都能够从它的镜像中获取. 举个例子, <a href="http://maven.oschina.net/content/groups/public/" target="_blank" rel="noopener">http://maven.oschina.net/content/groups/public/</a> 是中央仓库<a href="http://repo1.maven.org/maven2/" target="_blank" rel="noopener">http://repo1.maven.org/maven2/</a> 在中国的镜像, 由于地理位置的因素, 该镜像往往能够提供比中央仓库更快的服务. 因此, 可以配置Maven使用该镜像来替代中央仓库, 编辑settings.xml, 代码如下:</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">mirrors</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">mirror</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">id</span>&gt;</span>maven.oschina.net<span class="tag">&lt;/<span class="name">id</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">name</span>&gt;</span>maven mirror in China<span class="tag">&lt;/<span class="name">name</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">url</span>&gt;</span>http://maven.oschina.net/content/groups/public/<span class="tag">&lt;/<span class="name">url</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">mirrorOf</span>&gt;</span>central<span class="tag">&lt;/<span class="name">mirrorOf</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">mirror</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">mirrors</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p>该例中, mirrorOf的值为central, 表示该配置为中央仓库的镜像, 任何对于中央仓库的请求都会转至该镜像, 用户也可以使用同样的方法配置其他仓库的镜像.id表示镜像的唯一标识符, name表示镜像的名称, url表示镜像的地址.</p>
+<p>关于镜像的一个更为常见的用法是结合私服. 由于私服可以代理任何外部的公共仓库(包括中央仓库), 因此, 对于组织内部的Maven用户来说, 使用一个私服地址就等于使用了所有需要的外部仓库, 这可以将配置集中到私服, 从而简化Maven本身的配置. 在这种情况下, 任何需要的构件都可以从私服获得, 私服就是所有仓库的镜像. 这时, 可以配置这样的一个镜像:</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">&lt;!--配置私服镜像--&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">mirrors</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">mirror</span>&gt;</span>  </span><br><span class="line">        <span class="tag">&lt;<span class="name">id</span>&gt;</span>nexus<span class="tag">&lt;/<span class="name">id</span>&gt;</span>  </span><br><span class="line">        <span class="tag">&lt;<span class="name">name</span>&gt;</span>internal nexus repository<span class="tag">&lt;/<span class="name">name</span>&gt;</span>  </span><br><span class="line">        <span class="tag">&lt;<span class="name">url</span>&gt;</span>http://192.168.0.1:8081/nexus/content/groups/public/<span class="tag">&lt;/<span class="name">url</span>&gt;</span>  </span><br><span class="line">        <span class="tag">&lt;<span class="name">mirrorOf</span>&gt;</span>*<span class="tag">&lt;/<span class="name">mirrorOf</span>&gt;</span>  </span><br><span class="line">    <span class="tag">&lt;/<span class="name">mirror</span>&gt;</span>  </span><br><span class="line"><span class="tag">&lt;/<span class="name">mirrors</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<h2 id="8-1-特别强调"><a href="#8-1-特别强调" class="headerlink" title="8.1 特别强调"></a>8.1 特别强调</h2><font color="red">需要注意的是, 由于镜像仓库完全屏蔽了被镜像仓库, 当镜像仓库不稳定或者停止服务的时候, Maven仍将无法访问被镜像仓库, 因而将无法下载构件.</font>
+
+<h1 id="9-参考链接"><a href="#9-参考链接" class="headerlink" title="9. 参考链接"></a>9. 参考链接</h1><p>&lt;&lt;Maven实战&gt;&gt;(许晓斌)</p>
 
       
     </div>
@@ -511,7 +527,7 @@
           
             <a href="/tags/基础储备/" rel="tag"># 基础储备</a>
           
-            <a href="/tags/Java/" rel="tag"># Java</a>
+            <a href="/tags/Maven/" rel="tag"># Maven</a>
           
         </div>
       
@@ -524,8 +540,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2018/09/24/Java程序启动时指定外部依赖jar包/" rel="next" title="Java程序启动时指定外部依赖jar包">
-                <i class="fa fa-chevron-left"></i> Java程序启动时指定外部依赖jar包
+              <a href="/2018/10/11/Maven实战(二)--Maven坐标和依赖/" rel="next" title="Maven实战(二)--Maven坐标和依赖">
+                <i class="fa fa-chevron-left"></i> Maven实战(二)--Maven坐标和依赖
               </a>
             
           </div>
@@ -533,10 +549,6 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
-            
-              <a href="/2018/09/24/Spring系列(一)/" rel="prev" title="Java本地方法">
-                Java本地方法 <i class="fa fa-chevron-right"></i>
-              </a>
             
           </div>
         </div>
@@ -712,7 +724,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#1-前言"><span class="nav-text">1. 前言</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#2-基础使用"><span class="nav-text">2. 基础使用</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#3-几个问题"><span class="nav-text">3. 几个问题</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#3-1-动态链接库"><span class="nav-text">3.1 动态链接库</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#3-1-1-解决方法一-通过Java运行参数指定java-library-path"><span class="nav-text">3.1.1 解决方法一:通过Java运行参数指定java.library.path</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-1-2-解决方法二-通过配置-LD-LIBRARY-PATH-环境变量"><span class="nav-text">3.1.2 解决方法二:通过配置 LD_LIBRARY_PATH 环境变量</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-2-工作流程图"><span class="nav-text">3.2 工作流程图</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-3-常见异常"><span class="nav-text">3.3 常见异常</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#4-参考链接"><span class="nav-text">4. 参考链接</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#1-前言"><span class="nav-text">1. 前言</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#2-仓库概述"><span class="nav-text">2. 仓库概述</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#3-仓库分类"><span class="nav-text">3. 仓库分类</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#4-仓库的布局"><span class="nav-text">4. 仓库的布局</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#5-远程仓库的配置"><span class="nav-text">5. 远程仓库的配置</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#5-1-远程仓库认证"><span class="nav-text">5.1 远程仓库认证</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#6-部署构件至远程仓库"><span class="nav-text">6. 部署构件至远程仓库</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#7-从仓库解析依赖的机制"><span class="nav-text">7. 从仓库解析依赖的机制</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#8-镜像"><span class="nav-text">8. 镜像</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#8-1-特别强调"><span class="nav-text">8.1 特别强调</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#9-参考链接"><span class="nav-text">9. 参考链接</span></a></li></ol></div>
             
 
           </div>
