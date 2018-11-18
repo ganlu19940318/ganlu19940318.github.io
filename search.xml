@@ -1,6 +1,42 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title><![CDATA[Spring Boot之Actuator]]></title>
+    <url>%2F2018%2F11%2F18%2FSpring%20Boot%E4%B9%8BActuator%2F</url>
+    <content type="text"><![CDATA[1. 前言本文是&lt;&lt; Spring Boot 实战 &gt;&gt;和&lt;&lt; Java EE开发的颠覆者 Spring Boot 实战 &gt;&gt;的学习笔记, 以便自己查阅. Sprng Boot 2 actuator变动加大, 网上很多资料都都已经过期, 所以记录一下. 2. 配置在 application.properties 配置文件, actuator 的设置项 management.endpoints(设置 actuator 全局级的属性) 和 management.endpoint(设置 具体endpoint 属性) 开头. 2.1 全局级的控制123456789101112#定制管理功能的 port, 如果端口为 -1 代表不暴露管理功能 over HTTPmanagement.server.port=8081# 设定 /actuator 入口路径management.endpoints.web.base-path=/actuator# 所有endpoint缺省为禁用状态management.endpoints.enabled-by-default=false# 暴露所有的endpoint, 但 shutdown 需要显示enable才暴露, * 表示全部, 如果多个的话,用逗号隔开management.endpoints.web.exposure.include=*# 排除暴露 loggers和beans endpointmanagement.endpoints.web.exposure.exclude=loggers,beans# 定制化 health 端点的访问路径management.endpoints.web.path-mapping.health=healthcheck 2.2 endpoint 级别的控制所有的endpoint都有 enabled 属性, 可以按需开启或关闭特定端点. 12#启用 shutdownmanagement.endpoint.shutdown.enabled=true 2.3 health端点配置12345management.endpoint.health.enabled=true#show-details属性的取值有: never/always/when-authorized, 默认值是 nevermanagement.endpoint.health.show-details=always #增加磁盘空间health 统计, 还有其他health indicatormanagement.health.diskspace.enabled=true 2.4 actuator 缺省的设置缺省 actuator 的根路径为 /actuator缺省仅开放 health 和 info, 其他都不开放.有些 endpoint 是GET, 有些是POST方法, 比如 health 为GET, shutdown 为 POST, 从SpringBoot程序启动日志中,可以看出到底有哪些endpoint被开启. 2.5 endpoint 清单actuator 支持的所有 endpoint, 可以查官网 https://docs.spring.io/spring-boot/docs/current/reference/html/production-ready-endpoints.html 下面是一些重要的端点,(以访问路径列出): 123456789/actuator: actuator 严格地说不能算 endpoint, /actuator 返回要给 endpoint 的清单./actuator/health: 展现系统运行状态, 在和spring cloud consul集成时候, 就使用该端点检查Spring应用的状态./actuator/metric/: 显示更全面的系统指标/actuator/configprops:展现 SpringBoot 配置项/actuator/env: 显示系统变量和SpringBoot应用变量, actuator 非常贴心, 如果属性名包含 password/secret/key 这些关键词, 对应的属性值将用 * 号代替./actuator/httptrace: 显示最近100条 request-response 信息/actuator/autoconfig: 生成Spring boot自动化配置报告, 该报告非常有用, 说明如下: Spring Boot项目倾向于使用很多auto config技术, 包括散落在很多config java类. 我们在开发过程中偶尔会遇到, 为什么我的配置没起作用这样的问题. 这时候查看 /actuator/autoconfig 的报告非常有用, 它会告诉你哪些自动化装配成功了,哪些没有成功. /actuator/beans: 该端点可以获取 application context 中创建的所有 bean, 并列出它们的scope 和 type 等详细信息/actuator/mappings: 该端点列出了所有 controller 的路由信息. 3. 使用在pom文件导入依赖即可. 12345678910&lt;dependencies&gt; &lt;dependency&gt; &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt; &lt;artifactId&gt;spring-boot-starter-web&lt;/artifactId&gt; &lt;/dependency&gt; &lt;dependency&gt; &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt; &lt;artifactId&gt;spring-boot-starter-actuator&lt;/artifactId&gt; &lt;/dependency&gt;&lt;/dependencies&gt; 3.1 其他说明actuator的UI显示不好,所以网上有很多结合actuator使用的UI界面. 不过日常一般也不会去用这个actuator, 只是spring cloud里面会有需要. 4. 参考链接&lt;&lt; Spring Boot 实战 &gt;&gt;(Craig Walls 著, 丁雪丰 译)&lt;&lt; Java EE开发的颠覆者 Spring Boot 实战 &gt;&gt;SpringBoot系列: Actuator监控]]></content>
+      <categories>
+        <category>Spring Boot</category>
+      </categories>
+      <tags>
+        <tag>基础储备</tag>
+        <tag>Spring Boot</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[Spring Boot基本认识]]></title>
+    <url>%2F2018%2F11%2F18%2FSpring%20Boot%E5%9F%BA%E6%9C%AC%E8%AE%A4%E8%AF%86%2F</url>
+    <content type="text"><![CDATA[1. 前言本文是&lt;&lt; Spring Boot 实战 &gt;&gt;和&lt;&lt; Java EE开发的颠覆者 Spring Boot 实战 &gt;&gt;的学习笔记, 以便自己查阅. 2. 什么是Spring Boot2.1 Spring Boot本质简单的说,spring boot就是整合了很多优秀的框架,不用我们自己手动的去写一堆xml配置然后进行配置. 从本质上来说,Spring Boot就是Spring,它做了那些没有它你也会去做的Spring Bean配置.它使用”习惯优于配置”(项目中存在大量的配置,此外还内置了一个习惯性的配置,让你无需手动进行配置)的理念让你的项目快速运行起来.使用Spring Boot很容易创建一个独立运行(运行jar,内嵌Servlet容器),准生产级别的基于Spring框架的项目,使用Spring Boot你可以不用或者只需要很少的Spring配置. 2.2 Spring Boot精要Spring将很多魔法带入了Spring应用程序的开发之中,其中最重要的是以下四个核心. 自动配置: 针对很多Spring应用程序常见的应用功能, Spring Boot能自动提供相关配置;(简化配置) 起步依赖: 告诉Spring Boot需要什么功能, 它就能引入需要的库.(简化导入依赖) 命令行界面: 这是Spring Boot的可选特性, 借此你只需写代码就能完成完整的应用程序, 无需传统项目构建.(感觉没啥用) Actuator: 让你能够深入运行中的Spring Boot应用程序, 一探究竟.(监控) 3. 参考链接&lt;&lt; Spring Boot 实战 &gt;&gt;(Craig Walls 著, 丁雪丰 译)&lt;&lt; Java EE开发的颠覆者 Spring Boot 实战 &gt;&gt;]]></content>
+      <categories>
+        <category>Spring Boot</category>
+      </categories>
+      <tags>
+        <tag>基础储备</tag>
+        <tag>Spring Boot</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[使用Maven搭建多模块Spring Boot项目]]></title>
+    <url>%2F2018%2F11%2F18%2F%E4%BD%BF%E7%94%A8Maven%E6%90%AD%E5%BB%BA%E5%A4%9A%E6%A8%A1%E5%9D%97Spring%20Boot%E9%A1%B9%E7%9B%AE%2F</url>
+    <content type="text"><![CDATA[项目地址: https://github.com/ganlu19940318/maven-parent]]></content>
+      <categories>
+        <category>Spring Boot</category>
+      </categories>
+      <tags>
+        <tag>Maven</tag>
+        <tag>Spring Boot</tag>
+      </tags>
+  </entry>
+  <entry>
     <title><![CDATA[Spring MVC]]></title>
     <url>%2F2018%2F11%2F16%2FSpring%20MVC%2F</url>
     <content type="text"><![CDATA[1. 前言本文是&lt;&lt;精通Spring 4.x 企业应用开发实战&gt;&gt;学习笔记, 以便自己查阅. 2. Spring MVC核心流程 SpringMVC 框架中,DispatcherServlet 处于核心位置,它负责协调和组织不同组件已完成请求处理并返回响应的工作.和大多数Web MVC 框架一样,SpringMVC 通过一个前端的Servlet 接收所有的请求,并将具体工作委托给其他的组件进行处理,DispatcherServlet 就是Spring MVC 的前端Servlet. Spring MVC 处理请求的整体过程如下: 整个过程始于客户端发出的一个HTTP 请求, Web 应用服务器接收到这个请求, 如果匹配 DispatcherServlet 的请求映射路径(在web.xml中指定), Web容器就将该请求转交给DispatcherServlet 处理. DispatcherServlet 接收到这个请求后, 将根据请求的信息(包括URL,HTTP方法,请求报文头,请求参数,coookie等)及HandlerMapping的配置找到处理请求的处理器(Handler). 可将 HandlerMapping看成路由控制器, 将 Handler 看成目标主机.值得注意的是:Spring MVC 中并没有定义一个Handler 接口,实际上任何一个 Object 都可以成为请求处理器. 当DispatcherServlet 根据 HandlerMapping 得到对应当前请求的 Handler 后,通过HandlerAdapter 对 Handler 进行封装,再以统一的适配器接口调用 Handler. HandlerAdapter 是SpringMvc 框架级接口,顾名思义, HandlerAdapter 是一个适配器, 它用统一的接口对各种Handler 方法进行调用. 处理器完成业务逻辑的处理后将返回一个 ModelAndView 给 DispatcherServlet, ModelAndView 包含了视图逻辑名和模型数据信息. ModelAndView 中包含的是”逻辑视图名”而非真正的视图对象,DispatcherServlet 借由ViewResolver 完成逻辑视图名到真实视图对象的解析工作. 当得到真实的视图对象View 后, DispatcherServlet 就使用这个View 对象对ModelAndView中的模型数据进行视图渲染. 最终客户端得到的响应消息可能是一个HTML页面, 也可能是一个XML或JSON串, 甚至是一张图片或者一个PDF文档等不同的媒体形式. 3. 参考链接Spring MVC 教程,快速入门,深入分析深入理解Spring MVC 思想&lt;&lt;精通Spring 4.x 企业应用开发实战&gt;&gt;]]></content>
