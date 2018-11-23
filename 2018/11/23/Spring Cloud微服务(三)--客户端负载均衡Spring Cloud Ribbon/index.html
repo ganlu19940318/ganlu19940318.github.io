@@ -1,0 +1,1275 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-CN">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=6.4.1" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=6.4.1">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=6.4.1">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=6.4.1">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=6.4.1" color="#222">
+
+
+
+
+
+
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '6.4.1',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="keywords" content="基础储备,Spring Cloud,微服务">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Spring Cloud微服务(三)--客户端负载均衡Spring Cloud Ribbon">
+<meta property="og:url" content="http://ganlu19940318.github.io/2018/11/23/Spring Cloud微服务(三)--客户端负载均衡Spring Cloud Ribbon/index.html">
+<meta property="og:site_name" content="glennlgan的个人博客">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="https://blogpictures-1257055754.cos.ap-guangzhou.myqcloud.com/897287-20170526002234638-1191131982.png">
+<meta property="og:image" content="https://blogpictures-1257055754.cos.ap-guangzhou.myqcloud.com/1556759493-5b74c261f0624_articlex.png">
+<meta property="og:updated_time" content="2018-11-23T09:22:37.706Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Spring Cloud微服务(三)--客户端负载均衡Spring Cloud Ribbon">
+<meta name="twitter:image" content="https://blogpictures-1257055754.cos.ap-guangzhou.myqcloud.com/897287-20170526002234638-1191131982.png">
+
+
+
+
+
+
+  <link rel="canonical" href="http://ganlu19940318.github.io/2018/11/23/Spring Cloud微服务(三)--客户端负载均衡Spring Cloud Ribbon/"/>
+
+
+
+<script type="text/javascript" id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>Spring Cloud微服务(三)--客户端负载均衡Spring Cloud Ribbon | glennlgan的个人博客</title>
+  
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style type="text/css">
+    .use-motion .motion-element,
+    .use-motion .brand,
+    .use-motion .menu-item,
+    .sidebar-inner,
+    .use-motion .post-block,
+    .use-motion .pagination,
+    .use-motion .comments,
+    .use-motion .post-header,
+    .use-motion .post-body,
+    .use-motion .collection-title { opacity: initial; }
+
+    .use-motion .logo,
+    .use-motion .site-title,
+    .use-motion .site-subtitle {
+      opacity: initial;
+      top: initial;
+    }
+
+    .use-motion {
+      .logo-line-before i { left: initial; }
+      .logo-line-after i { right: initial; }
+    }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">glennlgan的个人博客</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+      
+        <p class="site-subtitle">记录学习点滴</p>
+      
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="切换导航栏">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-home">
+    <a href="/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-home"></i> <br />首页</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+    <a href="/archives/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />归档</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-categories">
+    <a href="/categories/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-th"></i> <br />分类</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-tags">
+    <a href="/tags/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />标签</a>
+  </li>
+
+      
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />搜索</a>
+        </li>
+      
+    </ul>
+  
+
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off"
+             placeholder="搜索..." spellcheck="false"
+             type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+            
+
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://ganlu19940318.github.io/2018/11/23/Spring Cloud微服务(三)--客户端负载均衡Spring Cloud Ribbon/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="glennlgan">
+      <meta itemprop="description" content="不积跬步无以至千里">
+      <meta itemprop="image" content="/uploads/glennlgan.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="glennlgan的个人博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Spring Cloud微服务(三)--客户端负载均衡Spring Cloud Ribbon
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2018-11-23 12:27:26 / 修改时间：17:22:37" itemprop="dateCreated datePublished" datetime="2018-11-23T12:27:26+08:00">2018-11-23</time>
+            
+
+            
+              
+
+              
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/Spring-Cloud/" itemprop="url" rel="index"><span itemprop="name">Spring Cloud</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <hr>
+<a id="more"></a>
+<h1 id="1-前言"><a href="#1-前言" class="headerlink" title="1. 前言"></a>1. 前言</h1><p>本文是 &lt;&lt; Spring Cloud微服务实战 &gt;&gt; 学习笔记, 以便自己查阅.</p>
+<p>Spring Cloud Ribbon是一个基于HTTP和TCP的客户端负载均衡工具,它基于Netflix Ribbon实现.</p>
+<h1 id="2-客户端负载均衡"><a href="#2-客户端负载均衡" class="headerlink" title="2. 客户端负载均衡"></a>2. 客户端负载均衡</h1><p>负载均衡是对系统的高可用,网络压力的缓解和处理内容扩容的重要手段之一.<br>负载均衡可以分为客户端负载均衡和服务端负载均衡.<br>负载均衡按设备来分为硬件负载均衡和软件负载均衡,都属于服务端负载均衡.</p>
+<p>硬件负载均衡主要通过在服务器节点之间安装专门用于负载均衡的设备,例如F5等.<br>软件负载均衡通过在服务器上安装一些具有负载均衡功能或模块的软件来完成请求的转发工作,例如Nginx等.</p>
+<p>硬件负载均衡和软件负载均衡都会维护一个可用的服务清单,然后通过心跳检测来剔除故障节点以保证服务清单中的节点都正常可用.当客户端发出请求时,负载均衡器会按照某种算法(线性轮询,按权重负载,按流量负载等)从服务清单中取出一台服务器的地址,然后将请求转发到该服务器上.</p>
+<p>客户端负载均衡需要客户端自己维护自己要访问的服务实例清单,这些服务清单来源于注册中心(在使用Eureka进行服务治理时).</p>
+<p>服务端负载均衡架构方式<br><img src="https://blogpictures-1257055754.cos.ap-guangzhou.myqcloud.com/897287-20170526002234638-1191131982.png" alt="服务端负载均衡"></p>
+<h1 id="3-基于Spring-Cloud-Ribbon实现客户端负载均衡"><a href="#3-基于Spring-Cloud-Ribbon实现客户端负载均衡" class="headerlink" title="3. 基于Spring Cloud Ribbon实现客户端负载均衡"></a>3. 基于Spring Cloud Ribbon实现客户端负载均衡</h1><p>基于Spring Cloud Ribbon实现客户端负载均衡非常简单,主要由以下步骤:</p>
+<ol>
+<li><p>服务提供者需要启动多个服务实例并注册到一个或多个相关联的服务注册中心上;</p>
+</li>
+<li><p>服务消费者直接通过带有@LoadBalanced注解的RestTemplate向服务提供者发送请求以实现客户端的负载均衡.</p>
+</li>
+</ol>
+<h1 id="4-原理"><a href="#4-原理" class="headerlink" title="4. 原理"></a>4. 原理</h1><p>使用被@LoadBalanced注解的RestTemplate发起请求时,会被LoadBalancerInterceptor拦截,然后借助负载均衡器LoadBalancerClient将逻辑服务名转换为host:port的具体的服务实例地址,在使用RibbonLoadBalancerClient(Ribbon实现的负载均衡器)时实际使用的是Ribbon中定义的ILoadBalancer,默认自动化配置的负载均衡器是ZoneAwareLoadBalancer.</p>
+<h1 id="5-负载均衡策略"><a href="#5-负载均衡策略" class="headerlink" title="5. 负载均衡策略"></a>5. 负载均衡策略</h1><p>这一部分主要引自外部, 我觉得负载均衡是理解这块必不可少的, 可以提前了解一下, 但是实际使用中, 应该还是得根据业务需求选择最合适的. 并且选择之后, 还是得看对应的源码部分, 以便了解这些策略下可能会出现什么问题. 所以这里的源码解读只作参考.</p>
+<h2 id="5-1-RandomRule"><a href="#5-1-RandomRule" class="headerlink" title="5.1 RandomRule"></a>5.1 RandomRule</h2><p>该策略实现了从服务实例清单中随机选择一个服务实例的功能.下面先看一下源码:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.netflix.loadbalancer;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.util.List;</span><br><span class="line"><span class="keyword">import</span> java.util.Random;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> com.netflix.client.config.IClientConfig;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">RandomRule</span> <span class="keyword">extends</span> <span class="title">AbstractLoadBalancerRule</span> </span>&#123;</span><br><span class="line">    Random rand;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">RandomRule</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        rand = <span class="keyword">new</span> Random();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@edu</span>.umd.cs.findbugs.annotations.SuppressWarnings(value = <span class="string">"RCN_REDUNDANT_NULLCHECK_OF_NULL_VALUE"</span>)</span><br><span class="line">    <span class="function"><span class="keyword">public</span> Server <span class="title">choose</span><span class="params">(ILoadBalancer lb, Object key)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (lb == <span class="keyword">null</span>) &#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        Server server = <span class="keyword">null</span>;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">while</span> (server == <span class="keyword">null</span>) &#123;</span><br><span class="line">            <span class="keyword">if</span> (Thread.interrupted()) &#123;</span><br><span class="line">                <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">            &#125;</span><br><span class="line">            List&lt;Server&gt; upList = lb.getReachableServers();</span><br><span class="line">            List&lt;Server&gt; allList = lb.getAllServers();</span><br><span class="line"></span><br><span class="line">            <span class="keyword">int</span> serverCount = allList.size();</span><br><span class="line">            <span class="keyword">if</span> (serverCount == <span class="number">0</span>) &#123;</span><br><span class="line">                <span class="comment">/*</span></span><br><span class="line"><span class="comment">                 * No servers. End regardless of pass, because subsequent passes</span></span><br><span class="line"><span class="comment">                 * only get more restrictive.</span></span><br><span class="line"><span class="comment">                 */</span></span><br><span class="line">                <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            <span class="keyword">int</span> index = rand.nextInt(serverCount);</span><br><span class="line">            server = upList.get(index);</span><br><span class="line"></span><br><span class="line">            <span class="keyword">if</span> (server == <span class="keyword">null</span>) &#123;</span><br><span class="line">                <span class="comment">/*</span></span><br><span class="line"><span class="comment">                 * The only time this should happen is if the server list were</span></span><br><span class="line"><span class="comment">                 * somehow trimmed. This is a transient condition. Retry after</span></span><br><span class="line"><span class="comment">                 * yielding.</span></span><br><span class="line"><span class="comment">                 */</span></span><br><span class="line">                Thread.yield();</span><br><span class="line">                <span class="keyword">continue</span>;</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            <span class="keyword">if</span> (server.isAlive()) &#123;</span><br><span class="line">                <span class="keyword">return</span> (server);</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            <span class="comment">// Shouldn't actually happen.. but must be transient or a bug.</span></span><br><span class="line">            server = <span class="keyword">null</span>;</span><br><span class="line">            Thread.yield();</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> server;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Server <span class="title">choose</span><span class="params">(Object key)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> choose(getLoadBalancer(), key);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">initWithNiwsConfig</span><span class="params">(IClientConfig clientConfig)</span> </span>&#123;</span><br><span class="line">        <span class="comment">// TODO Auto-generated method stub</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>分析源码可以看出,IRule接口中Server choose(Object key)函数的实现委托给了该类中的Server choose(ILoadBalancer lb, Object key)函数,该方法增加了一个负载均衡器参数.从具体的实现可以看出,它会使用负载均衡器来获得可用实例列表upList和所有的实例列表allList,并且使用rand.nextInt(serverCount)函数来获取一个随机数,并将该随机数作为upList的索引值来返回具体实例.同时,具体的选择逻辑在一个while(server == null)循环之内,而根据选择逻辑的实现,正常情况下每次都应该选出一个服务实例.</p>
+<h2 id="5-2-RoundRobinRule"><a href="#5-2-RoundRobinRule" class="headerlink" title="5.2 RoundRobinRule"></a>5.2 RoundRobinRule</h2><p>该策略实现了按照线性轮询的方式依次选择每个服务实例的功能.下面看一下源码:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.netflix.loadbalancer;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> com.netflix.client.config.IClientConfig;</span><br><span class="line"><span class="keyword">import</span> org.slf4j.Logger;</span><br><span class="line"><span class="keyword">import</span> org.slf4j.LoggerFactory;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.util.List;</span><br><span class="line"><span class="keyword">import</span> java.util.concurrent.atomic.AtomicInteger;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">RoundRobinRule</span> <span class="keyword">extends</span> <span class="title">AbstractLoadBalancerRule</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> AtomicInteger nextServerCyclicCounter;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Server <span class="title">choose</span><span class="params">(ILoadBalancer lb, Object key)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (lb == <span class="keyword">null</span>) &#123;</span><br><span class="line">            log.warn(<span class="string">"no load balancer"</span>);</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        Server server = <span class="keyword">null</span>;</span><br><span class="line">        <span class="keyword">int</span> count = <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">while</span> (server == <span class="keyword">null</span> &amp;&amp; count++ &lt; <span class="number">10</span>) &#123;</span><br><span class="line">            List&lt;Server&gt; reachableServers = lb.getReachableServers();</span><br><span class="line">            List&lt;Server&gt; allServers = lb.getAllServers();</span><br><span class="line">            <span class="keyword">int</span> upCount = reachableServers.size();</span><br><span class="line">            <span class="keyword">int</span> serverCount = allServers.size();</span><br><span class="line"></span><br><span class="line">            <span class="keyword">if</span> ((upCount == <span class="number">0</span>) || (serverCount == <span class="number">0</span>)) &#123;</span><br><span class="line">                log.warn(<span class="string">"No up servers available from load balancer: "</span> + lb);</span><br><span class="line">                <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            <span class="keyword">int</span> nextServerIndex = incrementAndGetModulo(serverCount);</span><br><span class="line">            server = allServers.get(nextServerIndex);</span><br><span class="line"></span><br><span class="line">            <span class="keyword">if</span> (server == <span class="keyword">null</span>) &#123;</span><br><span class="line">                <span class="comment">/* Transient. */</span></span><br><span class="line">                Thread.yield();</span><br><span class="line">                <span class="keyword">continue</span>;</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            <span class="keyword">if</span> (server.isAlive() &amp;&amp; (server.isReadyToServe())) &#123;</span><br><span class="line">                <span class="keyword">return</span> (server);</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            <span class="comment">// Next.</span></span><br><span class="line">            server = <span class="keyword">null</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (count &gt;= <span class="number">10</span>) &#123;</span><br><span class="line">            log.warn(<span class="string">"No available alive servers after 10 tries from load balancer: "</span></span><br><span class="line">                    + lb);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> server;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Inspired by the implementation of &#123;<span class="doctag">@link</span> AtomicInteger#incrementAndGet()&#125;.</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> modulo The modulo to bound the value of the counter.</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span> The next value.</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">int</span> <span class="title">incrementAndGetModulo</span><span class="params">(<span class="keyword">int</span> modulo)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">for</span> (;;) &#123;</span><br><span class="line">            <span class="keyword">int</span> current = nextServerCyclicCounter.get();</span><br><span class="line">            <span class="keyword">int</span> next = (current + <span class="number">1</span>) % modulo;</span><br><span class="line">            <span class="keyword">if</span> (nextServerCyclicCounter.compareAndSet(current, next))</span><br><span class="line">                <span class="keyword">return</span> next;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>RoundRobinRule具体实现和RandomRule类似,但是循环条件和从可用列表获取实例的逻辑不同.循环条件中增加了一个count计数变量,该变量会在每次循环之后累加,如果循环10次还没获取到Server,就会结束,并打印一个警告信息No available alive servers after 10 tries from load balancer:…</p>
+<p>线性轮询的实现是通过AtomicInteger nextServerCyclicCounter对象实现,每次进行实例选择时通过调用int incrementAndGetModulo(int modulo)方法来实现.</p>
+<h2 id="5-3-RetryRule"><a href="#5-3-RetryRule" class="headerlink" title="5.3 RetryRule"></a>5.3 RetryRule</h2><p>该策略实现了一个具备重试机制的实例选择功能. 从源码中可以看出, 内部定义了一个IRule对象, 默认是RoundRobinRule实例, choose方法中则实现了对内部定义的策略进行反复尝试的策略, 若期间能够选择到具体的服务实例就返回, 若选择不到并且超过设置的尝试结束时间(maxRetryMillis参数定义的值 + choose方法开始执行的时间戳)就返回null.</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.netflix.loadbalancer;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> com.netflix.client.config.IClientConfig;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">RetryRule</span> <span class="keyword">extends</span> <span class="title">AbstractLoadBalancerRule</span> </span>&#123;</span><br><span class="line">    IRule subRule = <span class="keyword">new</span> RoundRobinRule();</span><br><span class="line">    <span class="keyword">long</span> maxRetryMillis = <span class="number">500</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/*</span></span><br><span class="line"><span class="comment">     * Loop if necessary. Note that the time CAN be exceeded depending on the</span></span><br><span class="line"><span class="comment">     * subRule, because we're not spawning additional threads and returning</span></span><br><span class="line"><span class="comment">     * early.</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Server <span class="title">choose</span><span class="params">(ILoadBalancer lb, Object key)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">long</span> requestTime = System.currentTimeMillis();</span><br><span class="line">        <span class="keyword">long</span> deadline = requestTime + maxRetryMillis;</span><br><span class="line"></span><br><span class="line">        Server answer = <span class="keyword">null</span>;</span><br><span class="line"></span><br><span class="line">        answer = subRule.choose(key);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (((answer == <span class="keyword">null</span>) || (!answer.isAlive()))</span><br><span class="line">                &amp;&amp; (System.currentTimeMillis() &lt; deadline)) &#123;</span><br><span class="line"></span><br><span class="line">            InterruptTask task = <span class="keyword">new</span> InterruptTask(deadline</span><br><span class="line">                    - System.currentTimeMillis());</span><br><span class="line"></span><br><span class="line">            <span class="keyword">while</span> (!Thread.interrupted()) &#123;</span><br><span class="line">                answer = subRule.choose(key);</span><br><span class="line"></span><br><span class="line">                <span class="keyword">if</span> (((answer == <span class="keyword">null</span>) || (!answer.isAlive()))</span><br><span class="line">                        &amp;&amp; (System.currentTimeMillis() &lt; deadline)) &#123;</span><br><span class="line">                    <span class="comment">/* pause and retry hoping it's transient */</span></span><br><span class="line">                    Thread.yield();</span><br><span class="line">                &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                    <span class="keyword">break</span>;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            task.cancel();</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> ((answer == <span class="keyword">null</span>) || (!answer.isAlive())) &#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="keyword">return</span> answer;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="5-4-WeightedResponseTimeRule"><a href="#5-4-WeightedResponseTimeRule" class="headerlink" title="5.4 WeightedResponseTimeRule"></a>5.4 WeightedResponseTimeRule</h2><p>该策略是对RoundRobinRule的扩展, 增加了根据实例的运行情况来计算权重, 并根据权重来挑选实例, 以达到更优的分配效果. 它的实现主要有三个核心内容.</p>
+<h3 id="5-4-1-定时任务"><a href="#5-4-1-定时任务" class="headerlink" title="5.4.1 定时任务"></a>5.4.1 定时任务</h3><p>WeightedResponseTimeRule策略在初始化的时候会通过serverWeightTimer.schedule(new DynamicServerWeightTask(), 0, serverWeightTaskTimerInterval)启动一个定时任务, 用来为每个服务实例计算权重,该任务默认30s执行一次.</p>
+<h3 id="5-4-2-权重计算"><a href="#5-4-2-权重计算" class="headerlink" title="5.4.2 权重计算"></a>5.4.2 权重计算</h3><p>在源码中我们可以轻松找到用于存储权重的对象private volatile List &lt; Double &gt; accumulatedWeights = new ArrayList<double>();该List中每个权重值所处的位置对应了负载均衡器维护的服务实例清单中所有实例在清单中的位置. 下面看一下权重计算函数maintainWeights的源码:</double></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">maintainWeights</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    ILoadBalancer lb = getLoadBalancer();</span><br><span class="line">    <span class="keyword">if</span> (lb == <span class="keyword">null</span>) &#123;</span><br><span class="line">        <span class="keyword">return</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> (!serverWeightAssignmentInProgress.compareAndSet(<span class="keyword">false</span>,  <span class="keyword">true</span>))  &#123;</span><br><span class="line">        <span class="keyword">return</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        logger.info(<span class="string">"Weight adjusting job started"</span>);</span><br><span class="line">        AbstractLoadBalancer nlb = (AbstractLoadBalancer) lb;</span><br><span class="line">        LoadBalancerStats stats = nlb.getLoadBalancerStats();</span><br><span class="line">        <span class="keyword">if</span> (stats == <span class="keyword">null</span>) &#123;</span><br><span class="line">            <span class="comment">// no statistics, nothing to do</span></span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">double</span> totalResponseTime = <span class="number">0</span>;</span><br><span class="line">        <span class="comment">// find maximal 95% response time</span></span><br><span class="line">        <span class="keyword">for</span> (Server server : nlb.getAllServers()) &#123;</span><br><span class="line">            <span class="comment">// this will automatically load the stats if not in cache</span></span><br><span class="line">            ServerStats ss = stats.getSingleServerStat(server);</span><br><span class="line">            totalResponseTime += ss.getResponseTimeAvg();</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">// weight for each server is (sum of responseTime of all servers - responseTime)</span></span><br><span class="line">        <span class="comment">// so that the longer the response time, the less the weight and the less likely to be chosen</span></span><br><span class="line">        Double weightSoFar = <span class="number">0.0</span>;</span><br><span class="line">        <span class="comment">// create new list and hot swap the reference</span></span><br><span class="line">        List&lt;Double&gt; finalWeights = <span class="keyword">new</span> ArrayList&lt;Double&gt;();</span><br><span class="line">        <span class="keyword">for</span> (Server server : nlb.getAllServers()) &#123;</span><br><span class="line">            ServerStats ss = stats.getSingleServerStat(server);</span><br><span class="line">            <span class="keyword">double</span> weight = totalResponseTime - ss.getResponseTimeAvg();</span><br><span class="line">            weightSoFar += weight;</span><br><span class="line">            finalWeights.add(weightSoFar);</span><br><span class="line">        &#125;</span><br><span class="line">        setWeights(finalWeights);</span><br><span class="line">    &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">        logger.error(<span class="string">"Error calculating server weights"</span>, e);</span><br><span class="line">    &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">        serverWeightAssignmentInProgress.set(<span class="keyword">false</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>该方法的实现主要分为两个步骤:</p>
+<p>根据LoadBalancerStats中记录的每个实例的统计信息,累加所有实例的平均响应时间,得到总平均响应时间totalResponseTime,该值会用于后续的计算.<br>为负载均衡器中维护的实例清单逐个计算权重(从第一个开始),计算规则为weightSoFar + totalResponseTime - 实例的平均响应时间,其中weightSoFar初始化为0,并且每计算好一个权重需要累加到weightSoFar上供下一次计算使用.<br>通过概算计算出来的权重值只是代表了各实例权重区间的上限.下面图节选自&lt;&lt; Spring Cloud微服务实战 &gt;&gt;.</p>
+<p><img src="https://blogpictures-1257055754.cos.ap-guangzhou.myqcloud.com/1556759493-5b74c261f0624_articlex.png" alt="Spring Cloud微服务实战"></p>
+<h3 id="5-4-3-实例选择"><a href="#5-4-3-实例选择" class="headerlink" title="5.4.3 实例选择"></a>5.4.3 实例选择</h3><p>下面看一下Server choose(ILoadBalancer lb, Object key)如何选择Server的.</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> Server <span class="title">choose</span><span class="params">(ILoadBalancer lb, Object key)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (lb == <span class="keyword">null</span>) &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    Server server = <span class="keyword">null</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">while</span> (server == <span class="keyword">null</span>) &#123;</span><br><span class="line">        <span class="comment">// get hold of the current reference in case it is changed from the other thread</span></span><br><span class="line">        List&lt;Double&gt; currentWeights = accumulatedWeights;</span><br><span class="line">        <span class="keyword">if</span> (Thread.interrupted()) &#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        List&lt;Server&gt; allList = lb.getAllServers();</span><br><span class="line"></span><br><span class="line">        <span class="keyword">int</span> serverCount = allList.size();</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (serverCount == <span class="number">0</span>) &#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">int</span> serverIndex = <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// last one in the list is the sum of all weights</span></span><br><span class="line">        <span class="keyword">double</span> maxTotalWeight = currentWeights.size() == <span class="number">0</span> ? <span class="number">0</span> : currentWeights.get(currentWeights.size() - <span class="number">1</span>);</span><br><span class="line">        <span class="comment">// No server has been hit yet and total weight is not initialized</span></span><br><span class="line">        <span class="comment">// fallback to use round robin</span></span><br><span class="line">        <span class="keyword">if</span> (maxTotalWeight &lt; <span class="number">0.001</span>d || serverCount != currentWeights.size()) &#123;</span><br><span class="line">            server =  <span class="keyword">super</span>.choose(getLoadBalancer(), key);</span><br><span class="line">            <span class="keyword">if</span>(server == <span class="keyword">null</span>) &#123;</span><br><span class="line">                <span class="keyword">return</span> server;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="comment">// generate a random weight between 0 (inclusive) to maxTotalWeight (exclusive)</span></span><br><span class="line">            <span class="keyword">double</span> randomWeight = random.nextDouble() * maxTotalWeight;</span><br><span class="line">            <span class="comment">// pick the server index based on the randomIndex</span></span><br><span class="line">            <span class="keyword">int</span> n = <span class="number">0</span>;</span><br><span class="line">            <span class="keyword">for</span> (Double d : currentWeights) &#123;</span><br><span class="line">                <span class="keyword">if</span> (d &gt;= randomWeight) &#123;</span><br><span class="line">                    serverIndex = n;</span><br><span class="line">                    <span class="keyword">break</span>;</span><br><span class="line">                &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                    n++;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            server = allList.get(serverIndex);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (server == <span class="keyword">null</span>) &#123;</span><br><span class="line">            <span class="comment">/* Transient. */</span></span><br><span class="line">            Thread.yield();</span><br><span class="line">            <span class="keyword">continue</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (server.isAlive()) &#123;</span><br><span class="line">            <span class="keyword">return</span> (server);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// Next.</span></span><br><span class="line">        server = <span class="keyword">null</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> server;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>下面我们看一下源码的主要步骤有：</p>
+<p>首先先获取accumulatedWeights中最后一个权重,如果该权重小于0.001或者实例的数量不等于权重列表的数量,就采用父类的线性轮询策略.<br>如果满足条件,就先产生一个[0,最大权重值)区间内的随机数.<br>遍历权重列表,比较权重值与随机数的大小,如果权重值大于等于随机数,就拿当前权重列表的索引值去服务实例列表获取具体的实例.</p>
+<h2 id="5-5-ClientConfigEnabledRoundRobinRule"><a href="#5-5-ClientConfigEnabledRoundRobinRule" class="headerlink" title="5.5 ClientConfigEnabledRoundRobinRule"></a>5.5 ClientConfigEnabledRoundRobinRule</h2><p>该策略比较特殊,一般不直接使用它.因为他本身并没有实现特殊的处理逻辑,在他内部定义了一个RoundRobinRule策略,choose函数的实现其实就是采用了RoundRobinRule的线性轮询机制.</p>
+<p>在实际开发中,我们并不会直接使用该策略,而是基于它做高级策略扩展.</p>
+<h2 id="5-6-BestAvailableRule"><a href="#5-6-BestAvailableRule" class="headerlink" title="5.6 BestAvailableRule"></a>5.6 BestAvailableRule</h2><p>该策略继承自ClientConfigEnabledRoundRobinRule,在实现中它注入了负载均衡器的统计对象LoadBalancerStats,同时在choose方法中利用LoadBalancerStats保存的实例统计信息来选择满足要求的服务实例.</p>
+<p>当LoadBalancerStats为空时,会使用RoundRobinRule线性轮询策略,当有LoadBalancerStats时,会通过遍历负载均衡器中维护的所有服务实例,会过滤掉故障的实例,并找出并发请求数最小的一个.</p>
+<p>该策略的特性是可以选出最空闲的服务实例.</p>
+<h2 id="5-7-PredicateBasedRule"><a href="#5-7-PredicateBasedRule" class="headerlink" title="5.7 PredicateBasedRule"></a>5.7 PredicateBasedRule</h2><p>这是一个抽象策略,它继承了ClientConfigEnabledRoundRobinRule,从命名中可以猜出这是一个基于Predicate实现的策略,Predicate是Google Guava Collection工具对集合进行过滤的条件接口.</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> Server <span class="title">choose</span><span class="params">(Object key)</span> </span>&#123;</span><br><span class="line">    ILoadBalancer lb = getLoadBalancer();</span><br><span class="line">    Optional&lt;Server&gt; server = getPredicate().chooseRoundRobinAfterFiltering(lb.getAllServers(), key);</span><br><span class="line">    <span class="keyword">if</span> (server.isPresent()) &#123;</span><br><span class="line">        <span class="keyword">return</span> server.get();</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>在该源码中,它定义了一个抽象函数getPredicate来获取AbstractServerPredicate对象的实现,在choose方法中,通过AbstractServerPredicate的chooseRoundRobinAfterFiltering函数来选择具体的服务实例.从该方法的命名我们可以看出大致的逻辑:首先通过子类中实现的Predicate逻辑来过滤一部分服务实例,然后再以线性轮询的方式从过滤后的实例清单中选出一个.</p>
+<p>在上面choose函数中调用的chooseRoundRobinAfterFiltering方法先通过内部定义的getEligibleServers函数来获取备选的实例清单(实现了过滤),如果返回的清单为空,则用Optional.absent来表示不存在,反之则以线性轮询的方式从备选清单中获取一个实例.</p>
+<p>下面看一下getEligibleServers方法的源码:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> List&lt;Server&gt; <span class="title">getEligibleServers</span><span class="params">(List&lt;Server&gt; servers, Object loadBalancerKey)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (loadBalancerKey == <span class="keyword">null</span>) &#123;</span><br><span class="line">        <span class="keyword">return</span> ImmutableList.copyOf(Iterables.filter(servers, <span class="keyword">this</span>.getServerOnlyPredicate()));</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        List&lt;Server&gt; results = Lists.newArrayList();</span><br><span class="line">        <span class="keyword">for</span> (Server server: servers) &#123;</span><br><span class="line">            <span class="keyword">if</span> (<span class="keyword">this</span>.apply(<span class="keyword">new</span> PredicateKey(loadBalancerKey, server))) &#123;</span><br><span class="line">                results.add(server);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> results;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>上述源码的大致逻辑是遍历服务清单,使用this.apply方法来判断实例是否需要保留,如果是就添加到结果列表中.</p>
+<p>实际上,AbstractServerPredicate实现了com.google.common.base.Predicate接口,apply方法是接口中的定义,主要用来实现过滤条件的判断逻辑,它输入的参数则是过滤条件需要用到的一些信息(比如源码中的new PredicateKey(loadBalancerKey, server)),传入了关于实例的统计信息和负载均衡器的选择算法传递过来的key.</p>
+<p>AbstractServerPredicate没有apply的实现,所以这里的chooseRoundRobinAfterFiltering方法只是定义了一个模板策略:先过滤清单,再轮询选择.</p>
+<p>对于如何过滤,需要在AbstractServerPredicate的子类中实现apply方法来确定具体的过滤策略.</p>
+<h2 id="5-8-AvailabilityFilteringRule"><a href="#5-8-AvailabilityFilteringRule" class="headerlink" title="5.8 AvailabilityFilteringRule"></a>5.8 AvailabilityFilteringRule</h2><p>该类继承自PredicateBasedRule,遵循了先过滤清单,再轮询选择的基本处理逻辑,其中过滤条件使用了AvailabilityPredicate,下面看一下AvailabilityPredicate的源码:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.netflix.loadbalancer;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> javax.annotation.Nullable;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> com.netflix.client.config.IClientConfig;</span><br><span class="line"><span class="keyword">import</span> com.netflix.config.ChainedDynamicProperty;</span><br><span class="line"><span class="keyword">import</span> com.netflix.config.DynamicBooleanProperty;</span><br><span class="line"><span class="keyword">import</span> com.netflix.config.DynamicIntProperty;</span><br><span class="line"><span class="keyword">import</span> com.netflix.config.DynamicPropertyFactory;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">AvailabilityPredicate</span> <span class="keyword">extends</span>  <span class="title">AbstractServerPredicate</span> </span>&#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">apply</span><span class="params">(@Nullable PredicateKey input)</span> </span>&#123;</span><br><span class="line">        LoadBalancerStats stats = getLBStats();</span><br><span class="line">        <span class="keyword">if</span> (stats == <span class="keyword">null</span>) &#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> !shouldSkipServer(stats.getSingleServerStat(input.getServer()));</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">boolean</span> <span class="title">shouldSkipServer</span><span class="params">(ServerStats stats)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> ((CIRCUIT_BREAKER_FILTERING.get() &amp;&amp; stats.isCircuitBreakerTripped()) </span><br><span class="line">                || stats.getActiveRequestsCount() &gt;= activeConnectionsLimit.get()) &#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>从上面的源码可以看出,主要过的过滤逻辑都是在boolean shouldSkipServer(ServerStats stats)方法中实现,该方法主要判断服务实例的两项内容:</p>
+<p>是否故障,即断路由器是否生效已断开<br>实例的并发请求数大于阀值,默认值2^32 - 1,该配置可以通过参数来修改</p>
+<p>上面两项只要满足一项,apply方法就返回false,代表该服务实例可能存在故障或负载过高,都不满足就返回true.</p>
+<p>在AvailabilityFilteringRule进行实例选择时做了小小的优化,它并没有向父类一样先遍历所有的节点进行过滤,然后在过滤后的集合中选择实例.而是先以线性的方式选择一个实例,接着使用过滤条件来判断该实例是否满足要求,若满足就直接使用该实例,若不满足要求就再选择下一个实例,检查是否满足要求,这个过程循环10次如果还没有找到合适的服务实例,就采用父类的实现方案.</p>
+<p>该策略通过线性轮询的方式直接尝试寻找可用且比较空闲的实例来用,优化了每次都要遍历所有实例的开销.</p>
+<h2 id="5-9-ZoneAvoidanceRule"><a href="#5-9-ZoneAvoidanceRule" class="headerlink" title="5.9 ZoneAvoidanceRule"></a>5.9 ZoneAvoidanceRule</h2><p>该类也是PredicateBasedRule的子类,它的实现是通过组合过滤条件CompositePredicate,以ZoneAvoidancePredicate为主过滤条件,以AvailabilityPredicate为次过滤条件.</p>
+<p>ZoneAvoidanceRule的实现并没有像AvailabilityFilteringRule重写choose函数来优化,所以它遵循了先过滤清单再轮询选择的基本逻辑.</p>
+<p>下面看一下CompositePredicate的源码</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="keyword">package</span> com.netflix.loadbalancer;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.util.Iterator;</span><br><span class="line"><span class="keyword">import</span> java.util.List;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> javax.annotation.Nullable;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> com.google.common.base.Predicate;</span><br><span class="line"><span class="keyword">import</span> com.google.common.base.Predicates;</span><br><span class="line"><span class="keyword">import</span> com.google.common.collect.Lists;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">CompositePredicate</span> <span class="keyword">extends</span> <span class="title">AbstractServerPredicate</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> AbstractServerPredicate delegate;</span><br><span class="line">    <span class="keyword">private</span> List&lt;AbstractServerPredicate&gt; fallbacks = Lists.newArrayList();</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">int</span> minimalFilteredServers = <span class="number">1</span>;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">float</span> minimalFilteredPercentage = <span class="number">0</span>;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">apply</span><span class="params">(@Nullable PredicateKey input)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> delegate.apply(input);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> List&lt;Server&gt; <span class="title">getEligibleServers</span><span class="params">(List&lt;Server&gt; servers, Object loadBalancerKey)</span> </span>&#123;</span><br><span class="line">        List&lt;Server&gt; result = <span class="keyword">super</span>.getEligibleServers(servers, loadBalancerKey);</span><br><span class="line">        Iterator&lt;AbstractServerPredicate&gt; i = fallbacks.iterator();</span><br><span class="line">        <span class="keyword">while</span> (!(result.size() &gt;= minimalFilteredServers &amp;&amp; result.size() &gt; (<span class="keyword">int</span>) (servers.size() * minimalFilteredPercentage))</span><br><span class="line">                &amp;&amp; i.hasNext()) &#123;</span><br><span class="line">            AbstractServerPredicate predicate = i.next();</span><br><span class="line">            result = predicate.getEligibleServers(servers, loadBalancerKey);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> result;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>从源码中可以看出,CompositePredicate定义了一个主过滤条件delegate和一组过滤条件列表fallbacks,次过滤条件的过滤顺序是按存储顺序执行的.</p>
+<p>在获取结果的getEligibleServers函数中的主要逻辑是:</p>
+<p>使用主过滤条件对所有实例过滤并返回过滤后的实例清单<br>每次使用次过滤条件过滤前,都要判断两个条件,一个是过滤后的实例总数 &gt;= 最小过滤实例数(minimalFilteredServers,默认值为1), 另一个是过滤后的实例比例 &gt; 最小过滤百分比(minimalFilteredPercentage，默认为0),只要有一个不符合就不再进行过滤, 将当前服务实例列表返回<br>依次使用次过滤条件列表中的过滤条件对主过滤条件的过滤结果进行过滤.</p>
+<h1 id="6-参考链接"><a href="#6-参考链接" class="headerlink" title="6. 参考链接"></a>6. 参考链接</h1><p>&lt;&lt; Spring Cloud微服务实战 &gt;&gt;<br><a href="https://segmentfault.com/a/1190000015981984" target="_blank" rel="noopener">客户端负载均衡Spring Cloud Ribbon</a><br><a href="https://segmentfault.com/a/1190000016028992" target="_blank" rel="noopener">Spring Cloud Ribbon负载均衡策略</a></p>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      <div>
+        <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+  <div>谢谢你请我吃糖果!</div>
+  <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+    <span>打赏</span>
+  </button>
+  <div id="QR" style="display: none;">
+
+    
+
+    
+
+    
+      <div id="bitcoin" style="display: inline-block">
+        <img id="bitcoin_qr" src="/uploads/bonus.png" alt="glennlgan 打赏"/>
+        <p>打赏</p>
+      </div>
+    
+
+  </div>
+</div>
+
+      </div>
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/基础储备/" rel="tag"># 基础储备</a>
+          
+            <a href="/tags/Spring-Cloud/" rel="tag"># Spring Cloud</a>
+          
+            <a href="/tags/微服务/" rel="tag"># 微服务</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/11/23/Spring Cloud微服务(二)--服务治理Spring Cloud Eureka/" rel="next" title="Spring Cloud微服务(二)--服务治理Spring Cloud Eureka">
+                <i class="fa fa-chevron-left"></i> Spring Cloud微服务(二)--服务治理Spring Cloud Eureka
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+  </div>
+
+
+          </div>
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/uploads/glennlgan.jpg"
+                alt="glennlgan" />
+            
+              <p class="site-author-name" itemprop="name">glennlgan</p>
+              <p class="site-description motion-element" itemprop="description">不积跬步无以至千里</p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">48</span>
+                    <span class="site-state-item-name">日志</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  <a href="/categories/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">8</span>
+                    <span class="site-state-item-name">分类</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  <a href="/tags/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">12</span>
+                    <span class="site-state-item-name">标签</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+            <div class="links-of-author motion-element">
+              
+                <span class="links-of-author-item">
+                  <a href="https://github.com/ganlu19940318" target="_blank" title="GitHub"><i class="fa fa-fw fa-github"></i>GitHub</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="mailto:274671731@qq.com" target="_blank" title="E-Mail"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  
+                </span>
+              
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#1-前言"><span class="nav-text">1. 前言</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#2-客户端负载均衡"><span class="nav-text">2. 客户端负载均衡</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#3-基于Spring-Cloud-Ribbon实现客户端负载均衡"><span class="nav-text">3. 基于Spring Cloud Ribbon实现客户端负载均衡</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#4-原理"><span class="nav-text">4. 原理</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#5-负载均衡策略"><span class="nav-text">5. 负载均衡策略</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#5-1-RandomRule"><span class="nav-text">5.1 RandomRule</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#5-2-RoundRobinRule"><span class="nav-text">5.2 RoundRobinRule</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#5-3-RetryRule"><span class="nav-text">5.3 RetryRule</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#5-4-WeightedResponseTimeRule"><span class="nav-text">5.4 WeightedResponseTimeRule</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#5-4-1-定时任务"><span class="nav-text">5.4.1 定时任务</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-4-2-权重计算"><span class="nav-text">5.4.2 权重计算</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-4-3-实例选择"><span class="nav-text">5.4.3 实例选择</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#5-5-ClientConfigEnabledRoundRobinRule"><span class="nav-text">5.5 ClientConfigEnabledRoundRobinRule</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#5-6-BestAvailableRule"><span class="nav-text">5.6 BestAvailableRule</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#5-7-PredicateBasedRule"><span class="nav-text">5.7 PredicateBasedRule</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#5-8-AvailabilityFilteringRule"><span class="nav-text">5.8 AvailabilityFilteringRule</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#5-9-ZoneAvoidanceRule"><span class="nav-text">5.9 ZoneAvoidanceRule</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#6-参考链接"><span class="nav-text">6. 参考链接</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2018</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">glennlgan</span>
+
+  
+
+  
+</div>
+
+
+
+
+
+
+
+
+
+
+
+        
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+	
+    
+
+    
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=6.4.1"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=6.4.1"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=6.4.1"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=6.4.1"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=6.4.1"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=6.4.1"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=6.4.1"></script>
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  <!-- 代码块复制功能 -->
+  <script type="text/javascript" src="/js/src/clipboard.min.js"></script>  
+  <script type="text/javascript" src="/js/src/clipboard-use.js"></script>
+</body>
+</html>
