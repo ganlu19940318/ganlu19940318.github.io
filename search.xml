@@ -1,6 +1,30 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title><![CDATA[设计模式之观察者模式]]></title>
+    <url>%2F2018%2F11%2F27%2F%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B9%8B%E8%A7%82%E5%AF%9F%E8%80%85%E6%A8%A1%E5%BC%8F%2F</url>
+    <content type="text"><![CDATA[1. 什么是观察者在对象之间定义一对多的依赖,这样一来,当一个对象改变状态,依赖它的对象都会收到通知,并自动更新. 2. 示例UML图 3. 示例代码地址https://github.com/ganlu19940318/Head-First/tree/master/Observer%20Pattern 4. 参考链接&lt;&lt; Head First 设计模式 &gt;&gt;]]></content>
+      <categories>
+        <category>设计模式</category>
+      </categories>
+      <tags>
+        <tag>基础储备</tag>
+        <tag>设计模式</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[设计模式之策略模式]]></title>
+    <url>%2F2018%2F11%2F27%2F%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B9%8B%E7%AD%96%E7%95%A5%E6%A8%A1%E5%BC%8F%2F</url>
+    <content type="text"><![CDATA[1. 什么是策略模式策略模式定义了算法族, 分别封装起来, 让它们之间可以互相替换, 此模式让算法的变化独立于使用算法的客户. 2. 示例UML图 3. 示例代码地址https://github.com/ganlu19940318/Head-First/tree/master/Strategy%20Pattern 4. 参考链接&lt;&lt; Head First 设计模式 &gt;&gt;]]></content>
+      <categories>
+        <category>设计模式</category>
+      </categories>
+      <tags>
+        <tag>基础储备</tag>
+        <tag>设计模式</tag>
+      </tags>
+  </entry>
+  <entry>
     <title><![CDATA[Spring Cloud微服务(八)--消息总线Spring Cloud Bus]]></title>
     <url>%2F2018%2F11%2F26%2FSpring%20Cloud%E5%BE%AE%E6%9C%8D%E5%8A%A1(%E5%85%AB)--%E6%B6%88%E6%81%AF%E6%80%BB%E7%BA%BFSpring%20Cloud%20Bus%2F</url>
     <content type="text"><![CDATA[1. 前言本文是 &lt;&lt; Spring Cloud微服务实战 &gt;&gt; 学习笔记, 以便自己查阅. 2. 概述在微服务架构的系统中,我们通常会使用轻量级的消息代理来构建一个共用的消息主题让系统中所有微服务实例都连接上来,由于该主题中产生的消息会被所有实例监听和消费,所以我们称它为消息总线. Spring Cloud Bus本质上就是对消息代理的封装. 目前只支持RabbitMQ和Kafka. 3. 消息代理消息代理(Message Broker)是一种消息验证,传输,路由的架构模式.它在应用程序之间起到通信调度并最小化应用之间的依赖的作用,使得应用程序可以高效地解耦通信过程.消息代理是一个中间件产品,它的核心是一个消息的路由程序,用来实现接收和分发消息,并根据设定好的消息处理流来转发给正确的应用.它包括独立的通信和消息传递协议,能够实现组织内部和组织间的网络通信.设计代理的目的就是为了能够从应用程序中传入消息,并执行一些特别的操作,下面这些是在企业应用中,我们经常需要使用消息代理的场景: 将消息路由到一个或多个目的地. 消息转化为其他的表现方式. 执行消息的聚集,消息的分解,并将结果发送到它们的目的地,然后重新组合响应返回给消息用户. 调用Web服务来检索数据. 响应事件或错误. 使用发布－订阅模式来提供内容或基千主题的消息路由. 目前已经有非常多的开源产品可以供大家使用,比如: ActiveMQ, Kafka, RabbitMQ, RocketMQ等 4. 经典示例应用4.1 传统架构 通过这个架构, 实现了Git仓库配置更新的同时, 各个Service的配置也跟着更新. 4.2 架构调整既然SpringCloud Bus的/bus/refresh接口提供了针对服务和实例进行配置更新的参数,那么我们的架构也可以相应做出一些调整.在之前的架构中,服务的配置更新需要通过向具体服务中的某个实例发送请求,再触发对整个服务集群的配置更新.虽然能实现功能,但是这样的结果是,我们指定的应用实例会不同千集群中的其他应用实例,这样会增加集群内部的复杂度,不利于将来的运维工作.比如,需要对服务实例进行迁移,那么我们不得不修改Web Hook中的配置等.所以要尽可能地让服务集群中的各个节点是对等的. 因此,我们将之前的架构做了 一些调整,如下图所示: 5. 参考链接&lt;&lt; Spring Cloud微服务实战 &gt;&gt;SpringCloud之消息总线Spring Cloud Bus实例]]></content>
