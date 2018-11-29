@@ -108,22 +108,22 @@
 
 
 
-  <meta name="keywords" content="基础储备,数据库">
+  <meta name="keywords" content="基础储备,设计模式">
 <meta property="og:type" content="article">
-<meta property="og:title" content="数据库事务">
-<meta property="og:url" content="http://ganlu19940318.github.io/2018/09/24/数据库事务/index.html">
+<meta property="og:title" content="设计模式之单例模式">
+<meta property="og:url" content="http://ganlu19940318.github.io/2018/11/29/设计模式之单例模式/index.html">
 <meta property="og:site_name" content="glennlgan的个人博客">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2018-09-24T09:13:03.129Z">
+<meta property="og:updated_time" content="2018-11-29T14:13:34.593Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="数据库事务">
+<meta name="twitter:title" content="设计模式之单例模式">
 
 
 
 
 
 
-  <link rel="canonical" href="http://ganlu19940318.github.io/2018/09/24/数据库事务/"/>
+  <link rel="canonical" href="http://ganlu19940318.github.io/2018/11/29/设计模式之单例模式/"/>
 
 
 
@@ -133,7 +133,7 @@
   };
 </script>
 
-  <title>数据库事务 | glennlgan的个人博客</title>
+  <title>设计模式之单例模式 | glennlgan的个人博客</title>
   
 
 
@@ -329,7 +329,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://ganlu19940318.github.io/2018/09/24/数据库事务/">
+    <link itemprop="mainEntityOfPage" href="http://ganlu19940318.github.io/2018/11/29/设计模式之单例模式/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="glennlgan">
@@ -346,7 +346,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">数据库事务
+          <h1 class="post-title" itemprop="name headline">设计模式之单例模式
               
             
           </h1>
@@ -371,7 +371,7 @@
                 
               
 
-              <time title="创建时间：2018-09-24 15:22:45 / 修改时间：17:13:03" itemprop="dateCreated datePublished" datetime="2018-09-24T15:22:45+08:00">2018-09-24</time>
+              <time title="创建时间：2018-11-29 22:03:22 / 修改时间：22:13:34" itemprop="dateCreated datePublished" datetime="2018-11-29T22:03:22+08:00">2018-11-29</time>
             
 
             
@@ -393,7 +393,7 @@
                 <span class="post-meta-item-text">分类于</span>
               
               
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/计算机基础/" itemprop="url" rel="index"><span itemprop="name">计算机基础</span></a></span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/设计模式/" itemprop="url" rel="index"><span itemprop="name">设计模式</span></a></span>
 
                 
                 
@@ -429,22 +429,12 @@
       
         <hr>
 <a id="more"></a>
-<h1 id="1-前言"><a href="#1-前言" class="headerlink" title="1. 前言"></a>1. 前言</h1><p>后台开发过程中, 与数据库打交道是日常操作, 为了提高代码质量和程序性能, 数据库事务是必须理解深刻的, 这篇文章主要是记录数据库事务相关的概念和知识.</p>
-<h1 id="2-事务"><a href="#2-事务" class="headerlink" title="2. 事务"></a>2. 事务</h1><h2 id="2-1-什么是事务"><a href="#2-1-什么是事务" class="headerlink" title="2.1 什么是事务"></a>2.1 什么是事务</h2><p>事务就是DBMS当中用户程序的任何一次执行, 事务是DBMS能看到的基本修改单元.<br>事务是指对系统进行的一组操作, 为了保证系统的完整性, 事务需要具有ACID特性.</p>
-<h2 id="2-2-为什么要有事务"><a href="#2-2-为什么要有事务" class="headerlink" title="2.2 为什么要有事务"></a>2.2 为什么要有事务</h2><p>事务的产生,其实是为了当应用程序访问数据库的时候,事务能够简化我们的编程模型,不需要我们去考虑各种各样的潜在错误和并发问题.可以想一下当我们使用事务时,要么提交,要么回滚,我们不会去考虑网络异常了,服务器宕机了,同时更改一个数据怎么办对吧?因此事务本质上是为了应用层服务的.而不是伴随着数据库系统天生就有的.</p>
-<h2 id="2-3-ACID特性"><a href="#2-3-ACID特性" class="headerlink" title="2.3 ACID特性"></a>2.3 ACID特性</h2><h3 id="2-3-1-原子性-Atomic"><a href="#2-3-1-原子性-Atomic" class="headerlink" title="2.3.1 原子性(Atomic)"></a>2.3.1 原子性(Atomic)</h3><p>事务是一个完整的操作. 事务的各步操作是不可分的(原子的); 要么都执行,要么都不执行.</p>
-<h3 id="2-3-2-一致性-Consistency"><a href="#2-3-2-一致性-Consistency" class="headerlink" title="2.3.2 一致性(Consistency)"></a>2.3.2 一致性(Consistency)</h3><p>当事务完成时, 数据必须处于一致状态. 即应用系统从一个正确的状态到另一个正确的状态.</p>
-<h3 id="2-3-3-隔离性-Isolation"><a href="#2-3-3-隔离性-Isolation" class="headerlink" title="2.3.3 隔离性(Isolation)"></a>2.3.3 隔离性(Isolation)</h3><p>对数据进行修改的所有并发事务是彼此隔离的, 这表明事务必须是独立的, 它不应以任何方式依赖于或影响其他事务.</p>
-<h3 id="2-3-4-持久性-Durability"><a href="#2-3-4-持久性-Durability" class="headerlink" title="2.3.4 持久性(Durability)"></a>2.3.4 持久性(Durability)</h3><p>事务完成后, 它对数据库的修改被永久保持, 事务日志能够保持事务的永久性.</p>
-<h2 id="2-4-隔离性详解"><a href="#2-4-隔离性详解" class="headerlink" title="2.4 隔离性详解"></a>2.4 隔离性详解</h2><h3 id="2-4-1-隔离级别"><a href="#2-4-1-隔离级别" class="headerlink" title="2.4.1 隔离级别"></a>2.4.1 隔离级别</h3><p>事务的隔离级别从低到高有:<br>Read Uncommitted: 最低的隔离级别, 什么都不需要做, 一个事务可以读到另一个事务未提交的结果. 所有的并发事务问题都会发生.<br>Read Committed: 只有在事务提交后, 其更新结果才会被其他事务看见. 可以解决脏读问题.<br>Repeated Read: 在一个事务中, 对于同一份数据的读取结果总是相同的, 无论是否有其他事务对这份数据进行操作, 以及这个事务是否提交. 可以解决脏读, 不可重复读.<br>Serialization: 事务串行化执行, 隔离级别最高, 牺牲了系统的并发性. 可以解决并发事务的所有问题.<br>通常, 在工程实践中, 为了性能的考虑会对隔离性进行折中.<br>其中只有serialization实现隔离性所有要求, 真正实现事务的隔离性.<br>但考虑到实践, 为了性能, 数据库厂商做出了这方面的妥协, 让使用者可以选择隔离的级别.<br>不同的隔离级别可以解决不同阶段的问题, 是层层递进, 逐渐增强的关系.</p>
-<h3 id="2-4-2-隔离性要解决的问题"><a href="#2-4-2-隔离性要解决的问题" class="headerlink" title="2.4.2 隔离性要解决的问题"></a>2.4.2 隔离性要解决的问题</h3><p>隔离性为了解决的问题主要有三个(将事务的隔离级别和问题联系在一起理解):</p>
-<ol>
-<li>脏读(Drity Read): 事务A修改了一个数据, 但未提交, 事务B读到了事务A未提交的更新结果, 如果事务A提交失败, 事务B读到的就是脏数据. Read Committed可以解决脏读问题, 但仍存在以下两种问题.</li>
-<li>不可重复读(Non-repeatable read): 在同一个事务中, 对于同一份数据读取到的结果不一致. 比如, 事务B在事务A提交前读到的结果, 和提交后读到的结果可能不同. 不可重复读出现的原因就是事务并发修改记录, 要避免这种情况, 最简单的方法就是对要修改的记录加锁, 这导致锁竞争加剧, 影响性能.(另一种方法是通过MVCC可以在无锁的情况下, 避免不可重复读.) Repeated Read可以解决不可重复读问题和脏读问题, 但仍无法解决下面的问题.</li>
-<li>幻读(Phantom Read): 在同一个事务中, 同一个查询多次返回的结果不一致. 事务A新增了一条记录, 事务B在事务A提交前后各执行了一次查询操作, 发现后一次比前一次多了一条记录. 幻读仅指由于并发事务增加记录导致的问题, 这个不能像不可重复读通过记录加锁解决, 因为对于新增的记录根本无法加锁. 需要将事务串行化, 才能避免幻读. Serialization解决了以上所有问题, 但是性能效率较低.</li>
-</ol>
-<p>通常来说, 事务隔离级别越低, 所需持有锁的时间也就越短, 并发性能也就越好.</p>
-<h1 id="3-参考链接"><a href="#3-参考链接" class="headerlink" title="3.参考链接"></a>3.参考链接</h1><p><a href="https://www.zhihu.com/question/31346392?sort=created" target="_blank" rel="noopener">如何理解数据库事务中的一致性的概念？</a><br><a href="https://blog.csdn.net/zxl315/article/details/5388389" target="_blank" rel="noopener">事务的特性：事务必须具备以下四个属性，简称ACID</a><br><a href="https://www.cnblogs.com/ws-astrologer/p/6681089.html" target="_blank" rel="noopener">事务的隔离性理解</a></p>
+<h1 id="1-什么是单例模式"><a href="#1-什么是单例模式" class="headerlink" title="1. 什么是单例模式"></a>1. 什么是单例模式</h1><p>确保一个类只有一个实例,并提供全局访问点.</p>
+<h1 id="2-示例代码"><a href="#2-示例代码" class="headerlink" title="2. 示例代码"></a>2. 示例代码</h1><p>3种单例模式代码.</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 方法一</span></span><br><span class="line"><span class="comment">// 只有在类被使用的时候才会实例化, 每次getInstance都会产生大量额外开销, 所以getInstance的性能很差.</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">SingletonOne</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> SingletonOne uniqueInstance;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="title">SingletonOne</span><span class="params">()</span></span>&#123;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">synchronized</span> SingletonOne <span class="title">getInstance</span><span class="params">()</span></span>&#123;</span><br><span class="line">        <span class="keyword">if</span>(uniqueInstance == <span class="keyword">null</span>)&#123;</span><br><span class="line">            uniqueInstance = <span class="keyword">new</span> SingletonOne();</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> uniqueInstance;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 方法二</span></span><br><span class="line"><span class="comment">// 在类被使用之前就创建好了实例, 其实我觉得, 一般情况下用这种就可以了.</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">SingletonTwo</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> SingletonTwo uniqueInstance = <span class="keyword">new</span> SingletonTwo();</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="title">SingletonTwo</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> SingletonTwo <span class="title">getInstance</span><span class="params">()</span></span>&#123;</span><br><span class="line">        <span class="keyword">return</span> uniqueInstance;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 方法三</span></span><br><span class="line"><span class="comment">// 只有在类被使用的时候才会实例化, 每次getInstance都会产生非常小的额外开销(判断逻辑), 但是相对于方法一, 开销已经小很多了.</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">SingletonThree</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">volatile</span> <span class="keyword">static</span> SingletonThree uniqueInstance;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="title">SingletonThree</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> SingletonThree <span class="title">getInstance</span><span class="params">()</span></span>&#123;</span><br><span class="line">        <span class="keyword">if</span>(uniqueInstance == <span class="keyword">null</span>)&#123;</span><br><span class="line">            <span class="keyword">synchronized</span> (SingletonThree.class)&#123;</span><br><span class="line">                <span class="keyword">if</span>(uniqueInstance == <span class="keyword">null</span>)&#123;</span><br><span class="line">                    uniqueInstance = <span class="keyword">new</span> SingletonThree();</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> uniqueInstance;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h1 id="3-参考链接"><a href="#3-参考链接" class="headerlink" title="3. 参考链接"></a>3. 参考链接</h1><p>&lt;&lt; Head First 设计模式 &gt;&gt;</p>
 
       
     </div>
@@ -491,7 +481,7 @@
           
             <a href="/tags/基础储备/" rel="tag"># 基础储备</a>
           
-            <a href="/tags/数据库/" rel="tag"># 数据库</a>
+            <a href="/tags/设计模式/" rel="tag"># 设计模式</a>
           
         </div>
       
@@ -504,8 +494,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2018/09/24/并行和并发的区别/" rel="next" title="并行和并发的区别">
-                <i class="fa fa-chevron-left"></i> 并行和并发的区别
+              <a href="/2018/11/29/设计模式之抽象工厂模式/" rel="next" title="设计模式之抽象工厂模式">
+                <i class="fa fa-chevron-left"></i> 设计模式之抽象工厂模式
               </a>
             
           </div>
@@ -513,10 +503,6 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
-            
-              <a href="/2018/09/24/MVCC多版本并发控制/" rel="prev" title="MVCC多版本并发控制">
-                MVCC多版本并发控制 <i class="fa fa-chevron-right"></i>
-              </a>
             
           </div>
         </div>
@@ -710,7 +696,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#1-前言"><span class="nav-text">1. 前言</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#2-事务"><span class="nav-text">2. 事务</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#2-1-什么是事务"><span class="nav-text">2.1 什么是事务</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-2-为什么要有事务"><span class="nav-text">2.2 为什么要有事务</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-3-ACID特性"><span class="nav-text">2.3 ACID特性</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#2-3-1-原子性-Atomic"><span class="nav-text">2.3.1 原子性(Atomic)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-3-2-一致性-Consistency"><span class="nav-text">2.3.2 一致性(Consistency)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-3-3-隔离性-Isolation"><span class="nav-text">2.3.3 隔离性(Isolation)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-3-4-持久性-Durability"><span class="nav-text">2.3.4 持久性(Durability)</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-4-隔离性详解"><span class="nav-text">2.4 隔离性详解</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#2-4-1-隔离级别"><span class="nav-text">2.4.1 隔离级别</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-4-2-隔离性要解决的问题"><span class="nav-text">2.4.2 隔离性要解决的问题</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#3-参考链接"><span class="nav-text">3.参考链接</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#1-什么是单例模式"><span class="nav-text">1. 什么是单例模式</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#2-示例代码"><span class="nav-text">2. 示例代码</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#3-参考链接"><span class="nav-text">3. 参考链接</span></a></li></ol></div>
             
 
           </div>
