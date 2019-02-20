@@ -1,6 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title><![CDATA[设计模式之MVC模式]]></title>
+    <url>%2F2019%2F02%2F20%2F%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B9%8BMVC%E6%A8%A1%E5%BC%8F%2F</url>
+    <content type="text"><![CDATA[1. 什么是MVC模式MVC 模式代表 Model-View-Controller(模型-视图-控制器)模式. 这种模式用于应用程序的分层开发. Model(模型) - 模型代表一个存取数据的对象或 JAVA POJO。它也可以带有逻辑，在数据变化时更新控制器。View(视图) - 视图代表模型包含的数据的可视化。Controller(控制器) - 控制器作用于模型和视图上。它控制数据流向模型对象，并在数据变化时更新视图。它使视图与模型分离开。 2. 示例UML图 3. 示例代码地址https://github.com/ganlu19940318/Head-First/tree/master/Model-View-Controller 4. 参考链接&lt;&lt; Head First 设计模式 &gt;&gt; MVC 模式|菜鸟教程]]></content>
+      <categories>
+        <category>设计模式</category>
+      </categories>
+      <tags>
+        <tag>基础储备</tag>
+        <tag>设计模式</tag>
+      </tags>
+  </entry>
+  <entry>
     <title><![CDATA[设计模式之代理模式]]></title>
     <url>%2F2019%2F02%2F19%2F%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B9%8B%E4%BB%A3%E7%90%86%E6%A8%A1%E5%BC%8F%2F</url>
     <content type="text"><![CDATA[1. 什么是代理模式代理模式为另一个对象提供一个替身或占位符以控制对这个对象的访问. 通过代理模式,创建代表对象,让代表对象控制某对象的访问,被代理的对象可以是远程的对象,创建开销大的对象或需要安全控制的对象. 2. 示例UML图 3. 示例代码地址https://github.com/ganlu19940318/Head-First/tree/master/Proxy%20Pattern 4. 参考链接&lt;&lt; Head First 设计模式 &gt;&gt;]]></content>
