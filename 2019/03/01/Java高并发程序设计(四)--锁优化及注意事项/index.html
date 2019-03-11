@@ -1,0 +1,1291 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-CN">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=6.4.1" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=6.4.1">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=6.4.1">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=6.4.1">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=6.4.1" color="#222">
+
+
+
+
+
+
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '6.4.1',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="keywords" content="基础储备,Java,并发设计">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Java高并发程序设计(四)--锁优化及注意事项">
+<meta property="og:url" content="http://ganlu19940318.github.io/2019/03/01/Java高并发程序设计(四)--锁优化及注意事项/index.html">
+<meta property="og:site_name" content="glennlgan的个人博客">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="https://blogpictures-1257055754.cos.ap-guangzhou.myqcloud.com/%E5%BE%AE%E4%BF%A1%E5%9B%BE%E7%89%87_20190307185137.jpg">
+<meta property="og:updated_time" content="2019-03-11T03:38:53.973Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Java高并发程序设计(四)--锁优化及注意事项">
+<meta name="twitter:image" content="https://blogpictures-1257055754.cos.ap-guangzhou.myqcloud.com/%E5%BE%AE%E4%BF%A1%E5%9B%BE%E7%89%87_20190307185137.jpg">
+
+
+
+
+
+
+  <link rel="canonical" href="http://ganlu19940318.github.io/2019/03/01/Java高并发程序设计(四)--锁优化及注意事项/"/>
+
+
+
+<script type="text/javascript" id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>Java高并发程序设计(四)--锁优化及注意事项 | glennlgan的个人博客</title>
+  
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style type="text/css">
+    .use-motion .motion-element,
+    .use-motion .brand,
+    .use-motion .menu-item,
+    .sidebar-inner,
+    .use-motion .post-block,
+    .use-motion .pagination,
+    .use-motion .comments,
+    .use-motion .post-header,
+    .use-motion .post-body,
+    .use-motion .collection-title { opacity: initial; }
+
+    .use-motion .logo,
+    .use-motion .site-title,
+    .use-motion .site-subtitle {
+      opacity: initial;
+      top: initial;
+    }
+
+    .use-motion {
+      .logo-line-before i { left: initial; }
+      .logo-line-after i { right: initial; }
+    }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">glennlgan的个人博客</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+      
+        <p class="site-subtitle">记录学习点滴</p>
+      
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="切换导航栏">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-home">
+    <a href="/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-home"></i> <br />首页</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+    <a href="/archives/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />归档</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-categories">
+    <a href="/categories/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-th"></i> <br />分类</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-tags">
+    <a href="/tags/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />标签</a>
+  </li>
+
+      
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />搜索</a>
+        </li>
+      
+    </ul>
+  
+
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off"
+             placeholder="搜索..." spellcheck="false"
+             type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+            
+
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://ganlu19940318.github.io/2019/03/01/Java高并发程序设计(四)--锁优化及注意事项/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="glennlgan">
+      <meta itemprop="description" content="不积跬步无以至千里">
+      <meta itemprop="image" content="/uploads/glennlgan.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="glennlgan的个人博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Java高并发程序设计(四)--锁优化及注意事项
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-03-01 15:38:09" itemprop="dateCreated datePublished" datetime="2019-03-01T15:38:09+08:00">2019-03-01</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2019-03-11 11:38:53" itemprop="dateModified" datetime="2019-03-11T11:38:53+08:00">2019-03-11</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/高并发程序设计/" itemprop="url" rel="index"><span itemprop="name">高并发程序设计</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <hr>
+<a id="more"></a>
+<h1 id="1-提高锁性能的几点建议"><a href="#1-提高锁性能的几点建议" class="headerlink" title="1. 提高锁性能的几点建议"></a>1. 提高锁性能的几点建议</h1><p>锁优化的核心思想就是尽可能减少锁带来的额外开销.</p>
+<h2 id="1-1-减少锁持有时间"><a href="#1-1-减少锁持有时间" class="headerlink" title="1.1 减少锁持有时间"></a>1.1 减少锁持有时间</h2><p>减少锁的持有时间有助于降低锁冲突的可能性,进而提升系统的并发能力.</p>
+<p>对比两段代码</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 代码一</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">synchronized</span> <span class="keyword">void</span> <span class="title">syncMethod</span><span class="params">()</span></span>&#123;</span><br><span class="line">    othercode1();</span><br><span class="line">    metextMethod();</span><br><span class="line">    othercode2();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 代码二</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">syncMethod2</span><span class="params">()</span></span>&#123;</span><br><span class="line">    othercode1();</span><br><span class="line">    <span class="keyword">synchronized</span> (<span class="keyword">this</span>) &#123;</span><br><span class="line">        metextMethod();</span><br><span class="line">    &#125;</span><br><span class="line">    othercode2();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>其中, othercode1()othercode2()都没有持有锁的必要性.</p>
+<h2 id="1-2-减少锁粒度"><a href="#1-2-减少锁粒度" class="headerlink" title="1.2 减少锁粒度"></a>1.2 减少锁粒度</h2><p>所谓减少锁粒度,就是指缩小锁定对象的范围,从而减少锁冲突的可能性,进而提高系统的并发能力.</p>
+<p>ConcurrentHashMap就是典型的实例(相对于HashMap),使用分段锁减少了锁粒度.</p>
+<p>缺点是,当系统需要取得全局锁时,其消耗的资源会比较多,因为当试图访问全局信息时,就会需要同时取得所有段的锁方能顺利实施.(参考ConcurrentHashMap的size方法)</p>
+<h2 id="1-3-读写分离锁来替换独占锁"><a href="#1-3-读写分离锁来替换独占锁" class="headerlink" title="1.3 读写分离锁来替换独占锁"></a>1.3 读写分离锁来替换独占锁</h2><p>本质上是减少锁粒度的一种情况,上面ConcurrentHashMap是通过分割结构实现,而读写分离锁则是对系统功能点的分割.适用于读多写少的场景.</p>
+<h2 id="1-4-锁分离"><a href="#1-4-锁分离" class="headerlink" title="1.4 锁分离"></a>1.4 锁分离</h2><p>锁分离是读写锁思想的进一步延伸.说白了就是,根据应用程序的功能特点,使用分离思想.比如LinkedBlockingQueue中对队列的put和take,是两个不存在锁竞争的操作,如果用一把独占锁,就会导致锁竞争相对比较激烈,因此可以用两把不同的锁控制,从而减少冲突.</p>
+<h2 id="1-5-锁粗化"><a href="#1-5-锁粗化" class="headerlink" title="1.5 锁粗化"></a>1.5 锁粗化</h2><p>虚拟机在遇到一连串地对同一锁不断进行请求和释放的操作时,便会把所有的锁操作整合成对锁的一次请求,从而减少对锁的请求同步次数,这个操作叫做锁的粗化.</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 优化前</span></span><br><span class="line"><span class="keyword">synchronized</span> (lock)&#123;</span><br><span class="line">    <span class="comment">// 1. do sth.</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">synchronized</span> (lock)&#123;</span><br><span class="line">    <span class="comment">// 2. do sth.</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 优化后</span></span><br><span class="line"><span class="keyword">synchronized</span> (lock)&#123;</span><br><span class="line">    <span class="comment">// 1. do sth.</span></span><br><span class="line">    <span class="comment">// 2. do sth.</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>在开发过程中,应该有意识地在合理的场合进行锁的粗化,尤其是当在循环内请求锁时.</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 优化前</span></span><br><span class="line"><span class="keyword">for</span>(<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; CIRCLE; i++)&#123;</span><br><span class="line">    <span class="keyword">synchronized</span> (lock)&#123;</span><br><span class="line">        <span class="comment">// do sth.</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 优化后</span></span><br><span class="line"><span class="keyword">synchronized</span> (lock)&#123;</span><br><span class="line">    <span class="keyword">for</span>(<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; CIRCLE; i++)&#123;</span><br><span class="line">        <span class="comment">// do sth.</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>锁粗化的思想和减少锁持有时间是相反的,在不同的场合,它们的效果不同,应该根据实际情况,进行权衡.</p>
+<h1 id="2-JVM在锁优化方面的工作"><a href="#2-JVM在锁优化方面的工作" class="headerlink" title="2. JVM在锁优化方面的工作"></a>2. JVM在锁优化方面的工作</h1><h2 id="2-1-锁偏向"><a href="#2-1-锁偏向" class="headerlink" title="2.1 锁偏向"></a>2.1 锁偏向</h2><p>如果一个线程获得了锁,那么锁就进入了偏向模式,当这个线程再次请求锁时,无须再做任何同步操作,这样就节省了大量有关锁申请的操作,从而提高了程序性能.因此,对于几乎没有锁竞争的场合,偏向锁有比较好的优化效果,因为连续多次极有可能是同一个线程请求相同的锁.而对于锁竞争比较激烈的场合,其效果不佳.因为在竞争激烈的场合,最有可能的情况是每次都是不同的线程来请求相同的锁.这样偏向模式会失效,还不如不启用偏向锁.</p>
+<p>可以使用JVM参数来显式开启偏向锁.</p>
+<h2 id="2-2-轻量级锁"><a href="#2-2-轻量级锁" class="headerlink" title="2.2 轻量级锁"></a>2.2 轻量级锁</h2><p>如果偏向锁失败,虚拟机并不会立即挂起线程,它还会使用一种称为轻量级锁的优化手段.轻量级锁的操作也很轻便,它只是简单地将对象头部作为指针,指向持有锁的线程堆栈的内部,来判断一个线程是否持有对象锁.如果线程获得轻量级锁成功,则可以顺利进入临界区,如果轻量级锁加锁失败,则表示其他线程抢先争夺到了锁,那么当前线程的请求就会膨胀为重量级锁.</p>
+<h2 id="2-3-自旋锁"><a href="#2-3-自旋锁" class="headerlink" title="2.3 自旋锁"></a>2.3 自旋锁</h2><p>锁膨胀后,虚拟机为避免线程真实地在操作系统层面挂起,虚拟机还会做最后的努力–自旋锁,由于当前线程暂时无法获得锁,但是什么时候可以获得锁是一个未知数.也许在几个CPU时钟周期后,就可以得到锁.如果这样,简单粗暴地挂起线程可能是一种得不偿失的操作.因此,系统会进行一次赌注:它会假设在不久的将来,线程可以得到这把锁.因此,虚拟机会让当前线程做几个空循环,在经过若干次循环后,如果可以得到锁,那么就顺利进入临界区.如果还不能得到锁,才会真实地将线程在操作系统层面挂起.</p>
+<h2 id="2-4-锁消除"><a href="#2-4-锁消除" class="headerlink" title="2.4 锁消除"></a>2.4 锁消除</h2><p>锁消除是一种更彻底的锁优化.Java虚拟机在JIT编译时,通过对上下文的扫描,去除不可能存在共享资源竞争的锁.通过锁消除,可以节省毫无意义的请求锁时间.</p>
+<p>锁消除涉及的关键技术为逃逸分析,所谓逃逸分析,就是观察某一个变量是否会逃出某一个作用域.</p>
+<p>逃逸分析必须在-server模式下进行,逃逸分析和锁消除都需要通过JVM参数开启.</p>
+<h1 id="3-ThreadLocal"><a href="#3-ThreadLocal" class="headerlink" title="3. ThreadLocal"></a>3. ThreadLocal</h1><p>ThreadLocal,顾名思义,线程的局部变量,只有当前线程可以访问.</p>
+<h2 id="3-1-基本使用"><a href="#3-1-基本使用" class="headerlink" title="3.1 基本使用"></a>3.1 基本使用</h2><p>为每一个线程分配不同的线程对象,需要在应用层面保证.ThreadLocal只是起到了简单的容器作用.</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> java.text.ParseException;</span><br><span class="line"><span class="keyword">import</span> java.text.SimpleDateFormat;</span><br><span class="line"><span class="keyword">import</span> java.util.Date;</span><br><span class="line"><span class="keyword">import</span> java.util.concurrent.ExecutorService;</span><br><span class="line"><span class="keyword">import</span> java.util.concurrent.Executors;</span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Course</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> ThreadLocal&lt;SimpleDateFormat&gt; t1 = <span class="keyword">new</span> ThreadLocal&lt;SimpleDateFormat&gt;();</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">ParseDate</span> <span class="keyword">implements</span> <span class="title">Runnable</span></span>&#123;</span><br><span class="line">        <span class="keyword">private</span> <span class="keyword">int</span> i = <span class="number">0</span>;</span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="title">ParseDate</span><span class="params">(<span class="keyword">int</span> i)</span> </span>&#123;</span><br><span class="line">            <span class="keyword">this</span>.i = i;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="meta">@Override</span></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">            <span class="keyword">try</span> &#123;</span><br><span class="line">                <span class="keyword">if</span>(t1.get() == <span class="keyword">null</span>)&#123;</span><br><span class="line">                    t1.set(<span class="keyword">new</span> SimpleDateFormat(<span class="string">"yyyy-MM-dd HH:mm:ss"</span>));</span><br><span class="line">                &#125;</span><br><span class="line">                Date t = t1.get().parse(<span class="string">"2019-03-07 15:29:"</span> + i%<span class="number">60</span>);</span><br><span class="line">                System.out.println(i + <span class="string">":"</span> + t);</span><br><span class="line">            &#125; <span class="keyword">catch</span> (ParseException e) &#123;</span><br><span class="line">                e.printStackTrace();</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        ExecutorService executorService = Executors.newFixedThreadPool(<span class="number">10</span>);</span><br><span class="line">        <span class="keyword">for</span>(<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; <span class="number">1000</span>; i++)&#123;</span><br><span class="line">            executorService.execute(<span class="keyword">new</span> ParseDate(i));</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="3-2-实现原理"><a href="#3-2-实现原理" class="headerlink" title="3.2 实现原理"></a>3.2 实现原理</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">set</span><span class="params">(T value)</span> </span>&#123;</span><br><span class="line">    Thread t = Thread.currentThread();</span><br><span class="line">    ThreadLocalMap map = getMap(t);</span><br><span class="line">    <span class="keyword">if</span> (map != <span class="keyword">null</span>)</span><br><span class="line">        map.set(<span class="keyword">this</span>, value);</span><br><span class="line">    <span class="keyword">else</span></span><br><span class="line">        createMap(t, value);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> T <span class="title">get</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    Thread t = Thread.currentThread();</span><br><span class="line">    ThreadLocalMap map = getMap(t);</span><br><span class="line">    <span class="keyword">if</span> (map != <span class="keyword">null</span>) &#123;</span><br><span class="line">        ThreadLocalMap.Entry e = map.getEntry(<span class="keyword">this</span>);</span><br><span class="line">        <span class="keyword">if</span> (e != <span class="keyword">null</span>) &#123;</span><br><span class="line">            <span class="meta">@SuppressWarnings</span>(<span class="string">"unchecked"</span>)</span><br><span class="line">            T result = (T)e.value;</span><br><span class="line">            <span class="keyword">return</span> result;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> setInitialValue();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>思考: 这些变量是维护在Thread类内部的,这也意味着只要线程不退出,对象的引用将一直存在.线程退出时,Thread类会进行一些清理工作,包括清理ThreadLocalMap.</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">exit</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (group != <span class="keyword">null</span>) &#123;</span><br><span class="line">        group.threadTerminated(<span class="keyword">this</span>);</span><br><span class="line">        group = <span class="keyword">null</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">/* Aggressively null out all reference fields: see bug 4006245 */</span></span><br><span class="line">    target = <span class="keyword">null</span>;</span><br><span class="line">    <span class="comment">/* Speed the release of some of these resources */</span></span><br><span class="line">    threadLocals = <span class="keyword">null</span>;</span><br><span class="line">    inheritableThreadLocals = <span class="keyword">null</span>;</span><br><span class="line">    inheritedAccessControlContext = <span class="keyword">null</span>;</span><br><span class="line">    blocker = <span class="keyword">null</span>;</span><br><span class="line">    uncaughtExceptionHandler = <span class="keyword">null</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>如果使用线程池,将一些大对象设置到ThreadLocal中,就可能会出现内存泄漏.如果希望及时回收对象,最好使用ThreadLocal.remove().</p>
+<p>另外, 通过 t1 = null 也可以实现对象的回收, 其中t1是ThreadLocal. 具体原理如下图.</p>
+<p><img src="https://blogpictures-1257055754.cos.ap-guangzhou.myqcloud.com/%E5%BE%AE%E4%BF%A1%E5%9B%BE%E7%89%87_20190307185137.jpg" alt="ThreadLocal回收机制"></p>
+<h2 id="3-3-ThreadLocal有何好处"><a href="#3-3-ThreadLocal有何好处" class="headerlink" title="3.3 ThreadLocal有何好处"></a>3.3 ThreadLocal有何好处</h2><p>如果共享对象对于竞争的处理容易引起性能损失, 我们就应该考虑使用ThreadLocal为每个线程分配单独的对象.</p>
+<p>ThreadLocal 并不是为了解决线程安全问题,而是提供了一种将实例绑定到当前线程的机制,类似于隔离的效果,实际上自己在方法中 new 出来变量也能达到类似的效果.</p>
+<p>ThreadLocal 最大的用处就是用来把实例变量共享成全局变量,在程序的任何方法中都可以访问到该实例变量而已.</p>
+<font color="red">也就是说 ThreadLocal 的用法和我们自己 new 对象一样, 然后将这个 new 的对象传递到各个方法中. 但是到处传递的话, 太麻烦了. 这个时候,就应该用 ThreadLocal.</font>
+
+<h1 id="4-无锁"><a href="#4-无锁" class="headerlink" title="4. 无锁"></a>4. 无锁</h1><p>锁是一种悲观的策略,它总是假设每一次的临界区操作会产生冲突.<br>无锁是一种乐观的策略,它会假设对资源的访问是没有冲突的.无锁策略核心是CAS(Compare And Set)</p>
+<h2 id="4-1-并发策略CAS"><a href="#4-1-并发策略CAS" class="headerlink" title="4.1 并发策略CAS"></a>4.1 并发策略CAS</h2><p>优点:非阻塞性导致对死锁问题天生免疫;线程间相互影响远小于基于锁的方式;没有锁竞争带来的系统开销,也没有线程间频繁调度带来的开销.</p>
+<p>CAS算法的过程是这样:它包含三个参数 CAS(V,E,N). V表示要更新的变量,E表示预期的值,N表示新值. 仅当V值等于E值时,才会将V的值设置成N,否则什么都不做.最后CAS返回当前V的值.CAS算法需要你额外给出一个期望值,也就是你认为现在变量应该是什么样子,如果变量不是你想象的那样,那说明已经被别人修改过.你就重新读取,再次尝试修改即可.</p>
+<h2 id="4-2-无锁的线程安全整数AtomicInterger"><a href="#4-2-无锁的线程安全整数AtomicInterger" class="headerlink" title="4.2 无锁的线程安全整数AtomicInterger"></a>4.2 无锁的线程安全整数AtomicInterger</h2><p>JDK并发包中的atomic包,里面实现了一些直接使用CAS操作的线程安全的类型.</p>
+<h2 id="4-3-无锁的对象引用AtomicReference"><a href="#4-3-无锁的对象引用AtomicReference" class="headerlink" title="4.3 无锁的对象引用AtomicReference"></a>4.3 无锁的对象引用AtomicReference</h2><p>AtomicReference是对应普通的对象引用.也就是它可以保证你再修改对象引用时的线程安全性.</p>
+<h3 id="4-3-1-ABA问题"><a href="#4-3-1-ABA问题" class="headerlink" title="4.3.1 ABA问题"></a>4.3.1 ABA问题</h3><p>比如说一个线程one从内存位置V中取出A,这时候另一个线程two也从内存中取出A,并且two进行了一些操作变成了B,然后two又将V位置的数据变成A,这时候线程one进行CAS操作发现内存中仍然是A,然后one操作成功.尽管线程one的CAS操作成功,但是不代表这个过程就是没有问题的.如果链表的头在变化了两次后恢复了原值.但是不代表链表就没有变化.</p>
+<h2 id="4-4-带有时间戳的对象引用AtomicStampedReference"><a href="#4-4-带有时间戳的对象引用AtomicStampedReference" class="headerlink" title="4.4 带有时间戳的对象引用AtomicStampedReference"></a>4.4 带有时间戳的对象引用AtomicStampedReference</h2><p>针对ABA问题,AtomicReference会存在问题,于是有了AtomicStampedReference来解决ABA问题.</p>
+<p>AtomicStampedReference它内部不仅维护了对象的值,还维护了一个时间戳(实际上可以使用任何一个整数来表示状态值),当AtomicStampedReference对应的数值被修改时,除了更新数据本身外,还必须要更新时间戳.当AtomicStampedReference设置对象值时,对象值以及时间戳都必须满足期望值,写入才会成功.因此即使对象值被反复读写,写回原值,只要时间戳发生变化,就能防止不恰当的写入.</p>
+<h2 id="4-5-无锁数组AtomicIntergerArray"><a href="#4-5-无锁数组AtomicIntergerArray" class="headerlink" title="4.5 无锁数组AtomicIntergerArray"></a>4.5 无锁数组AtomicIntergerArray</h2><p>本质上是对int[]类型的封装,并用CAS控制int[]在多线程下的安全性.</p>
+<h2 id="4-6-普通变量享受原子操作AtomicIntegerFieldUpdater"><a href="#4-6-普通变量享受原子操作AtomicIntegerFieldUpdater" class="headerlink" title="4.6 普通变量享受原子操作AtomicIntegerFieldUpdater"></a>4.6 普通变量享受原子操作AtomicIntegerFieldUpdater</h2><p>AtomicIntegerFieldUpdater可以让普通变量也享受CAS操作带来的线程安全性.</p>
+<p>几点注意:</p>
+<p>a.只能修改可见范围内的变量.<br>b.变量必须是volatile类型.<br>c.不支持static字段.</p>
+<h2 id="4-7-让线程之间互相帮助SynchronousQueue"><a href="#4-7-让线程之间互相帮助SynchronousQueue" class="headerlink" title="4.7 让线程之间互相帮助SynchronousQueue"></a>4.7 让线程之间互相帮助SynchronousQueue</h2><p>SynchronousQueue,数据交换通道.</p>
+<h1 id="5-死锁"><a href="#5-死锁" class="headerlink" title="5. 死锁"></a>5. 死锁</h1><p>死锁一旦发生,如果没有外力介入,这种等待将永远存在,从而对程序产生严重的影响.</p>
+<p>避免死锁的办法:使用无锁函数 或者 使用重入锁的中断或者限时等待.</p>
+<h1 id="6-参考链接"><a href="#6-参考链接" class="headerlink" title="6. 参考链接"></a>6. 参考链接</h1><p>&lt;&lt; Java高并发程序设计 &gt;&gt;(葛一鸣 郭超)</p>
+<p><a href="https://blog.csdn.net/qq_35232663/article/details/82914537" target="_blank" rel="noopener">ThreadLocal的彻底理解（ThreadLocal不是用来解决多线程下访问共享变量问题的）</a></p>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      <div>
+        <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+  <div>谢谢你请我吃糖果!</div>
+  <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+    <span>打赏</span>
+  </button>
+  <div id="QR" style="display: none;">
+
+    
+
+    
+
+    
+      <div id="bitcoin" style="display: inline-block">
+        <img id="bitcoin_qr" src="/uploads/bonus.png" alt="glennlgan 打赏"/>
+        <p>打赏</p>
+      </div>
+    
+
+  </div>
+</div>
+
+      </div>
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/基础储备/" rel="tag"># 基础储备</a>
+          
+            <a href="/tags/Java/" rel="tag"># Java</a>
+          
+            <a href="/tags/并发设计/" rel="tag"># 并发设计</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/02/24/Java 如何在线程池中寻找堆栈/" rel="next" title="Java 如何在线程池中寻找堆栈">
+                <i class="fa fa-chevron-left"></i> Java 如何在线程池中寻找堆栈
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/03/07/Java内存泄漏与内存溢出/" rel="prev" title="Java内存泄漏与内存溢出">
+                Java内存泄漏与内存溢出 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+  </div>
+
+
+          </div>
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/uploads/glennlgan.jpg"
+                alt="glennlgan" />
+            
+              <p class="site-author-name" itemprop="name">glennlgan</p>
+              <p class="site-description motion-element" itemprop="description">不积跬步无以至千里</p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">77</span>
+                    <span class="site-state-item-name">日志</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  <a href="/categories/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">11</span>
+                    <span class="site-state-item-name">分类</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  <a href="/tags/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">15</span>
+                    <span class="site-state-item-name">标签</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+            <div class="links-of-author motion-element">
+              
+                <span class="links-of-author-item">
+                  <a href="https://github.com/ganlu19940318" target="_blank" title="GitHub"><i class="fa fa-fw fa-github"></i>GitHub</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="mailto:274671731@qq.com" target="_blank" title="E-Mail"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  
+                </span>
+              
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#1-提高锁性能的几点建议"><span class="nav-text">1. 提高锁性能的几点建议</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-1-减少锁持有时间"><span class="nav-text">1.1 减少锁持有时间</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#1-2-减少锁粒度"><span class="nav-text">1.2 减少锁粒度</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#1-3-读写分离锁来替换独占锁"><span class="nav-text">1.3 读写分离锁来替换独占锁</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#1-4-锁分离"><span class="nav-text">1.4 锁分离</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#1-5-锁粗化"><span class="nav-text">1.5 锁粗化</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#2-JVM在锁优化方面的工作"><span class="nav-text">2. JVM在锁优化方面的工作</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#2-1-锁偏向"><span class="nav-text">2.1 锁偏向</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-2-轻量级锁"><span class="nav-text">2.2 轻量级锁</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-3-自旋锁"><span class="nav-text">2.3 自旋锁</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-4-锁消除"><span class="nav-text">2.4 锁消除</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#3-ThreadLocal"><span class="nav-text">3. ThreadLocal</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#3-1-基本使用"><span class="nav-text">3.1 基本使用</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-2-实现原理"><span class="nav-text">3.2 实现原理</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-3-ThreadLocal有何好处"><span class="nav-text">3.3 ThreadLocal有何好处</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#4-无锁"><span class="nav-text">4. 无锁</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#4-1-并发策略CAS"><span class="nav-text">4.1 并发策略CAS</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-2-无锁的线程安全整数AtomicInterger"><span class="nav-text">4.2 无锁的线程安全整数AtomicInterger</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-3-无锁的对象引用AtomicReference"><span class="nav-text">4.3 无锁的对象引用AtomicReference</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#4-3-1-ABA问题"><span class="nav-text">4.3.1 ABA问题</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-4-带有时间戳的对象引用AtomicStampedReference"><span class="nav-text">4.4 带有时间戳的对象引用AtomicStampedReference</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-5-无锁数组AtomicIntergerArray"><span class="nav-text">4.5 无锁数组AtomicIntergerArray</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-6-普通变量享受原子操作AtomicIntegerFieldUpdater"><span class="nav-text">4.6 普通变量享受原子操作AtomicIntegerFieldUpdater</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-7-让线程之间互相帮助SynchronousQueue"><span class="nav-text">4.7 让线程之间互相帮助SynchronousQueue</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#5-死锁"><span class="nav-text">5. 死锁</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#6-参考链接"><span class="nav-text">6. 参考链接</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; 2018 – <span itemprop="copyrightYear">2019</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">glennlgan</span>
+
+  
+
+  
+</div>
+
+
+
+
+
+
+
+
+
+
+
+        
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+	
+    
+
+    
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=6.4.1"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=6.4.1"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=6.4.1"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=6.4.1"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=6.4.1"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=6.4.1"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=6.4.1"></script>
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  <!-- 代码块复制功能 -->
+  <script type="text/javascript" src="/js/src/clipboard.min.js"></script>  
+  <script type="text/javascript" src="/js/src/clipboard-use.js"></script>
+</body>
+</html>
