@@ -1,6 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title><![CDATA[Java 函数式编程]]></title>
+    <url>%2F2019%2F03%2F13%2FJava%20%E5%87%BD%E6%95%B0%E5%BC%8F%E7%BC%96%E7%A8%8B%2F</url>
+    <content type="text"><![CDATA[1. 问题提出Java最令人头痛的问题,是Java烦琐的语法.我们不得不花费大量的代码行数来实现一些司空见惯的功能,以至于Java程序总是冗长的.但是这一切在Java 8函数式编程中得到缓解. 2. 函数式编程介绍 将函数作为参数传递给另外一个函数,这是函数式编程的特性之一. 函数可以作为另外一个函数的返回值,也是函数式编程的重要特点. 无副作用.(函数的副作用指的是函数在调用过程中,除了给出了返回值外,还修改了函数外部的状态,比如,函数在调用过程中,修改了某一个全局状态.函数式编程认为,函数的副用作应该被尽量避免.) 申明式的,函数式编程是申明式的编程方式.相对于命令式而言,命令式的程序设计喜欢大量使用可变对象和指令.对于申明式的编程范式,你不在需要提供明确的指令操作,所有的细节指令将会更好的被程序库所封装,你要做的只是提出你要的要求,申明你的用意即可. 不变的对象.在使用函数式编程时,几乎所有的对象都拒绝被修改.(这一点我觉得跟无副作用类似) 易于并行.由于对象都处于不变的状态,因此函数式编程更加易于并行. 更少的代码. 3. 函数式编程基础3.1 FunctionalInterface注释Java 8提出了函数式接口的概念.简单来说就是只定义了单一抽象方法的接口.比如下面的定义: 1234@FunctionalInterfacepublic interface IntHandler &#123; void handle(int i);&#125; 注释FunctionalInterface用于表明IntHandler接口是一个函数式接口,该接口被定义为只包含一个抽象方法handle(int i),因此它符合函数式接口的定义.如果声明两个抽象方法则会出现编译错误: 12345@FunctionalInterfacepublic interface IntHandler &#123; void handle(int i); void handle2(int i);&#125; 需要注意的是函数式接口只能有一个抽象方法,但是不是只能有一个方法:在Java8中,接口运行存在实例方法,其次任何被java.lang.Object实现的方法都不能视为抽象方法所以下面的接口并不会报错: 12345@FunctionalInterfacepublic interface IntHandler &#123; void handle(int i); String toString();&#125; 它完全是一个符合规范的函数式接口. 3.2 接口默认方法在Java8之前接口只能包含抽象方法，但是在Java8之后接口也可以包含若干个实例方法。这一改进使Java8拥有了类似于多继承的能力。一个对象实例将拥有来自多个不同接口的实例方法。 在Java8中使用default关键字可以在接口内定义实例方法。（这个方法不是抽象方法，而是有特定逻辑的具体实例方法。） 1234567@FunctionalInterfacepublic interface IntHandler &#123; void eat(); default void wait(String name)&#123; System.out.println("I am waiting for " + name); &#125;&#125; 从某种程度上说这种模式可以弥补Java单一继承的不便,但是需要注意的是它也会遇到和多继承相同的问题. 1234567891011121314public interface IntHandler &#123; default void wait(String name)&#123; System.out.println("I am waiting for " + name); &#125;&#125;public interface LongHandler &#123; default void wait(String name)&#123; System.out.println("I am not waiting for " + name); &#125;&#125;public class Hello implements IntHandler,LongHandler &#123;&#125; 它会报编译错误.这时候的解决方法是 123456public class Hello implements IntHandler,LongHandler &#123; @Override public void wait(String name) &#123; // todo &#125;&#125; 3.3 lambda表达式lambda表达式是函数式编程的核心.lambda表达式就是匿名函数它是一段没有函数名的函数体,可以作为参数直接传递给相关的调用者. 12345678910// 示例import java.util.Arrays;import java.util.List;public class Solution &#123; public static void main(String[] args) &#123; List&lt;Integer&gt; numbers= Arrays.asList(1,2,3,4,5); numbers.forEach((Integer value)-&gt;System.out.println(value)); &#125;&#125; 123456// 输出结果12345 和匿名对象一样lambda表达式也可以访问外部的局部变量.与匿名内部对象一样外部的i变量必须声明为final,这样才能保证在lambda表达式中合法的访问.但是对于lambda来说即使去掉final定义也能正常运行.但是需要注意的是即使如此也不能修改外部的局部变量的值. 3.4 方法引用方法引用是Java8中提出来用于简化lambda表达式的一种手段,它通过类名和方法名来定位到一个静态方法或者实例方法. 静态方法引用：ClassName::methodName 实例上的实例方法引用：instanceReference::methodName 超类上的实例方法引用：super::methodName 类型上的实例方法引用：ClassName::methodName 构造方法引用：Class::new 数组构造方法引用：TypeName[]::new 首先方法引用使用”::”来定义,”::”的前半部分表示类名或者实例名,后半部分表示方法名称,如果是构造函数则使用new表示. 下面给个示例 12345678910111213141516171819202122232425public class User &#123; private String name; private int id; public User(String name, int id) &#123; this.name = name; this.id = id; &#125; public String getName() &#123; return name; &#125; public void setName(String name) &#123; this.name = name; &#125; public int getId() &#123; return id; &#125; public void setId(int id) &#123; this.id = id; &#125;&#125; 123456789101112import java.util.ArrayList;import java.util.List;public class Solution &#123; public static void main(String[] args) &#123; List&lt;User&gt; user = new ArrayList&lt;&gt;(); for (int i = 0; i &lt; 10; i++) &#123; user.add(new User("name" + i, i)); &#125; user.stream().map(User::getName).forEach(System.out::println); &#125;&#125; 对于第一个方法引用”User::getName”表示是User类的实例方法.在执行时,Java会自动识别流中的元素(此处为User实例)是作为调用目标还是调用方法的参数.在”User::getName”中流内的元素应该作为调用目标,在这里调用了每一个User对象实例的getName()方法,并将这些User的name作为一个新的流.同时对于这里所有得到的name使用方法引用System.out::println进行处理.这里的System.out为PrintStream对象实例,因此,这里表示System.out实例的println方法,系统也会自动判断流内的元素此时应该作为方法的参数传入而不是调用目标. 一般来说如果使用的是静态方法或者调用目标明确那么流内的元素会自动作为参数使用.如果函数引用表示实例方法且不存在调动目标则流内元素自动作为调用目标. 因此如果一个类中存在同名的实例方法和静态函数,那么编译器就无法判断应该使用哪个方法进行调用. 如下编译器就会报错: 12345678910111213import java.util.ArrayList;import java.util.List;public class Solution &#123; public static void main(String[] args) &#123; List&lt;Double&gt; doubles = new ArrayList&lt;&gt;(); for(int i = 0; i &lt; 10; i++)&#123; doubles.add(Double.valueOf(i)); &#125; doubles.stream().map(Double::toString).forEach(System.out::print); &#125;&#125; 此时在Double中同时存在两个以下函数 12public static String toString(double d)public String toString() 此时对函数引用的处理出现了歧义因此会在编译器就出错. 方法引用还可以用于直接使用构造函数. 4. 参考链接&lt;&lt; Java高并发程序设计 &gt;&gt;(葛一鸣 郭超) 函数式编程（基础部分）关于Java8函数式编程你需要了解的几点]]></content>
+      <categories>
+        <category>Java基础</category>
+      </categories>
+      <tags>
+        <tag>基础储备</tag>
+        <tag>Java</tag>
+      </tags>
+  </entry>
+  <entry>
     <title><![CDATA[Java NIO和AIO]]></title>
     <url>%2F2019%2F03%2F12%2FJava%20NIO%E5%92%8CAIO%2F</url>
     <content type="text"><![CDATA[0. 前言这里只是简单介绍和了解Java NIO和AIO,以后补上深入的部分. 1. 网络NIOJava NIO是New IO的简称,它是一种可以替代Java IO的一套新的IO机制.使用NIO技术可以大大提高线程的使用效率. 1.1 基于Socket的服务端的多线程模式传统的网络IO是基于Socket的多线程模式. 服务器会为每一个客户端连接启用一个线程,这个新的线程将全心全意为这个客户端服务.为了接受客户端连接,服务器还会额外使用一个派发线程.但是这个模式有一个重大的弱点,那就是它倾向于让CPU进行IO等待.比如服务器要先读入客户端的输入,而客户端缓慢的处理速度(也可能是拥塞的网络环境造成的),使得服务器花费了不少等待时间. 1.2 使用NIO进行网络编程NIO就可以将上面的网络IO等待时间从业务处理线程中抽取出来. 具体而言, NIO里面有一个关键组件Channel(通道), Channel有点类似于流, 一个Channel可以和文件或者网络Socket对应, 如果Channel对应着一个Socket, 那么往这个Channel中写数据, 就等同于向Socket中写入数据. 和Channel一起使用的另一个重要组件就是Buffer, 可以简单地把Buffer理解成一个内存区域或者byte数组.数据需要包装成Buffer的形式才能和Channel交互(写入或者读取). 另一个和Channel密切相关的是Selector(选择器).在Channel的众多实现中,有一个SelectableChannel实现,表示可被选择的通道,任何一个SelectableChannel都可以将自己注册到一个Selector中,这样,这个Channel就能被Selector所管理,而一个Selector可以管理多个SelectableChannel.当SelectableChannel的数据准备好时,Selector就会接到通知,得到那些已经准备好的数据.而SocketChannel就是SelectableChannel就是的一种. 一个Selector可以由一个线程进行管理,而一个SocketChannel则表示一个客户端连接.当客户端连接的数据没有准备好时,Selector就会处于等待状态,而一旦有任何一个SocketChannel准备好了数据,Selector就能立即得到通知,获得数据进行处理. 2. AIOAIO是异步IO的缩写, 即Asynchronized. 虽然NIO在网络操作中提供了非阻塞的方法, 但是NIO的IO行为还是同步的. 对于NIO来说,我们的业务线程是在IO操作准备好时,得到通知,接着就由着这个线程自行进行IO操作,IO操作本身还是同步的. 对于AIO来说,它不是在IO准备好时再通知线程,而是在IO操作已经完成后再给线程发出通知.因此,AIO是完全不会阻塞的.此时,我们的业务逻辑将变成一个回调函数,等待IO操作完成后,由系统自动触发. 3. 参考文献&lt;&lt; Java高并发程序设计 &gt;&gt;(葛一鸣 郭超)]]></content>
@@ -8,9 +20,9 @@
         <category>高并发程序设计</category>
       </categories>
       <tags>
+        <tag>基础储备</tag>
         <tag>Java</tag>
         <tag>并发设计</tag>
-        <tag>基础储备</tag>
       </tags>
   </entry>
   <entry>
@@ -21,9 +33,9 @@
         <category>高并发程序设计</category>
       </categories>
       <tags>
+        <tag>基础储备</tag>
         <tag>Java</tag>
         <tag>并发设计</tag>
-        <tag>基础储备</tag>
       </tags>
   </entry>
   <entry>
@@ -34,9 +46,9 @@
         <category>高并发程序设计</category>
       </categories>
       <tags>
+        <tag>基础储备</tag>
         <tag>Java</tag>
         <tag>并发设计</tag>
-        <tag>基础储备</tag>
       </tags>
   </entry>
   <entry>
@@ -47,9 +59,9 @@
         <category>高并发程序设计</category>
       </categories>
       <tags>
+        <tag>基础储备</tag>
         <tag>Java</tag>
         <tag>并发设计</tag>
-        <tag>基础储备</tag>
       </tags>
   </entry>
   <entry>
@@ -60,9 +72,9 @@
         <category>高并发程序设计</category>
       </categories>
       <tags>
+        <tag>基础储备</tag>
         <tag>Java</tag>
         <tag>并发设计</tag>
-        <tag>基础储备</tag>
       </tags>
   </entry>
   <entry>
@@ -73,8 +85,8 @@
         <category>Java基础</category>
       </categories>
       <tags>
-        <tag>Java</tag>
         <tag>基础储备</tag>
+        <tag>Java</tag>
       </tags>
   </entry>
   <entry>
@@ -85,8 +97,8 @@
         <category>Java基础</category>
       </categories>
       <tags>
-        <tag>Java</tag>
         <tag>基础储备</tag>
+        <tag>Java</tag>
       </tags>
   </entry>
   <entry>
@@ -97,9 +109,9 @@
         <category>高并发程序设计</category>
       </categories>
       <tags>
+        <tag>基础储备</tag>
         <tag>Java</tag>
         <tag>并发设计</tag>
-        <tag>基础储备</tag>
       </tags>
   </entry>
   <entry>
@@ -110,8 +122,8 @@
         <category>高并发程序设计</category>
       </categories>
       <tags>
-        <tag>Java</tag>
         <tag>基础储备</tag>
+        <tag>Java</tag>
         <tag>高并发程序设计</tag>
       </tags>
   </entry>
@@ -123,9 +135,9 @@
         <category>高并发程序设计</category>
       </categories>
       <tags>
+        <tag>基础储备</tag>
         <tag>Java</tag>
         <tag>并发设计</tag>
-        <tag>基础储备</tag>
       </tags>
   </entry>
   <entry>
@@ -136,8 +148,8 @@
         <category>Java</category>
       </categories>
       <tags>
-        <tag>Java</tag>
         <tag>基础储备</tag>
+        <tag>Java</tag>
       </tags>
   </entry>
   <entry>
@@ -148,9 +160,9 @@
         <category>高并发程序设计</category>
       </categories>
       <tags>
+        <tag>基础储备</tag>
         <tag>Java</tag>
         <tag>并发设计</tag>
-        <tag>基础储备</tag>
       </tags>
   </entry>
   <entry>
@@ -161,9 +173,9 @@
         <category>高并发程序设计</category>
       </categories>
       <tags>
+        <tag>基础储备</tag>
         <tag>Java</tag>
         <tag>并发设计</tag>
-        <tag>基础储备</tag>
       </tags>
   </entry>
   <entry>
@@ -174,8 +186,8 @@
         <category>Java基础</category>
       </categories>
       <tags>
-        <tag>Java</tag>
         <tag>基础储备</tag>
+        <tag>Java</tag>
       </tags>
   </entry>
   <entry>
@@ -676,8 +688,8 @@
         <category>后台开发</category>
       </categories>
       <tags>
-        <tag>Java</tag>
         <tag>基础储备</tag>
+        <tag>Java</tag>
         <tag>解决方案</tag>
       </tags>
   </entry>
@@ -689,8 +701,8 @@
         <category>Java基础</category>
       </categories>
       <tags>
-        <tag>Java</tag>
         <tag>基础储备</tag>
+        <tag>Java</tag>
       </tags>
   </entry>
   <entry>
@@ -701,8 +713,8 @@
         <category>后台开发</category>
       </categories>
       <tags>
-        <tag>Java</tag>
         <tag>基础储备</tag>
+        <tag>Java</tag>
         <tag>解决方案</tag>
       </tags>
   </entry>
@@ -725,8 +737,8 @@
         <category>计算机基础</category>
       </categories>
       <tags>
-        <tag>Java</tag>
         <tag>基础储备</tag>
+        <tag>Java</tag>
         <tag>JVM</tag>
       </tags>
   </entry>
@@ -809,8 +821,8 @@
         <category>Java基础</category>
       </categories>
       <tags>
-        <tag>Java</tag>
         <tag>基础储备</tag>
+        <tag>Java</tag>
         <tag>JVM</tag>
       </tags>
   </entry>
@@ -822,8 +834,8 @@
         <category>Java基础</category>
       </categories>
       <tags>
-        <tag>Java</tag>
         <tag>基础储备</tag>
+        <tag>Java</tag>
         <tag>JVM</tag>
       </tags>
   </entry>
@@ -835,8 +847,8 @@
         <category>Java基础</category>
       </categories>
       <tags>
-        <tag>Java</tag>
         <tag>基础储备</tag>
+        <tag>Java</tag>
         <tag>JVM</tag>
       </tags>
   </entry>
@@ -848,8 +860,8 @@
         <category>Java基础</category>
       </categories>
       <tags>
-        <tag>Java</tag>
         <tag>基础储备</tag>
+        <tag>Java</tag>
         <tag>JVM</tag>
       </tags>
   </entry>
@@ -861,8 +873,8 @@
         <category>Java基础</category>
       </categories>
       <tags>
-        <tag>Java</tag>
         <tag>基础储备</tag>
+        <tag>Java</tag>
       </tags>
   </entry>
   <entry>
@@ -873,8 +885,8 @@
         <category>Java基础</category>
       </categories>
       <tags>
-        <tag>Java</tag>
         <tag>基础储备</tag>
+        <tag>Java</tag>
         <tag>JVM</tag>
       </tags>
   </entry>
@@ -886,8 +898,8 @@
         <category>Java基础</category>
       </categories>
       <tags>
-        <tag>Java</tag>
         <tag>基础储备</tag>
+        <tag>Java</tag>
       </tags>
   </entry>
   <entry>
@@ -898,8 +910,8 @@
         <category>Java基础</category>
       </categories>
       <tags>
-        <tag>Java</tag>
         <tag>基础储备</tag>
+        <tag>Java</tag>
       </tags>
   </entry>
   <entry>
@@ -910,8 +922,8 @@
         <category>Java基础</category>
       </categories>
       <tags>
-        <tag>Java</tag>
         <tag>基础储备</tag>
+        <tag>Java</tag>
       </tags>
   </entry>
   <entry>
@@ -922,8 +934,8 @@
         <category>Java基础</category>
       </categories>
       <tags>
-        <tag>Java</tag>
         <tag>基础储备</tag>
+        <tag>Java</tag>
       </tags>
   </entry>
   <entry>
@@ -934,8 +946,8 @@
         <category>Java基础</category>
       </categories>
       <tags>
-        <tag>Java</tag>
         <tag>基础储备</tag>
+        <tag>Java</tag>
       </tags>
   </entry>
   <entry>
@@ -946,8 +958,8 @@
         <category>Java基础</category>
       </categories>
       <tags>
-        <tag>Java</tag>
         <tag>基础储备</tag>
+        <tag>Java</tag>
       </tags>
   </entry>
   <entry>
@@ -958,8 +970,8 @@
         <category>Java基础</category>
       </categories>
       <tags>
-        <tag>Java</tag>
         <tag>基础储备</tag>
+        <tag>Java</tag>
       </tags>
   </entry>
   <entry>
@@ -970,8 +982,8 @@
         <category>Java基础</category>
       </categories>
       <tags>
-        <tag>Java</tag>
         <tag>基础储备</tag>
+        <tag>Java</tag>
       </tags>
   </entry>
   <entry>
@@ -982,8 +994,8 @@
         <category>Java基础</category>
       </categories>
       <tags>
-        <tag>Java</tag>
         <tag>基础储备</tag>
+        <tag>Java</tag>
       </tags>
   </entry>
   <entry>
@@ -994,8 +1006,8 @@
         <category>Java基础</category>
       </categories>
       <tags>
-        <tag>Java</tag>
         <tag>基础储备</tag>
+        <tag>Java</tag>
       </tags>
   </entry>
   <entry>
