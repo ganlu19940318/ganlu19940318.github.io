@@ -116,7 +116,7 @@
 <meta property="og:locale" content="zh-CN">
 <meta property="og:image" content="https://blogpictures-1257055754.cos.ap-guangzhou.myqcloud.com/%E5%BE%AE%E4%BF%A1%E5%9B%BE%E7%89%87_20190313103622.jpg">
 <meta property="og:image" content="https://blogpictures-1257055754.cos.ap-guangzhou.myqcloud.com/%E5%BE%AE%E4%BF%A1%E5%9B%BE%E7%89%87_20190313105438.jpg">
-<meta property="og:updated_time" content="2019-03-13T03:52:26.879Z">
+<meta property="og:updated_time" content="2019-03-13T04:39:24.305Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Java NIO和AIO">
 <meta name="twitter:image" content="https://blogpictures-1257055754.cos.ap-guangzhou.myqcloud.com/%E5%BE%AE%E4%BF%A1%E5%9B%BE%E7%89%87_20190313103622.jpg">
@@ -391,7 +391,7 @@
                 
                   <span class="post-meta-item-text">更新于</span>
                 
-                <time title="修改时间：2019-03-13 11:52:26" itemprop="dateModified" datetime="2019-03-13T11:52:26+08:00">2019-03-13</time>
+                <time title="修改时间：2019-03-13 12:39:24" itemprop="dateModified" datetime="2019-03-13T12:39:24+08:00">2019-03-13</time>
               
             
           </span>
@@ -444,6 +444,7 @@
       
         <hr>
 <a id="more"></a>
+<h1 id="0-前言"><a href="#0-前言" class="headerlink" title="0. 前言"></a>0. 前言</h1><p>这里只是简单介绍和了解Java NIO和AIO,以后补上深入的部分.</p>
 <h1 id="1-网络NIO"><a href="#1-网络NIO" class="headerlink" title="1. 网络NIO"></a>1. 网络NIO</h1><p>Java NIO是New IO的简称,它是一种可以替代Java IO的一套新的IO机制.使用NIO技术可以大大提高线程的使用效率.</p>
 <h2 id="1-1-基于Socket的服务端的多线程模式"><a href="#1-1-基于Socket的服务端的多线程模式" class="headerlink" title="1.1 基于Socket的服务端的多线程模式"></a>1.1 基于Socket的服务端的多线程模式</h2><p>传统的网络IO是基于Socket的多线程模式.</p>
 <p>服务器会为每一个客户端连接启用一个线程,这个新的线程将全心全意为这个客户端服务.为了接受客户端连接,服务器还会额外使用一个派发线程.但是这个模式有一个重大的<strong>弱点</strong>,那就是它倾向于让CPU进行IO等待.比如服务器要先读入客户端的输入,而客户端缓慢的处理速度(也可能是拥塞的网络环境造成的),使得服务器花费了不少等待时间.</p>
@@ -728,7 +729,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#1-网络NIO"><span class="nav-text">1. 网络NIO</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-1-基于Socket的服务端的多线程模式"><span class="nav-text">1.1 基于Socket的服务端的多线程模式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#1-2-使用NIO进行网络编程"><span class="nav-text">1.2 使用NIO进行网络编程</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#2-AIO"><span class="nav-text">2. AIO</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#3-参考文献"><span class="nav-text">3. 参考文献</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#0-前言"><span class="nav-text">0. 前言</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#1-网络NIO"><span class="nav-text">1. 网络NIO</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-1-基于Socket的服务端的多线程模式"><span class="nav-text">1.1 基于Socket的服务端的多线程模式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#1-2-使用NIO进行网络编程"><span class="nav-text">1.2 使用NIO进行网络编程</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#2-AIO"><span class="nav-text">2. AIO</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#3-参考文献"><span class="nav-text">3. 参考文献</span></a></li></ol></div>
             
 
           </div>
