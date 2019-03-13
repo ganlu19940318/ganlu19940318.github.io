@@ -1,6 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title><![CDATA[Java NIO和AIO]]></title>
+    <url>%2F2019%2F03%2F12%2FJava%20NIO%E5%92%8CAIO%2F</url>
+    <content type="text"><![CDATA[1. 网络NIOJava NIO是New IO的简称,它是一种可以替代Java IO的一套新的IO机制.使用NIO技术可以大大提高线程的使用效率. 1.1 基于Socket的服务端的多线程模式传统的网络IO是基于Socket的多线程模式. 服务器会为每一个客户端连接启用一个线程,这个新的线程将全心全意为这个客户端服务.为了接受客户端连接,服务器还会额外使用一个派发线程.但是这个模式有一个重大的弱点,那就是它倾向于让CPU进行IO等待.比如服务器要先读入客户端的输入,而客户端缓慢的处理速度(也可能是拥塞的网络环境造成的),使得服务器花费了不少等待时间. 1.2 使用NIO进行网络编程NIO就可以将上面的网络IO等待时间从业务处理线程中抽取出来. 具体而言, NIO里面有一个关键组件Channel(通道), Channel有点类似于流, 一个Channel可以和文件或者网络Socket对应, 如果Channel对应着一个Socket, 那么往这个Channel中写数据, 就等同于向Socket中写入数据. 和Channel一起使用的另一个重要组件就是Buffer, 可以简单地把Buffer理解成一个内存区域或者byte数组.数据需要包装成Buffer的形式才能和Channel交互(写入或者读取). 另一个和Channel密切相关的是Selector(选择器).在Channel的众多实现中,有一个SelectableChannel实现,表示可被选择的通道,任何一个SelectableChannel都可以将自己注册到一个Selector中,这样,这个Channel就能被Selector所管理,而一个Selector可以管理多个SelectableChannel.当SelectableChannel的数据准备好时,Selector就会接到通知,得到那些已经准备好的数据.而SocketChannel就是SelectableChannel就是的一种. 一个Selector可以由一个线程进行管理,而一个SocketChannel则表示一个客户端连接.当客户端连接的数据没有准备好时,Selector就会处于等待状态,而一旦有任何一个SocketChannel准备好了数据,Selector就能立即得到通知,获得数据进行处理. 2. AIOAIO是异步IO的缩写, 即Asynchronized. 虽然NIO在网络操作中提供了非阻塞的方法, 但是NIO的IO行为还是同步的. 对于NIO来说,我们的业务线程是在IO操作准备好时,得到通知,接着就由着这个线程自行进行IO操作,IO操作本身还是同步的. 对于AIO来说,它不是在IO准备好时再通知线程,而是在IO操作已经完成后再给线程发出通知.因此,AIO是完全不会阻塞的.此时,我们的业务逻辑将变成一个回调函数,等待IO操作完成后,由系统自动触发. 3. 参考文献&lt;&lt; Java高并发程序设计 &gt;&gt;(葛一鸣 郭超)]]></content>
+      <categories>
+        <category>高并发程序设计</category>
+      </categories>
+      <tags>
+        <tag>Java</tag>
+        <tag>并发设计</tag>
+        <tag>基础储备</tag>
+      </tags>
+  </entry>
+  <entry>
     <title><![CDATA[Java高并发程序设计(七)--并行算法之并行排序]]></title>
     <url>%2F2019%2F03%2F12%2FJava%E9%AB%98%E5%B9%B6%E5%8F%91%E7%A8%8B%E5%BA%8F%E8%AE%BE%E8%AE%A1(%E4%B8%83)--%E5%B9%B6%E8%A1%8C%E7%AE%97%E6%B3%95%E4%B9%8B%E5%B9%B6%E8%A1%8C%E6%8E%92%E5%BA%8F%2F</url>
     <content type="text"><![CDATA[1. 分离数据相关性:奇偶交换排序选择排序. 冒泡排序的过程 奇偶交换排序的过程 奇偶交换排序说白了就是将整个比较交换分割为奇阶段和偶阶段,使得每一个阶段内的所有比较和交换都是没有数据相关性的.因此,每一次比较和交换都可以独立执行,也就可以并行化了. 1.1 奇偶交换排序的串行实现1234567891011121314151617181920public static void oddEvenSort(int [] arr)&#123; int exchFlag = 1; int start = 0; while (exchFlag == 1 || start == 1)&#123; exchFlag = 0; for(int i = start; i &lt; arr.length - 1; i += 2)&#123; if(arr[i] &gt; arr[i+1])&#123; int temp = arr[i]; arr[i] = arr[i+1]; arr[i+1] = temp; exchFlag = 1; &#125; &#125; if(start == 0)&#123; start = 1; &#125;else &#123; start = 0; &#125; &#125;&#125; 1.2 奇偶交换排序的并行实现1234567891011121314151617181920212223242526272829303132333435363738394041424344454647484950515253545556575859import java.util.concurrent.CountDownLatch;import java.util.concurrent.ExecutorService;import java.util.concurrent.Executors;public class Main &#123; public static void main(String[] args) throws InterruptedException &#123; pOddEvenSort(arr); for(int i = 0; i &lt; arr.length; i++)&#123; System.out.println(arr[i]); &#125; pool.shutdown(); &#125; static int [] arr = new int[] &#123;2,3,6,6,8,9,6,2&#125;; static ExecutorService pool = Executors.newCachedThreadPool(); static int exchFlag = 1; static synchronized void setExchFlag(int v)&#123; exchFlag = v; &#125; static synchronized int getExchFlag()&#123; return exchFlag; &#125; public static class OddEvenSortTask implements Runnable&#123; int i; CountDownLatch countDownLatch; public OddEvenSortTask(int i, CountDownLatch countDownLatch) &#123; this.i = i; this.countDownLatch = countDownLatch; &#125; @Override public void run() &#123; if(arr[i] &gt; arr[i+1])&#123; int temp = arr[i]; arr[i] = arr[i+1]; arr[i+1] = temp; setExchFlag(1); &#125; countDownLatch.countDown(); &#125; &#125; public static void pOddEvenSort(int [] arr) throws InterruptedException &#123; int start = 0; while (getExchFlag() == 1 || start == 1)&#123; setExchFlag(0); int num = arr.length/2 - (arr.length % 2 == 0?start:0); CountDownLatch countDownLatch = new CountDownLatch(num); for(int i = start; i &lt; arr.length - 1; i = i + 2)&#123; pool.submit(new OddEvenSortTask(i, countDownLatch)); &#125; countDownLatch.await(); if(start == 0)&#123; start = 1; &#125;else &#123; start = 0; &#125; &#125; &#125;&#125; 2. 希尔排序简单的插入排序很难并行化,因为这一次的数据插入依赖于上一次得到的有序序列,因此多个步骤之间无法并行.为此,我们可以对插入排序进行扩展,这就是希尔排序. 希尔排序将整个数组根据建个h分割为若干个子数组.子数组相互穿插在一起,在每一次排序时,分别对每一个子数组进行排序.当h为3时,希尔排序将整个数组分为交织在一起的三个子数组,其中,所有的方块为一个子数组,所有的圆形,三角形分别组成另外两个子数组,每次排序时,总算交换间隔为h的两个元素. 2.1 串行实现1234567891011121314151617public class Solution &#123; public void shellSort(int[] array) &#123; int d = array.length; while (d &gt; 0) &#123; d = d / 2; for (int i = d; i &lt; array.length; i++) &#123; int number = array[i]; int j = i - d; while (j &gt;= 0 &amp;&amp; array[j] &gt; number) &#123; array[j + d] = array[j]; j -= d; &#125; array[j + d] = number; &#125; &#125; &#125;&#125; 2.2 并行实现123456789101112131415161718192021222324252627282930313233343536373839404142public class Solution &#123; static ExecutorService es = Executors.newCachedThreadPool(); static int[] array = &#123;1, 3, 4, 5, 2&#125;; public static class shellSort implements Runnable &#123; static int d; static int start; static CountDownLatch latch; public shellSort(int d, int start, CountDownLatch latch) &#123; this.d = d; this.start = start; this.latch = latch; &#125; @Override public void run() &#123; for (int i = start; i &lt; array.length; i++) &#123; int number = array[i]; int j = i - d; while (j &gt;= 0 &amp;&amp; array[j] &gt; number) &#123; array[j + d] = array[j]; j -= d; &#125; array[j + d] = number; latch.countDown(); &#125; &#125; &#125; public static void main(String[] args) throws InterruptedException&#123; int d = array.length; while (d &gt; 0) &#123; d /= 2; CountDownLatch latch = new CountDownLatch(d); for (int i = 0; i &lt; d; i++) &#123; es.submit(new shellSort(d, i, latch)); &#125; latch.await(); &#125; &#125;&#125; 3. 参考文献&lt;&lt; Java高并发程序设计 &gt;&gt;(葛一鸣 郭超) 插入排序及希尔排序的并行化实现]]></content>
@@ -8,9 +21,9 @@
         <category>高并发程序设计</category>
       </categories>
       <tags>
-        <tag>基础储备</tag>
         <tag>Java</tag>
         <tag>并发设计</tag>
+        <tag>基础储备</tag>
       </tags>
   </entry>
   <entry>
@@ -21,9 +34,9 @@
         <category>高并发程序设计</category>
       </categories>
       <tags>
-        <tag>基础储备</tag>
         <tag>Java</tag>
         <tag>并发设计</tag>
+        <tag>基础储备</tag>
       </tags>
   </entry>
   <entry>
@@ -34,9 +47,9 @@
         <category>高并发程序设计</category>
       </categories>
       <tags>
-        <tag>基础储备</tag>
         <tag>Java</tag>
         <tag>并发设计</tag>
+        <tag>基础储备</tag>
       </tags>
   </entry>
   <entry>
@@ -47,9 +60,9 @@
         <category>高并发程序设计</category>
       </categories>
       <tags>
-        <tag>基础储备</tag>
         <tag>Java</tag>
         <tag>并发设计</tag>
+        <tag>基础储备</tag>
       </tags>
   </entry>
   <entry>
@@ -60,8 +73,8 @@
         <category>Java基础</category>
       </categories>
       <tags>
-        <tag>基础储备</tag>
         <tag>Java</tag>
+        <tag>基础储备</tag>
       </tags>
   </entry>
   <entry>
@@ -72,8 +85,8 @@
         <category>Java基础</category>
       </categories>
       <tags>
-        <tag>基础储备</tag>
         <tag>Java</tag>
+        <tag>基础储备</tag>
       </tags>
   </entry>
   <entry>
@@ -84,9 +97,9 @@
         <category>高并发程序设计</category>
       </categories>
       <tags>
-        <tag>基础储备</tag>
         <tag>Java</tag>
         <tag>并发设计</tag>
+        <tag>基础储备</tag>
       </tags>
   </entry>
   <entry>
@@ -97,8 +110,8 @@
         <category>高并发程序设计</category>
       </categories>
       <tags>
-        <tag>基础储备</tag>
         <tag>Java</tag>
+        <tag>基础储备</tag>
         <tag>高并发程序设计</tag>
       </tags>
   </entry>
@@ -110,9 +123,9 @@
         <category>高并发程序设计</category>
       </categories>
       <tags>
-        <tag>基础储备</tag>
         <tag>Java</tag>
         <tag>并发设计</tag>
+        <tag>基础储备</tag>
       </tags>
   </entry>
   <entry>
@@ -123,8 +136,8 @@
         <category>Java</category>
       </categories>
       <tags>
-        <tag>基础储备</tag>
         <tag>Java</tag>
+        <tag>基础储备</tag>
       </tags>
   </entry>
   <entry>
@@ -135,9 +148,9 @@
         <category>高并发程序设计</category>
       </categories>
       <tags>
-        <tag>基础储备</tag>
         <tag>Java</tag>
         <tag>并发设计</tag>
+        <tag>基础储备</tag>
       </tags>
   </entry>
   <entry>
@@ -148,9 +161,9 @@
         <category>高并发程序设计</category>
       </categories>
       <tags>
-        <tag>基础储备</tag>
         <tag>Java</tag>
         <tag>并发设计</tag>
+        <tag>基础储备</tag>
       </tags>
   </entry>
   <entry>
@@ -161,8 +174,8 @@
         <category>Java基础</category>
       </categories>
       <tags>
-        <tag>基础储备</tag>
         <tag>Java</tag>
+        <tag>基础储备</tag>
       </tags>
   </entry>
   <entry>
@@ -663,8 +676,8 @@
         <category>后台开发</category>
       </categories>
       <tags>
-        <tag>基础储备</tag>
         <tag>Java</tag>
+        <tag>基础储备</tag>
         <tag>解决方案</tag>
       </tags>
   </entry>
@@ -676,8 +689,8 @@
         <category>Java基础</category>
       </categories>
       <tags>
-        <tag>基础储备</tag>
         <tag>Java</tag>
+        <tag>基础储备</tag>
       </tags>
   </entry>
   <entry>
@@ -688,8 +701,8 @@
         <category>后台开发</category>
       </categories>
       <tags>
-        <tag>基础储备</tag>
         <tag>Java</tag>
+        <tag>基础储备</tag>
         <tag>解决方案</tag>
       </tags>
   </entry>
@@ -712,8 +725,8 @@
         <category>计算机基础</category>
       </categories>
       <tags>
-        <tag>基础储备</tag>
         <tag>Java</tag>
+        <tag>基础储备</tag>
         <tag>JVM</tag>
       </tags>
   </entry>
@@ -796,8 +809,8 @@
         <category>Java基础</category>
       </categories>
       <tags>
-        <tag>基础储备</tag>
         <tag>Java</tag>
+        <tag>基础储备</tag>
         <tag>JVM</tag>
       </tags>
   </entry>
@@ -809,8 +822,8 @@
         <category>Java基础</category>
       </categories>
       <tags>
-        <tag>基础储备</tag>
         <tag>Java</tag>
+        <tag>基础储备</tag>
         <tag>JVM</tag>
       </tags>
   </entry>
@@ -822,8 +835,8 @@
         <category>Java基础</category>
       </categories>
       <tags>
-        <tag>基础储备</tag>
         <tag>Java</tag>
+        <tag>基础储备</tag>
         <tag>JVM</tag>
       </tags>
   </entry>
@@ -835,8 +848,8 @@
         <category>Java基础</category>
       </categories>
       <tags>
-        <tag>基础储备</tag>
         <tag>Java</tag>
+        <tag>基础储备</tag>
         <tag>JVM</tag>
       </tags>
   </entry>
@@ -848,8 +861,8 @@
         <category>Java基础</category>
       </categories>
       <tags>
-        <tag>基础储备</tag>
         <tag>Java</tag>
+        <tag>基础储备</tag>
       </tags>
   </entry>
   <entry>
@@ -860,8 +873,8 @@
         <category>Java基础</category>
       </categories>
       <tags>
-        <tag>基础储备</tag>
         <tag>Java</tag>
+        <tag>基础储备</tag>
         <tag>JVM</tag>
       </tags>
   </entry>
@@ -873,8 +886,8 @@
         <category>Java基础</category>
       </categories>
       <tags>
-        <tag>基础储备</tag>
         <tag>Java</tag>
+        <tag>基础储备</tag>
       </tags>
   </entry>
   <entry>
@@ -885,8 +898,8 @@
         <category>Java基础</category>
       </categories>
       <tags>
-        <tag>基础储备</tag>
         <tag>Java</tag>
+        <tag>基础储备</tag>
       </tags>
   </entry>
   <entry>
@@ -897,8 +910,8 @@
         <category>Java基础</category>
       </categories>
       <tags>
-        <tag>基础储备</tag>
         <tag>Java</tag>
+        <tag>基础储备</tag>
       </tags>
   </entry>
   <entry>
@@ -909,8 +922,8 @@
         <category>Java基础</category>
       </categories>
       <tags>
-        <tag>基础储备</tag>
         <tag>Java</tag>
+        <tag>基础储备</tag>
       </tags>
   </entry>
   <entry>
@@ -921,8 +934,8 @@
         <category>Java基础</category>
       </categories>
       <tags>
-        <tag>基础储备</tag>
         <tag>Java</tag>
+        <tag>基础储备</tag>
       </tags>
   </entry>
   <entry>
@@ -933,8 +946,8 @@
         <category>Java基础</category>
       </categories>
       <tags>
-        <tag>基础储备</tag>
         <tag>Java</tag>
+        <tag>基础储备</tag>
       </tags>
   </entry>
   <entry>
@@ -945,8 +958,8 @@
         <category>Java基础</category>
       </categories>
       <tags>
-        <tag>基础储备</tag>
         <tag>Java</tag>
+        <tag>基础储备</tag>
       </tags>
   </entry>
   <entry>
@@ -957,8 +970,8 @@
         <category>Java基础</category>
       </categories>
       <tags>
-        <tag>基础储备</tag>
         <tag>Java</tag>
+        <tag>基础储备</tag>
       </tags>
   </entry>
   <entry>
@@ -969,8 +982,8 @@
         <category>Java基础</category>
       </categories>
       <tags>
-        <tag>基础储备</tag>
         <tag>Java</tag>
+        <tag>基础储备</tag>
       </tags>
   </entry>
   <entry>
@@ -981,8 +994,8 @@
         <category>Java基础</category>
       </categories>
       <tags>
-        <tag>基础储备</tag>
         <tag>Java</tag>
+        <tag>基础储备</tag>
       </tags>
   </entry>
   <entry>
