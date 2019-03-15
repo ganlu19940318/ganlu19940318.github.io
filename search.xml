@@ -1,6 +1,43 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title><![CDATA[跳跃表]]></title>
+    <url>%2F2019%2F03%2F15%2F%E8%B7%B3%E8%B7%83%E8%A1%A8%2F</url>
+    <content type="text"><![CDATA[1. 为什么需要跳表 二叉树是一种能实现高效查找的数据结构,当数据是以完全随机的顺序加入的时候,它的查找效率是很高的.但如果数据是按递增或递减顺序输入时,二叉树的表现就非常差了.因为二叉树需要不断的重新构建自己来维持树的平衡. 跳表实现起来相对简单. 2. 什么是跳表2.1 有序表的搜索考虑一个有序表: 从该有序表中搜索元素 &lt; 23, 43, 59 &gt; ,需要比较的次数分别为 &lt; 2, 4, 6 &gt;,总共比较的次数为 2 + 4 + 6 = 12 次.有没有优化的算法? 链表是有序的, 但不能使用二分查找. 类似二叉搜索树,我们把一些节点提取出来,作为索引. 得到如下结构: 这里我们把 &lt; 14, 34, 50, 72 &gt; 提取出来作为一级索引,这样搜索的时候就可以减少比较次数了.我们还可以再从一级索引提取一些元素出来,作为二级索引,变成如下结构: 这里元素不多,体现不出优势,如果元素足够多,这种索引结构就能体现出优势来了. 2.2 跳跃表下面的结构是就是跳表:其中 -1 表示 INT_MIN, 链表的最小值; 1 表示 INT_MAX, 链表的最大值. 跳表具有如下性质:(1) 由很多层结构组成(2) 每一层都是一个有序的链表(3) 最底层(Level 1)的链表包含所有元素(4) 如果一个元素出现在 Level i 的链表中,则它在 Level i 之下的链表也都会出现.(5) 每个节点包含两个指针,一个指向同一链表中的下一个元素,一个指向下面一层的元素. 3. 跳表的操作3.1 跳表的搜索 例子:查找元素 117 (1)比较 21,比 21 大,往后面找(2)比较 37,比 37大,比链表最大值小,从 37 的下面一层开始找(3)比较 71,比 71 大,比链表最大值小,从 71 的下面一层开始找(4)比较 85,比 85 大,从后面找(5)比较 117,等于 117,找到了节点 3.2 跳表的插入先确定该元素要占据的层数 K(采用丢硬币的方式,这完全是随机的)然后在 Level 1 … Level K 各个层的链表都插入元素. 例子:插入 119, K = 2 如果 K 大于链表的层数,则要添加新的层. 例子:插入 119, K = 4 3.3 丢硬币决定K插入元素的时候,元素所占有的层数完全是随机的,通过随机算法产生. 1234567int random_level() &#123; K = 1; while (random(0,1)) K++; return K; &#125; 相当与做一次丢硬币的实验,如果遇到正面,继续丢,遇到反面,则停止.用实验中丢硬币的次数 K 作为元素占有的层数,显然随机变量 K 满足参数为 p = 1/2 的几何分布.K 的期望值 E[K] = 1/p = 2. 就是说,各个元素的层数,期望值是 2 层. 3.4 跳表的高度n 个元素的跳表,每个元素插入的时候都要做一次实验,用来决定元素占据的层数 K, 跳表的高度等于这 n 次实验中产生的最大 K. 3.5 跳表的空间复杂度分析根据上面的分析,每个元素的期望高度为 2, 一个大小为 n 的跳表, 其节点数目的期望值是 2n. 3.6 跳表的删除在各个层中找到包含 x 的节点, 使用标准的 delete from list 方法删除该节点. 例子:删除 71 4. 参考链接跳跃表原理Skip Lists: A Probabilistic Alternative to Balanced Trees浅谈一种扩展的数据结构_跳表_陈玉萍]]></content>
+      <categories>
+        <category>数据结构</category>
+      </categories>
+      <tags>
+        <tag>基础储备</tag>
+        <tag>数据结构</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[Redis设计与实现--数据结构与对象]]></title>
+    <url>%2F2019%2F03%2F15%2FRedis%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0--%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E5%AF%B9%E8%B1%A1%2F</url>
+    <content type="text"><![CDATA[1. 前言Redis数据库里面的每个键值对都是由对象组成的. 其中:数据库键总是一个字符串对象.而数据库键的值则可以是字符串对象,列表对象,哈希对象,集合对象,有序集合对象,这五种对象中的一种. 每种对象底层又使用着不同的数据结构. 2. 数据结构2.1 简单动态字符串简单动态字符串(SDS)是Redis的默认字符串表示. 2.1.1 SDS定义Redis没有使用C语言的字符串,C语言的字符串只会用在不需要对字符串修改而只使用其值地方.Redis使用SDS表示字符串,结构定义 123456789struct sdshdr &#123; // 记录 buf 数组中已使用字节的数量 // 等于 SDS 所保存字符串的长度 int len; // 记录 buf 数组中未使用字节的数量 int free; // 字节数组，用于保存字符串 char buf[];&#125;; SDS也是以’\0’表示结束,这一个字节不会计入已使用的长度.这样做的好处是可以重用C字符串函数库里面的一部分函数. 2.1.2 SSD和C字符串的区别C语言使用长度为N+1的数组表示长度为N的字符串,最后一个元素总是空字符’\0’,这种方式不能满足Redis对字符串效率,安全性,以及功能方面的要求.下面是SDS比C语言字符串的更加适用Redis的原因. 常数时间获取字符串长度C字符串需要遍历,时间复杂度为O(n).SDS直接获取,时间复杂度为O(1). 防止缓冲区溢出C语言不记录自身长度,容易误操作造成缓冲区溢出.SDS的空间分配策略完全杜绝了这种可能性.当API需要对SDS进行修改时,API会首先会检查SDS的空间是否满足条件,如果不满足,API会自动对它动态扩展,然后再进行修改,这个过程是完全透明的. 减少修改字符串带来的内存重分配次数C语言对字符串修改后都需要手动重新分配内存;当增加长度时需要扩展内存,否则会产生缓冲区溢出;当缩小长度时需要释放内存,否则会产生内存泄露.由于Redis频繁操作数据,内存分配和释放耗时可能对性能造成影响,SSD避免了这种缺陷,实现空间预分配和惰性空间释放两种优化策略.空间预分配如果修改后len长度将小于1M,这时分配给free的大小和len一样,例如修改过后为13字节,那么给free也是13字节.buf实际长度变成了13 byte+ 13 byte + 1 byte = 27byte.如果修改后len长度将大于等于1 M,这时分配给free的长度为1M,例如修改过后为30M,那么给free是1M.buf实际长度变成了30M + 1M + 1 byte. 在修改时,首先检查空间是不是够,如果足够,直接使用, 否则执行内存重分配.惰性空间释放当缩短SDS长度时,不进行内存释放,而是记录到free字段中,等待下次使用.与此同时,也提供相应的API,可以手动释放内存. 二进制安全C字符串只有末尾能保存空格,中间如果有空格会被截取,认作结束标识.这样就不能保存图片,音频视频等二进制数据了.所有的SDS API会以二进制的方式处理SDS buf数组里面的数据,程序不会对其中数据做任何限制,过滤,修改和假设,数据写入是什么样子,读取出来就是什么样子.例如,保留的数据中间出现’\0’,这是没有任何问题的,因为它使用len而不是空字符判断结束. 兼容部分C字符串函数 2.2 链表Redis实现为双链表结构,列表键的底层实现之一就是链表,发布与订阅,慢查询,监视器等功能都用到了链表.Redis本身也使用链表维持多个客户端. 2.2.1 链表定义123456789// 节点定义typedef struct listNode &#123; // 前置节点 struct listNode *prev; // 后置节点 struct listNode *next; // 节点的值 void *value;&#125; listNode; 123456789101112131415// 链表结构定义typedef struct list &#123; // 表头节点 listNode *head; // 表尾节点 listNode *tail; // 节点值复制函数 void *(*dup)(void *ptr); // 节点值释放函数 void (*free)(void *ptr); // 节点值对比函数 int (*match)(void *ptr, void *key); // 链表所包含的节点数量 unsigned long len;&#125; list; 2.2.2 链表特性总结 双端链表,获取前驱和后置都为O(1); 无环,表头的前驱和表尾的后置都为NULL; 带头指针和尾指针; 带链表长度计数器; 多态,void * 保存点值,通过list结构的dup,free,match三个属性设置节点特定函数,所以可以用链表保存不同类型的值. 2.3 字典2.3.1 字典实现123456789101112131415/** 哈希表* 每个字典都使用两个哈希表，从而实现渐进式 rehash 。*/typedef struct dictht &#123; // 哈希表数组 dictEntry **table; // 哈希表大小 unsigned long size; // 哈希表大小掩码，用于计算索引值 // 总是等于 size - 1 unsigned long sizemask; // 该哈希表已有节点的数量 unsigned long used;&#125; dictht; 12345678910111213/*哈希表节点*/typedef struct dictEntry &#123; // 键 void *key; // 值 union &#123; void *val; uint64_t u64; int64_t s64; &#125; v; // 指向下个哈希表节点，形成链表 struct dictEntry *next;&#125; dictEntry; 12345678910111213141516/* * 字典 */typedef struct dict &#123; // 类型特定函数 dictType *type; // 私有数据 void *privdata; // 哈希表 dictht ht[2]; // rehash 索引 // 当 rehash 不在进行时，值为 -1 int rehashidx; /* rehashing not in progress if rehashidx == -1 */ // 目前正在运行的安全迭代器的数量 int iterators; /* number of iterators currently running */&#125; dict; 2.3.2 哈希算法使用MurmurHash2算法计算哈希值. 2.3.3 决键冲突链地址法,采用头插法,时间复杂度为O(1). 2.3.4 rehashrehash步骤: 为ht[1]分配空间:如果是扩容,分配大小为第一个大于等于 ht[0].used*2的2的n次幂;如果是收缩,分配空间大小为第一个大于等于 ht[0].used的2的n次幂. 将ht[0]上的键值对通过重新计算键的哈希值和索引重新分配到ht[1]上. 这时ht[0]将变为空表,释放ht[0],将ht[1]设置为ht[0],并在ht[1]创建一个空表,为下次rehash做准备. 2.3.5 渐进式rehash渐进式rehash步骤: 在字典维持一个索引计数器rehashidx,设置为0, 表示rehash工作正式开始. 在对字典执行添加,删除,查找或修改时,将rehashidx索引上的所有键值对rehash到hd[1],完成后rehashidx++; 当ht[0] 上的所有键值对被rehash到 ht[1],设置 rehashidx = - 1, 表示操作已经完成了. 在此期间操作数据, 会使用ht[0] 和 ht[1]两个hash表, 例如要找某个键值, 会先在ht[0] 找, 没有就去ht[1]找.新增操作都保存到ht[1]中.保证了ht[0]只减不增,最终为空. 2.4 跳跃表2.4.1 跳跃表节点实现1234567891011// 跳跃表节点/* ZSETs use a specialized version of Skiplists */typedef struct zskiplistNode &#123; robj *obj; /*成员对象*/ double score; /*分值*/ struct zskiplistNode *backward; /*后退指针*/ struct zskiplistLevel &#123; /*层*/ struct zskiplistNode *forward; /*前进指针*/ unsigned int span; /*跨度*/ &#125; level[];&#125; zskiplistNode; 2.4.2 跳跃表节点的几个概念 分值和成员节点的分值(score属性)是一个double类型的浮点数,跳跃表中的所有节点都按分值从小到大来排序.节点的成员对象(obj属性)是一个指针,它指向一个字符串对象,而字符串对象则保存着一个SDS值. 后退指针节点的后退指针(backward属性)用于从表尾向表头方向访问节点:跟可以一次跳过多个节点的前进指针不同,因为每个节点只有一个后退指针,所以每次只能后退至前一个节点. 层跳跃表节点的level数组可以包含多个元素,每个元素都包含一个指向其他节点的指针,程序可以通过这些层来加快访问其他节点的速度,一般来说,层的数量越多,访问其他节点的速度就越快. 前进指针每个层都有一个指向表尾方向的前进指针(level[i].forward属性),用于从表头向表尾方向访问节点. 跨度层的跨度(level[i].span属性)用于记录两个节点之间的距离. 2.4.3 跳跃表123456// 跳跃表typedef struct zskiplist &#123; struct zskiplistNode *header, *tail; //header指向跳跃表的表头节点，tail指向跳跃表的表尾节点 unsigned long length; //记录跳跃表的长度，也即是，跳跃表目前包含节点的数量(表头节点不计算在内) int level; //记录目前跳跃表内，层数最大的那个节点的层数(表头节点的层数不计算在内)&#125; zskiplist; 仅靠多个跳跃表节点就可以组成一个跳跃表,但通过使用一个zskiplist结构来持有这些节点,程序可以更方便地对整个跳跃表进行处理,比如快速访问跳跃表的表头节点和表尾节点,或者快速地获取跳跃表节点的数量(也即是跳跃表的长度)等信息. 2.5 整数集合整数集合的底层实现是数组,这个数组以有序,无重复的方式保存集合元素. 2.5.1 实现12345678typedef struct intset &#123; // 保存元素所使用类型的长度 uint32_t encoding; // 元素个数 uint32_t length; // 保存元素的数组 int8_t contents[]; //数组的内存与结构体的内存是相邻的&#125; intset; 2.5.2 升级当一个要加到整数集合的新元素,当前集合的contents数组的元素类型不够长来容纳,则会升级,例如从int8_t升级到int16_t;升级的过程需要维持数组的有序性,会逐个元素移动.因为向intset添加元素有可能引起升级,所以添加元素的时间复杂度是O(N).升级机制提升了灵活性,节约了存储空间.不支持降级操作. 2.6 压缩列表压缩列表是一种数据结构,这种数据结构的功能是将一系列数据与其编码信息存储在一块连续的内存区域,这块内存物理上是连续的,逻辑上被分为多个组成部分,其目的是在一定可控的时间复杂读条件下尽可能的减少不必要的内存开销,从而达到节省内存的效果. 2.6.1 压缩列表构成上面说到压缩列表是一块连续的内存区域,这块内存区域布编码示意图大致如下: zlbytes:存储一个无符号整数,固定四个字节长度,用于存储压缩列表所占用的字节,当重新分配内存的时候使用,不需要遍历整个列表来计算内存大小. zltail:存储一个无符号整数,固定四个字节长度,代表指向列表尾部的偏移量,偏移量是指压缩列表的起始位置到指定列表节点的起始位置的距离. zllen:压缩列表包含的节点个数,固定两个字节长度,源码中指出当节点个数大于2^16-2个数的时候,该值将无效,此时需要遍历列表来计算列表节点的个数. entryX:列表节点区域,长度不定,由列表节点紧挨着组成. zlend:固定一字节长度, 固定值为255, 用于表示列表结束. 2.6.2 压缩列表节点构成上面介绍了压缩列表的总体内存布局,下面再看看entry区域的编码情况. 每个列表节点由三部分组成: previous length用于存储上一个节点的长度,因此压缩列表可以从尾部向头部遍历,即当前节点位置减去上一个节点的长度即得到上一个节点的起始位置.previous length的长度可能是1个字节或者是5个字节,如果上一个节点的长度小于254,则该节点只需要一个字节就可以表示前一个节点的长度了,如果前一个节点的长度大于等于254,则previous length的第一个字节为254,后面用四个字节表示当前节点前一个节点的长度.这么做很有效地减少了内存的浪费. encoding节点的encoding保存的是节点的content的内容类型以及长度,encoding类型一共有两种,一种字节数组一种是整数,encoding区域长度为1字节,2字节或者5字节长.Redis作者巧妙的利用了前两个字节来表示content存储的内容类型和encoding区域的长度.我们先看看字节数组类型的encoding内容:再看看整数编码类型的encoding内容: contentcontent区域用于保存节点的内容,节点内容类型和长度由encoding决定,上面可以看出目前content的内容类型有整数类型和字节数组类型,且某些条件下content的长度可能为0. 压缩列表并不是对数据利用某种算法进行压缩,而是将数据按照一定规则编码在一块连续的内存区域,目的是节省内存. 2.6.3 连锁更新添加新节点到压缩列表,或者从压缩列表中删除节点,可能会引发连锁更新操作,但这种操作出现的几率并不高. 连锁更新产生的原因是插入节点后,该节点后面那个节点的previous length的长度可能会变化(比如从1字节变成5字节,又或者从5字节变成1字节),而previous length变化后,使这个节点的长度发生了变化,并且也是临界变化(长度从小于254变成大于等于254,或者长度从大于等于254变成小于254),类似地,从而引起连锁变化. 3. 对象对象系统包括字符串对象,列表对象,哈希对象,集合对象,有序集合对象. 3.1 对象的类型和编码123456789typedef struct redisObject &#123; // 类型 unsigned type:4; // 编码 unsigned encoding:4; // 指向底层实现数据结构的指针 void *ptr; //...&#125; robj; 3.1.1 类型对象的type属性记录了对象的类型.比如REDIS_STRING(字符串对象),REDIS_LIST(列表对象)等. 3.1.2 编码和底层实现对象的prt指针指向对象的底层实现数据结构,而这些数据结构由对象的encoding属性决定.encoding属性记录了对象所使用的编码,也就是说对象使用什么数据结构作为对象的底层实现. 3.2 各对象及其对应的编码 字符串对象编码可以是int,raw或者embstr. 列表对象编码可以是ziplist或者linkedlist. 哈希对象编码可以是ziplist或者hashtable. 集合对象编码可以是intset或者hashtable. 有序集合对象编码可以是ziplist或者skiplist. 由于每种对象对应着多种不同的编码方式,所以,在不同条件下,会存在编码转换. 3.3 内存回收C语言不具备自动内存回收的功能.Redis使用引用计数技术实现内存回收机制. 3.4 对象共享为了节约内存.但是只对包含整数值的字符串对象进行共享.因为一个共享对象保存的值越复杂,验证共享对象和目标对象是否相同所需的复杂度就会越高,消耗的CPU时间也会越多.(其实这里类似于Java里面的常量池) 3.5 对象空转时长redisObject其实还有一个属性叫做lru,用来记录对象最后一次被命令程序访问的时间. 通过这个属性可以计算对象的空转时长,当服务器占用的内存数超过了maxmemory设置的上限值时,空转时长较高的那部分会优先被服务器释放,从而回收内存. 4. 参考文献&lt;&lt; Redis设计与实现 &gt;&gt; (黄健宏 著)Redis设计与实现 (一): 简单动态字符串Redis设计与实现 (二): 链表Redis设计与实现 (三): 字典redis跳跃表底层实现-intset 整数集合Redis压缩列表原理与应用分析我知道点redis-数据结构与对象(对象)-对象存储]]></content>
+      <categories>
+        <category>Redis</category>
+      </categories>
+      <tags>
+        <tag>基础储备</tag>
+        <tag>Redis</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[Java高并发程序设计(八)--并行流与并行排序]]></title>
+    <url>%2F2019%2F03%2F14%2FJava%E9%AB%98%E5%B9%B6%E5%8F%91%E7%A8%8B%E5%BA%8F%E8%AE%BE%E8%AE%A1(%E5%85%AB)--%E5%B9%B6%E8%A1%8C%E6%B5%81%E4%B8%8E%E5%B9%B6%E8%A1%8C%E6%8E%92%E5%BA%8F%2F</url>
+    <content type="text"><![CDATA[1. 使用并行流过滤数据统计1~1000000内所有质数的数量. 1234567891011public static boolean isPrime(int number)&#123; if(number &lt; 2)&#123; return false; &#125; for(int i = 2; Math.sqrt(number) &gt; i; i++)&#123; if(number % i == 0)&#123; return false; &#125; &#125; return true;&#125; 123456// 串行做法long val = IntStream.range(0, 1000000).filter(x -&gt; isPrime(x)).count();System.out.println(val);// 并行做法long val2 = IntStream.range(0, 1000000).parallel().filter(x -&gt; isPrime(x)).count();System.out.println(val2); 2. 从集合得到并行流统计集合内所有学生的平均分 1234567891011List&lt;Student&gt; students = new ArrayList&lt;&gt;();students.add(new Student("张三", 100));students.add(new Student("李四", 98));students.add(new Student("王五", 99));// 串行做法double ave = students.stream().mapToInt(x -&gt; x.score).average().getAsDouble();System.out.println(ave);// 并行做法double ave2 = students.parallelStream().mapToInt(x -&gt; x.score).average().getAsDouble();System.out.println(ave2); 3. 并行排序对数组进行并行排序. 1Arrays.parallelSort(arr); 数组中的数据赋值 123456789int [] arr = new int[1000000];Random random = new Random();// 串行做法Arrays.setAll(arr, (x) -&gt; random.nextInt());System.out.println(Arrays.toString(arr));// 并行做法Arrays.parallelSetAll(arr, (x) -&gt; random.nextInt());System.out.println(Arrays.toString(arr)); 4. 参考文献&lt;&lt; Java高并发程序设计 &gt;&gt;(葛一鸣 郭超)]]></content>
+      <categories>
+        <category>高并发程序设计</category>
+      </categories>
+      <tags>
+        <tag>Java</tag>
+        <tag>并发设计</tag>
+        <tag>基础储备</tag>
+      </tags>
+  </entry>
+  <entry>
     <title><![CDATA[Java 函数式编程]]></title>
     <url>%2F2019%2F03%2F13%2FJava%20%E5%87%BD%E6%95%B0%E5%BC%8F%E7%BC%96%E7%A8%8B%2F</url>
     <content type="text"><![CDATA[1. 问题提出Java最令人头痛的问题,是Java烦琐的语法.我们不得不花费大量的代码行数来实现一些司空见惯的功能,以至于Java程序总是冗长的.但是这一切在Java 8函数式编程中得到缓解. 2. 函数式编程介绍 将函数作为参数传递给另外一个函数,这是函数式编程的特性之一. 函数可以作为另外一个函数的返回值,也是函数式编程的重要特点. 无副作用.(函数的副作用指的是函数在调用过程中,除了给出了返回值外,还修改了函数外部的状态,比如,函数在调用过程中,修改了某一个全局状态.函数式编程认为,函数的副用作应该被尽量避免.) 申明式的,函数式编程是申明式的编程方式.相对于命令式而言,命令式的程序设计喜欢大量使用可变对象和指令.对于申明式的编程范式,你不在需要提供明确的指令操作,所有的细节指令将会更好的被程序库所封装,你要做的只是提出你要的要求,申明你的用意即可. 不变的对象.在使用函数式编程时,几乎所有的对象都拒绝被修改.(这一点我觉得跟无副作用类似) 易于并行.由于对象都处于不变的状态,因此函数式编程更加易于并行. 更少的代码. 3. 函数式编程基础3.1 FunctionalInterface注释Java 8提出了函数式接口的概念.简单来说就是只定义了单一抽象方法的接口.比如下面的定义: 1234@FunctionalInterfacepublic interface IntHandler &#123; void handle(int i);&#125; 注释FunctionalInterface用于表明IntHandler接口是一个函数式接口,该接口被定义为只包含一个抽象方法handle(int i),因此它符合函数式接口的定义.如果声明两个抽象方法则会出现编译错误: 12345@FunctionalInterfacepublic interface IntHandler &#123; void handle(int i); void handle2(int i);&#125; 需要注意的是函数式接口只能有一个抽象方法,但是不是只能有一个方法:在Java8中,接口运行存在实例方法,其次任何被java.lang.Object实现的方法都不能视为抽象方法所以下面的接口并不会报错: 12345@FunctionalInterfacepublic interface IntHandler &#123; void handle(int i); String toString();&#125; 它完全是一个符合规范的函数式接口. 3.2 接口默认方法在Java8之前接口只能包含抽象方法，但是在Java8之后接口也可以包含若干个实例方法。这一改进使Java8拥有了类似于多继承的能力。一个对象实例将拥有来自多个不同接口的实例方法。 在Java8中使用default关键字可以在接口内定义实例方法。（这个方法不是抽象方法，而是有特定逻辑的具体实例方法。） 1234567@FunctionalInterfacepublic interface IntHandler &#123; void eat(); default void wait(String name)&#123; System.out.println("I am waiting for " + name); &#125;&#125; 从某种程度上说这种模式可以弥补Java单一继承的不便,但是需要注意的是它也会遇到和多继承相同的问题. 1234567891011121314public interface IntHandler &#123; default void wait(String name)&#123; System.out.println("I am waiting for " + name); &#125;&#125;public interface LongHandler &#123; default void wait(String name)&#123; System.out.println("I am not waiting for " + name); &#125;&#125;public class Hello implements IntHandler,LongHandler &#123;&#125; 它会报编译错误.这时候的解决方法是 123456public class Hello implements IntHandler,LongHandler &#123; @Override public void wait(String name) &#123; // todo &#125;&#125; 3.3 lambda表达式lambda表达式是函数式编程的核心.lambda表达式就是匿名函数它是一段没有函数名的函数体,可以作为参数直接传递给相关的调用者. 12345678910// 示例import java.util.Arrays;import java.util.List;public class Solution &#123; public static void main(String[] args) &#123; List&lt;Integer&gt; numbers= Arrays.asList(1,2,3,4,5); numbers.forEach((Integer value)-&gt;System.out.println(value)); &#125;&#125; 123456// 输出结果12345 和匿名对象一样lambda表达式也可以访问外部的局部变量.与匿名内部对象一样外部的i变量必须声明为final,这样才能保证在lambda表达式中合法的访问.但是对于lambda来说即使去掉final定义也能正常运行.但是需要注意的是即使如此也不能修改外部的局部变量的值. 3.4 方法引用方法引用是Java8中提出来用于简化lambda表达式的一种手段,它通过类名和方法名来定位到一个静态方法或者实例方法. 静态方法引用：ClassName::methodName 实例上的实例方法引用：instanceReference::methodName 超类上的实例方法引用：super::methodName 类型上的实例方法引用：ClassName::methodName 构造方法引用：Class::new 数组构造方法引用：TypeName[]::new 首先方法引用使用”::”来定义,”::”的前半部分表示类名或者实例名,后半部分表示方法名称,如果是构造函数则使用new表示. 下面给个示例 12345678910111213141516171819202122232425public class User &#123; private String name; private int id; public User(String name, int id) &#123; this.name = name; this.id = id; &#125; public String getName() &#123; return name; &#125; public void setName(String name) &#123; this.name = name; &#125; public int getId() &#123; return id; &#125; public void setId(int id) &#123; this.id = id; &#125;&#125; 123456789101112import java.util.ArrayList;import java.util.List;public class Solution &#123; public static void main(String[] args) &#123; List&lt;User&gt; user = new ArrayList&lt;&gt;(); for (int i = 0; i &lt; 10; i++) &#123; user.add(new User("name" + i, i)); &#125; user.stream().map(User::getName).forEach(System.out::println); &#125;&#125; 对于第一个方法引用”User::getName”表示是User类的实例方法.在执行时,Java会自动识别流中的元素(此处为User实例)是作为调用目标还是调用方法的参数.在”User::getName”中流内的元素应该作为调用目标,在这里调用了每一个User对象实例的getName()方法,并将这些User的name作为一个新的流.同时对于这里所有得到的name使用方法引用System.out::println进行处理.这里的System.out为PrintStream对象实例,因此,这里表示System.out实例的println方法,系统也会自动判断流内的元素此时应该作为方法的参数传入而不是调用目标. 一般来说如果使用的是静态方法或者调用目标明确那么流内的元素会自动作为参数使用.如果函数引用表示实例方法且不存在调动目标则流内元素自动作为调用目标. 因此如果一个类中存在同名的实例方法和静态函数,那么编译器就无法判断应该使用哪个方法进行调用. 如下编译器就会报错: 12345678910111213import java.util.ArrayList;import java.util.List;public class Solution &#123; public static void main(String[] args) &#123; List&lt;Double&gt; doubles = new ArrayList&lt;&gt;(); for(int i = 0; i &lt; 10; i++)&#123; doubles.add(Double.valueOf(i)); &#125; doubles.stream().map(Double::toString).forEach(System.out::print); &#125;&#125; 此时在Double中同时存在两个以下函数 12public static String toString(double d)public String toString() 此时对函数引用的处理出现了歧义因此会在编译器就出错. 方法引用还可以用于直接使用构造函数. 4. 参考链接&lt;&lt; Java高并发程序设计 &gt;&gt;(葛一鸣 郭超) 函数式编程（基础部分）关于Java8函数式编程你需要了解的几点]]></content>
@@ -8,8 +45,8 @@
         <category>Java基础</category>
       </categories>
       <tags>
-        <tag>基础储备</tag>
         <tag>Java</tag>
+        <tag>基础储备</tag>
       </tags>
   </entry>
   <entry>
@@ -20,9 +57,9 @@
         <category>高并发程序设计</category>
       </categories>
       <tags>
-        <tag>基础储备</tag>
         <tag>Java</tag>
         <tag>并发设计</tag>
+        <tag>基础储备</tag>
       </tags>
   </entry>
   <entry>
@@ -33,9 +70,9 @@
         <category>高并发程序设计</category>
       </categories>
       <tags>
-        <tag>基础储备</tag>
         <tag>Java</tag>
         <tag>并发设计</tag>
+        <tag>基础储备</tag>
       </tags>
   </entry>
   <entry>
@@ -46,9 +83,9 @@
         <category>高并发程序设计</category>
       </categories>
       <tags>
-        <tag>基础储备</tag>
         <tag>Java</tag>
         <tag>并发设计</tag>
+        <tag>基础储备</tag>
       </tags>
   </entry>
   <entry>
@@ -59,9 +96,9 @@
         <category>高并发程序设计</category>
       </categories>
       <tags>
-        <tag>基础储备</tag>
         <tag>Java</tag>
         <tag>并发设计</tag>
+        <tag>基础储备</tag>
       </tags>
   </entry>
   <entry>
@@ -72,9 +109,9 @@
         <category>高并发程序设计</category>
       </categories>
       <tags>
-        <tag>基础储备</tag>
         <tag>Java</tag>
         <tag>并发设计</tag>
+        <tag>基础储备</tag>
       </tags>
   </entry>
   <entry>
@@ -85,8 +122,8 @@
         <category>Java基础</category>
       </categories>
       <tags>
-        <tag>基础储备</tag>
         <tag>Java</tag>
+        <tag>基础储备</tag>
       </tags>
   </entry>
   <entry>
@@ -97,8 +134,8 @@
         <category>Java基础</category>
       </categories>
       <tags>
-        <tag>基础储备</tag>
         <tag>Java</tag>
+        <tag>基础储备</tag>
       </tags>
   </entry>
   <entry>
@@ -109,9 +146,9 @@
         <category>高并发程序设计</category>
       </categories>
       <tags>
-        <tag>基础储备</tag>
         <tag>Java</tag>
         <tag>并发设计</tag>
+        <tag>基础储备</tag>
       </tags>
   </entry>
   <entry>
@@ -122,8 +159,8 @@
         <category>高并发程序设计</category>
       </categories>
       <tags>
-        <tag>基础储备</tag>
         <tag>Java</tag>
+        <tag>基础储备</tag>
         <tag>高并发程序设计</tag>
       </tags>
   </entry>
@@ -135,9 +172,9 @@
         <category>高并发程序设计</category>
       </categories>
       <tags>
-        <tag>基础储备</tag>
         <tag>Java</tag>
         <tag>并发设计</tag>
+        <tag>基础储备</tag>
       </tags>
   </entry>
   <entry>
@@ -148,8 +185,8 @@
         <category>Java</category>
       </categories>
       <tags>
-        <tag>基础储备</tag>
         <tag>Java</tag>
+        <tag>基础储备</tag>
       </tags>
   </entry>
   <entry>
@@ -160,9 +197,9 @@
         <category>高并发程序设计</category>
       </categories>
       <tags>
-        <tag>基础储备</tag>
         <tag>Java</tag>
         <tag>并发设计</tag>
+        <tag>基础储备</tag>
       </tags>
   </entry>
   <entry>
@@ -173,9 +210,9 @@
         <category>高并发程序设计</category>
       </categories>
       <tags>
-        <tag>基础储备</tag>
         <tag>Java</tag>
         <tag>并发设计</tag>
+        <tag>基础储备</tag>
       </tags>
   </entry>
   <entry>
@@ -186,8 +223,8 @@
         <category>Java基础</category>
       </categories>
       <tags>
-        <tag>基础储备</tag>
         <tag>Java</tag>
+        <tag>基础储备</tag>
       </tags>
   </entry>
   <entry>
@@ -688,8 +725,8 @@
         <category>后台开发</category>
       </categories>
       <tags>
-        <tag>基础储备</tag>
         <tag>Java</tag>
+        <tag>基础储备</tag>
         <tag>解决方案</tag>
       </tags>
   </entry>
@@ -701,8 +738,8 @@
         <category>Java基础</category>
       </categories>
       <tags>
-        <tag>基础储备</tag>
         <tag>Java</tag>
+        <tag>基础储备</tag>
       </tags>
   </entry>
   <entry>
@@ -713,8 +750,8 @@
         <category>后台开发</category>
       </categories>
       <tags>
-        <tag>基础储备</tag>
         <tag>Java</tag>
+        <tag>基础储备</tag>
         <tag>解决方案</tag>
       </tags>
   </entry>
@@ -737,8 +774,8 @@
         <category>计算机基础</category>
       </categories>
       <tags>
-        <tag>基础储备</tag>
         <tag>Java</tag>
+        <tag>基础储备</tag>
         <tag>JVM</tag>
       </tags>
   </entry>
@@ -821,8 +858,8 @@
         <category>Java基础</category>
       </categories>
       <tags>
-        <tag>基础储备</tag>
         <tag>Java</tag>
+        <tag>基础储备</tag>
         <tag>JVM</tag>
       </tags>
   </entry>
@@ -834,8 +871,8 @@
         <category>Java基础</category>
       </categories>
       <tags>
-        <tag>基础储备</tag>
         <tag>Java</tag>
+        <tag>基础储备</tag>
         <tag>JVM</tag>
       </tags>
   </entry>
@@ -847,8 +884,8 @@
         <category>Java基础</category>
       </categories>
       <tags>
-        <tag>基础储备</tag>
         <tag>Java</tag>
+        <tag>基础储备</tag>
         <tag>JVM</tag>
       </tags>
   </entry>
@@ -860,8 +897,8 @@
         <category>Java基础</category>
       </categories>
       <tags>
-        <tag>基础储备</tag>
         <tag>Java</tag>
+        <tag>基础储备</tag>
         <tag>JVM</tag>
       </tags>
   </entry>
@@ -873,8 +910,8 @@
         <category>Java基础</category>
       </categories>
       <tags>
-        <tag>基础储备</tag>
         <tag>Java</tag>
+        <tag>基础储备</tag>
       </tags>
   </entry>
   <entry>
@@ -885,8 +922,8 @@
         <category>Java基础</category>
       </categories>
       <tags>
-        <tag>基础储备</tag>
         <tag>Java</tag>
+        <tag>基础储备</tag>
         <tag>JVM</tag>
       </tags>
   </entry>
@@ -898,8 +935,8 @@
         <category>Java基础</category>
       </categories>
       <tags>
-        <tag>基础储备</tag>
         <tag>Java</tag>
+        <tag>基础储备</tag>
       </tags>
   </entry>
   <entry>
@@ -910,8 +947,8 @@
         <category>Java基础</category>
       </categories>
       <tags>
-        <tag>基础储备</tag>
         <tag>Java</tag>
+        <tag>基础储备</tag>
       </tags>
   </entry>
   <entry>
@@ -922,8 +959,8 @@
         <category>Java基础</category>
       </categories>
       <tags>
-        <tag>基础储备</tag>
         <tag>Java</tag>
+        <tag>基础储备</tag>
       </tags>
   </entry>
   <entry>
@@ -934,8 +971,8 @@
         <category>Java基础</category>
       </categories>
       <tags>
-        <tag>基础储备</tag>
         <tag>Java</tag>
+        <tag>基础储备</tag>
       </tags>
   </entry>
   <entry>
@@ -946,8 +983,8 @@
         <category>Java基础</category>
       </categories>
       <tags>
-        <tag>基础储备</tag>
         <tag>Java</tag>
+        <tag>基础储备</tag>
       </tags>
   </entry>
   <entry>
@@ -958,8 +995,8 @@
         <category>Java基础</category>
       </categories>
       <tags>
-        <tag>基础储备</tag>
         <tag>Java</tag>
+        <tag>基础储备</tag>
       </tags>
   </entry>
   <entry>
@@ -970,8 +1007,8 @@
         <category>Java基础</category>
       </categories>
       <tags>
-        <tag>基础储备</tag>
         <tag>Java</tag>
+        <tag>基础储备</tag>
       </tags>
   </entry>
   <entry>
@@ -982,8 +1019,8 @@
         <category>Java基础</category>
       </categories>
       <tags>
-        <tag>基础储备</tag>
         <tag>Java</tag>
+        <tag>基础储备</tag>
       </tags>
   </entry>
   <entry>
@@ -994,8 +1031,8 @@
         <category>Java基础</category>
       </categories>
       <tags>
-        <tag>基础储备</tag>
         <tag>Java</tag>
+        <tag>基础储备</tag>
       </tags>
   </entry>
   <entry>
@@ -1006,8 +1043,8 @@
         <category>Java基础</category>
       </categories>
       <tags>
-        <tag>基础储备</tag>
         <tag>Java</tag>
+        <tag>基础储备</tag>
       </tags>
   </entry>
   <entry>
