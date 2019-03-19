@@ -108,25 +108,28 @@
 
 
 
-  <meta name="keywords" content="基础储备,Maven">
+  <meta name="keywords" content="基础储备,Redis">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Maven实战(五)--聚合和继承">
-<meta property="og:url" content="http://ganlu19940318.github.io/2018/10/12/Maven实战(五)--聚合和继承/index.html">
+<meta property="og:title" content="Redis设计与实现--多机数据库的实现">
+<meta property="og:url" content="http://ganlu19940318.github.io/2019/03/19/Redis设计与实现--多机数据库的实现/index.html">
 <meta property="og:site_name" content="glennlgan的个人博客">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:image" content="https://blogpictures-1257055754.cos.ap-guangzhou.myqcloud.com/6875230-5df76e82367f0df9.png">
-<meta property="og:image" content="https://blogpictures-1257055754.cos.ap-guangzhou.myqcloud.com/6875230-c90899981f83afe7.png">
-<meta property="og:updated_time" content="2018-10-12T08:12:19.359Z">
+<meta property="og:image" content="https://blogpictures-1257055754.cos.ap-guangzhou.myqcloud.com/TIM%E6%88%AA%E5%9B%BE20190319104415.png">
+<meta property="og:image" content="https://blogpictures-1257055754.cos.ap-guangzhou.myqcloud.com/TIM%E6%88%AA%E5%9B%BE20190319110151.png">
+<meta property="og:image" content="https://blogpictures-1257055754.cos.ap-guangzhou.myqcloud.com/TIM%E6%88%AA%E5%9B%BE20190319111545.png">
+<meta property="og:image" content="https://blogpictures-1257055754.cos.ap-guangzhou.myqcloud.com/TIM%E6%88%AA%E5%9B%BE20190319114413.png">
+<meta property="og:image" content="https://blogpictures-1257055754.cos.ap-guangzhou.myqcloud.com/20180504212236867.png">
+<meta property="og:updated_time" content="2019-03-19T04:43:58.916Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Maven实战(五)--聚合和继承">
-<meta name="twitter:image" content="https://blogpictures-1257055754.cos.ap-guangzhou.myqcloud.com/6875230-5df76e82367f0df9.png">
+<meta name="twitter:title" content="Redis设计与实现--多机数据库的实现">
+<meta name="twitter:image" content="https://blogpictures-1257055754.cos.ap-guangzhou.myqcloud.com/TIM%E6%88%AA%E5%9B%BE20190319104415.png">
 
 
 
 
 
 
-  <link rel="canonical" href="http://ganlu19940318.github.io/2018/10/12/Maven实战(五)--聚合和继承/"/>
+  <link rel="canonical" href="http://ganlu19940318.github.io/2019/03/19/Redis设计与实现--多机数据库的实现/"/>
 
 
 
@@ -136,7 +139,7 @@
   };
 </script>
 
-  <title>Maven实战(五)--聚合和继承 | glennlgan的个人博客</title>
+  <title>Redis设计与实现--多机数据库的实现 | glennlgan的个人博客</title>
   
 
 
@@ -332,7 +335,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://ganlu19940318.github.io/2018/10/12/Maven实战(五)--聚合和继承/">
+    <link itemprop="mainEntityOfPage" href="http://ganlu19940318.github.io/2019/03/19/Redis设计与实现--多机数据库的实现/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="glennlgan">
@@ -349,7 +352,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">Maven实战(五)--聚合和继承
+          <h1 class="post-title" itemprop="name headline">Redis设计与实现--多机数据库的实现
               
             
           </h1>
@@ -374,7 +377,7 @@
                 
               
 
-              <time title="创建时间：2018-10-12 15:27:18 / 修改时间：16:12:19" itemprop="dateCreated datePublished" datetime="2018-10-12T15:27:18+08:00">2018-10-12</time>
+              <time title="创建时间：2019-03-19 10:28:18 / 修改时间：12:43:58" itemprop="dateCreated datePublished" datetime="2019-03-19T10:28:18+08:00">2019-03-19</time>
             
 
             
@@ -396,7 +399,7 @@
                 <span class="post-meta-item-text">分类于</span>
               
               
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/Maven基础/" itemprop="url" rel="index"><span itemprop="name">Maven基础</span></a></span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/Redis/" itemprop="url" rel="index"><span itemprop="name">Redis</span></a></span>
 
                 
                 
@@ -432,32 +435,59 @@
       
         <hr>
 <a id="more"></a>
-<h1 id="1-前言"><a href="#1-前言" class="headerlink" title="1. 前言"></a>1. 前言</h1><p>Java开发过程中, 使用Maven管理依赖. 这是Maven系列文章, 主要记录&lt;&lt;Maven实战&gt;&gt;的学习过程和一些重要知识点, 以方便自己查阅.</p>
-<h1 id="2-基本概述"><a href="#2-基本概述" class="headerlink" title="2. 基本概述"></a>2. 基本概述</h1><p>Maven的聚合特性能够把项目的各个模块聚合在一起构建, 而继承特性则能够帮助抽取各模块相同的依赖和插件等配置, 在简化POM的同时, 还能促进各个模块配置的一致性.</p>
-<h1 id="3-聚合"><a href="#3-聚合" class="headerlink" title="3. 聚合"></a>3. 聚合</h1><p>Maven聚合也称多模块, 能够一次构建多个模块. 聚合模块本身是一个Maven项目, 所以也有自己的POM文件, 该POM文件的packaging为pom, 并且含有modules和module元素.</p>
-<p><img src="https://blogpictures-1257055754.cos.ap-guangzhou.myqcloud.com/6875230-5df76e82367f0df9.png" alt="聚合"></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">&lt;project xmlns=&quot;http://maven.apache.org/POM/4.0.0&quot;</span><br><span class="line">         xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot;</span><br><span class="line">         xsi:schemaLocation=&quot;http://maven.apache.org/POM/4.0.0</span><br><span class="line">         http://maven.apache.org/xsd/maven-4.0.0.xsd&quot;&gt;</span><br><span class="line">   &lt;modelVersion&gt;4.0.0&lt;/modelVersion&gt;</span><br><span class="line">   &lt;groupId&gt;com.glennlgan&lt;/groupId&gt;</span><br><span class="line">   &lt;artifactId&gt;springboot.demo&lt;/artifactId&gt;</span><br><span class="line">   &lt;version&gt;1.0.0-SNAPSHOT&lt;/version&gt;</span><br><span class="line">   &lt;packaging&gt;pom&lt;/packaging&gt;</span><br><span class="line">   &lt;modules&gt;</span><br><span class="line">     &lt;module&gt;springboot-mybatis&lt;/module&gt;</span><br><span class="line">     &lt;module&gt;springboot-web&lt;/module&gt;</span><br><span class="line">     &lt;module&gt;springboot-quickstart&lt;/module&gt;</span><br><span class="line">   &lt;/modules&gt;</span><br><span class="line">&lt;/project&gt;</span><br></pre></td></tr></table></figure>
-<p>这里每个module的值都是一个当前POM的相对目录, 一般而言, 为了方便快速定位内容, 模块所处的目录名称应该与其artifactId一致, 不过这不是Maven的要求.</p>
-<p>因此, 聚合模块与其他模块的目录结构并非一定要父子关系, 通过修改module的值, 也能更改为平级关系:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;module&gt;../springboot-quickstart&lt;/module&gt;</span><br></pre></td></tr></table></figure>
-<p>Maven首先会解析聚合模块的POM, 分析要构建的模块, 并计算出一个反应堆构建顺序, 然后根据这个顺序依次构建各个模块. 反应堆包含了模块之间继承和依赖的关系. 模块间的依赖关系会将反应堆构成一个有向非循环图.</p>
-<h1 id="4-继承"><a href="#4-继承" class="headerlink" title="4. 继承"></a>4. 继承</h1><p>继承解决的是对重复依赖和插件配置的抽取. 通过定义一个父模块, 将其他模块相同的配置抽离到父模块中, 然后继承父模块, 并且父模块也是一个Maven项目, 其POM文件的packaging为pom.</p>
-<p><img src="https://blogpictures-1257055754.cos.ap-guangzhou.myqcloud.com/6875230-c90899981f83afe7.png" alt="继承"></p>
-<p>子模块需要增加parent元素配置:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">&lt;parent&gt;</span><br><span class="line">    &lt;artifactId&gt;springboot.demo&lt;/artifactId&gt;</span><br><span class="line">    &lt;groupId&gt;com.glennlgan&lt;/groupId&gt;</span><br><span class="line">    &lt;version&gt;1.0.0-SNAPSHOT&lt;/version&gt;</span><br><span class="line">    &lt;relativePath&gt;../pom.xml&lt;/relativePath&gt;</span><br><span class="line">&lt;/parent&gt;</span><br></pre></td></tr></table></figure>
-<p>relativePath定义了父模块POM文件的位置. 默认值为../pom.xml, Maven默认父POM在上一层目录下.</p>
-<p>POM文件可被继承的元素有:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">groupId:项目组ID,项目坐标的核心元素</span><br><span class="line">version:项目版本,项目坐标的核心元素</span><br><span class="line">description:项目的描述信息</span><br><span class="line">organization:项目所在组织机构信息</span><br><span class="line">inceptionYear:项目的创始年份</span><br><span class="line">url:项目的URL地址</span><br><span class="line">developers:项目的开发者信息</span><br><span class="line">contributors:项目的贡献者信息</span><br><span class="line">distributionManagement:项目的部署配置</span><br><span class="line">issueManagement:项目的缺陷跟着系统信息</span><br><span class="line">ciManagement:项目的持续集成系统信息</span><br><span class="line">scm:项目的版本控制系统信息</span><br><span class="line">mailingLists:项目的邮件列表信息</span><br><span class="line">properties:自定义的Maven属性</span><br><span class="line">dependencies:项目的依赖配置</span><br><span class="line">dependencyManagement:项目的依赖管理配置</span><br><span class="line">repositories:项目的仓库配置</span><br><span class="line">build:项目的源码目录配置,输出目录配置,插件配置,插件配置管理等</span><br><span class="line">reporting:项目的报告输出目录配置,报告插件配置等</span><br></pre></td></tr></table></figure>
-<h1 id="5-依赖管理"><a href="#5-依赖管理" class="headerlink" title="5. 依赖管理"></a>5. 依赖管理</h1><p>子模块继承父模块时, 也会继承父模块的依赖配置, 假设添加一个util的子模块, 该模块只提供一些简单的帮助工具, 与springframework完全无关, 难道也让它依赖spring-core,spring-beans,spring-context么?这显然是不合理的.</p>
-<p>Maven提供的dependencyManagement元素既能让子模块继承父模块的依赖配置, 又能保证子模块依赖使用的灵活性. 在dependencyManagement元素下声明的依赖不会引入实际的依赖, 不过它能够约束dependencies下的依赖使用.</p>
-<p>在父POM使用dependencyManagement声明的依赖能够统一项目范围中依赖的版本, 在子模块使用依赖的时候就不需要版本了, 只需要简单的配置groupId和artifactId就能获得对应的依赖信息, 从而引进正确的依赖.</p>
-<p>如果子模块不声明依赖的使用, 即使该依赖已经在父POM的dependencyManagement中声明了, 也不会产生实际的效果.</p>
-<p>如, 在父POM定义如下dependencyManagement:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">&lt;dependencyManagement&gt;</span><br><span class="line">    &lt;dependencies&gt;  </span><br><span class="line">        &lt;dependency&gt;</span><br><span class="line">            &lt;groupId&gt;org.springframework&lt;/groupId&gt;</span><br><span class="line">            &lt;artifactId&gt;spring-webmvc&lt;/artifactId&gt;</span><br><span class="line">            &lt;version&gt;4.3.14.RELEASE&lt;/version&gt;</span><br><span class="line">        &lt;/dependency&gt;</span><br><span class="line">    &lt;/dependencies&gt;</span><br><span class="line">&lt;/dependencyManagement&gt;</span><br></pre></td></tr></table></figure>
-<p>在子模块使用时, 只需要:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&lt;dependency&gt;</span><br><span class="line">    &lt;groupId&gt;org.springframework&lt;/groupId&gt;</span><br><span class="line">    &lt;artifactId&gt;spring-webmvc&lt;/artifactId&gt;</span><br><span class="line">&lt;/dependency&gt;</span><br></pre></td></tr></table></figure>
-<p>对于子模块而言, 可以按需添加依赖, 对于整个项目而言, 可以规范对依赖的版本号管理.</p>
-<h1 id="6-参考链接"><a href="#6-参考链接" class="headerlink" title="6. 参考链接"></a>6. 参考链接</h1><p>&lt;&lt;Maven实战&gt;&gt;(许晓斌)</p>
+<h1 id="1-复制"><a href="#1-复制" class="headerlink" title="1. 复制"></a>1. 复制</h1><p>Redis支持主从复制功能,当Redis主服务器更新数据时能将数据同步到Redis从服务器.</p>
+<p>通过命令: slaveof 主服务器ip地址, 形成主从关系, 完成复制.</p>
+<p>旧版:Redis 2.8 以前的版本;<br>新版:从Redis 2.8开始使用的版本.</p>
+<h2 id="1-1-旧版复制实现"><a href="#1-1-旧版复制实现" class="headerlink" title="1.1 旧版复制实现"></a>1.1 旧版复制实现</h2><p>复制分为同步(sync)和命令传播(command propagate)两个操作.</p>
+<p>同步操作用于将从服务器的数据库状态更新至主服务器当前所处的数据库状态.<br>命令传播操作则用于在主服务器的数据库状态被修改,导致主从服务器的数据库状态出现不一致时,让主从服务器的数据库重新回到一致状态.</p>
+<ol>
+<li><p>同步<br>从向主服务器发送sync命令;<br>主服务器收到sync命令执行BGSAVE,生成RDB文件,缓冲区同时记录从现在开始执行的所有命令;<br>主服务器执行完毕BGSAVE命令,会将RDB文件发送给从服务器,从服务器接收并载入这个RDB文件,同步至主服务器状态;<br>主服务器发送缓冲区的命令给从服务器,从服务器执行当前命令,保持数据最终一致.<br><img src="https://blogpictures-1257055754.cos.ap-guangzhou.myqcloud.com/TIM%E6%88%AA%E5%9B%BE20190319104415.png" alt="同步"></p>
+</li>
+<li><p>命令传播<br>主服务器会将客户端对它执行的写命令,发送给从服务器,使主从服务器状态保持一致.</p>
+</li>
+</ol>
+<p>旧版复制的缺点:<br>从服务器断线后,并在重连之后,从服务需要完全重新复制主服务器的数据,效率非常低.</p>
+<p>旧版复制的命令是SYNC,这是非常消耗资源的操作,理由如下:</p>
+<ol>
+<li>主服务器需要执行BGSAVE来生成RDB文件,这个操作会消耗主服务器大量的CPU,内存和磁盘I/O资源.</li>
+<li>主服务器将生成的RDB发送给从服务器,这个操作会消费主从服务器大量的网络资源.</li>
+<li>接收到RDB文件的从服务器需要载入主服务器发来的RDB文件,并且在载入期间,从服务器会处于阻塞状态.</li>
+</ol>
+<h2 id="1-2-新版复制实现"><a href="#1-2-新版复制实现" class="headerlink" title="1.2 新版复制实现"></a>1.2 新版复制实现</h2><p>使用PSYNC命令替代了SYNC.该命令具有 完整重同步 和 部分重同步 两种模式.<br>其中完整重同步用于处理初次复制情况,和SYNC类似<br>而部分重同步则用于断线后重复制情况:当从服务器在断线后重新连接主服务器时,如果条件允许,主服务器可以将从服务器连接断开期间执行的写命令发送给从服务器,从服务器只要接收并执行这些写命令,就可以将数据更新至主服务器当前所处的状态.</p>
+<p><img src="https://blogpictures-1257055754.cos.ap-guangzhou.myqcloud.com/TIM%E6%88%AA%E5%9B%BE20190319110151.png" alt="部分重同步"></p>
+<p>部分重同步通过复制偏移量,复制积压缓冲区,服务器运行ID三个部分来实现.</p>
+<p>其中复制偏移量+复制积压缓冲区其实类似于滑动窗口.<br>服务器运行ID其实就是身份确认,用来说明当前服务器就是从服务器断线前连接的那个服务器.</p>
+<p>PSYNC命令的实现</p>
+<p><img src="https://blogpictures-1257055754.cos.ap-guangzhou.myqcloud.com/TIM%E6%88%AA%E5%9B%BE20190319111545.png" alt="PSYNC命令的执行过程"></p>
+<h2 id="1-3-复制步骤"><a href="#1-3-复制步骤" class="headerlink" title="1.3 复制步骤"></a>1.3 复制步骤</h2><p>步骤1:设置主服务器的地址和端口<br>步骤2:建立套接字连接<br>步骤3:发送PING命令<br>步骤4:身份验证<br>步骤5:发送端口信息<br>步骤6:同步<br>步骤7:命令传播</p>
+<h2 id="1-4-心跳检测"><a href="#1-4-心跳检测" class="headerlink" title="1.4 心跳检测"></a>1.4 心跳检测</h2><p>三个作用:</p>
+<ol>
+<li>检测主从服务器的网络连接状态;</li>
+<li>辅助实现min-slaves选项;(用于防止主服务器在不安全的情况下执行写命令,比如三个从服务器的延迟都大于10秒时,主服务器将拒绝执行写命令)</li>
+<li>检测命令丢失.(类似于滑动窗口的作用)</li>
+</ol>
+<h1 id="2-Sentinel"><a href="#2-Sentinel" class="headerlink" title="2. Sentinel"></a>2. Sentinel</h1><p>Sentinel是Redis高可用解决方案,由一个或多个Sentinel实例组成的Sentinel系统可以监视任意多个主服务器,以及这些主服务器属下的所有从服务器,并在被监视的主服务器进入下线状态时,自动将下线主服务器属下的某个从服务器升级为新的主服务器,然后由新的主服务器代替已下线的主服务器继续处理命令请求.</p>
+<p>Sentinel本质上是运行在特殊模式下的Redis服务器,只是端口和命令表等不同.</p>
+<p>Sentinel会创建两个连向被监视主/从服务器的异步网络连接,一个是命令连接,一个是订阅连接.Sentinel默认10秒一次向被监视的主服务器发送INFO命令,通过回复获取主服务器的当前信息(包括各个主服务器的slaves).</p>
+<p><img src="https://blogpictures-1257055754.cos.ap-guangzhou.myqcloud.com/TIM%E6%88%AA%E5%9B%BE20190319114413.png" alt="Sentinel"></p>
+<p>另外, 服务器选举用的是Raft算法.</p>
+<h1 id="3-集群"><a href="#3-集群" class="headerlink" title="3. 集群"></a>3. 集群</h1><p>Redis集群是Redis提供的分布式数据库方案,集群通过分片来进行数据共享,并提供复制和故障转移功能.</p>
+<h2 id="3-1-节点"><a href="#3-1-节点" class="headerlink" title="3.1 节点"></a>3.1 节点</h2><p>连接各个节点的工作通过CLUSTER MEET ip port命令完成,A和B握手后,A会将B的信息通过Gossip协议传播给A所在集群中其他节点,让其他节点也与B握手;</p>
+<p><img src="https://blogpictures-1257055754.cos.ap-guangzhou.myqcloud.com/20180504212236867.png" alt="节点"></p>
+<h2 id="3-2-槽指派"><a href="#3-2-槽指派" class="headerlink" title="3.2 槽指派"></a>3.2 槽指派</h2><p>Redis集群通过分片保存键值对,集群的整个数据库分成16384(2^14)个槽,有任何一个槽没被节点处理,则集群处于下线状态.通过向节点发送CLUSTER ADDSLOTS 0 1 2 3 …… 100命令,可以将一个或多个槽指派给节点负责.一个节点除了会将自己负责的槽记录在clusterNode的slots里,还会发送消息告知集群其他节点;</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">clusterNode</span>&#123;</span></span><br><span class="line">    <span class="comment">// 用bitmap保存节点的槽</span></span><br><span class="line">    <span class="keyword">unsigned</span> <span class="keyword">char</span> slots[<span class="number">16384</span>/<span class="number">8</span>];</span><br><span class="line"></span><br><span class="line">    <span class="keyword">int</span> numslots;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>clusterState中的slots数组记录了集群所有槽的指派信息,而clusterNode.slots数组只记录了一个节点的槽指派;</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> <span class="title">clusterState</span>&#123;</span></span><br><span class="line">    <span class="comment">// 记录了每个槽由哪个clusterNode管理</span></span><br><span class="line">    clusterNode *slots[<span class="number">16384</span>];</span><br><span class="line"></span><br><span class="line">    zskiplist *slots_to_keys;</span><br><span class="line">&#125; clusterState;</span><br></pre></td></tr></table></figure>
+<p>节点用键的CRC-16校验和计算槽号, CRC16(key) &amp; 16383;客户端向节点发送命令时,如果键所在槽没有指派给当前节点,返回MOVED错误,指引客户端重定向到正确节点;</p>
+<p>集群节点和单机数据库类似,也保存键值对字典和过期字典,节点只能使用0号数据库.节点还会用clusterState中的slots_to_keys跳表来保存槽与键的关系,保存哪个键在哪个槽里,分值是槽号,可以快速获得同一个槽里的若干个键;</p>
+<h2 id="3-3-重新分片"><a href="#3-3-重新分片" class="headerlink" title="3.3 重新分片"></a>3.3 重新分片</h2><p>Redis集群的重新分片操作可以将任意数量已经指派给某个节点(源节点)的槽改为指派给另一个节点(目标节点),并且相关槽所属的键值对也会从源节点被移动到目标节点.</p>
+<p>重新分片可以在线进行,在重新分片的过程中,集群不需要下线,并且源节点和目标节点都可以继续处理命令请求.</p>
+<h2 id="3-4-复制和故障转移"><a href="#3-4-复制和故障转移" class="headerlink" title="3.4 复制和故障转移"></a>3.4 复制和故障转移</h2><p>集群中可以用CLUSTER REPLICATE node_id 让节点成为node_id的从节点,并开始对主节点复制,并告知集群其他节点;</p>
+<p>每个节点定期向其他节点发送PING,如果一个主节点被半数以上主节点标记为下线,则标记为已下线.从它的从节点选举出新的主节点,和领头Sentinel的选举类似,先到先得,超过半数.然后执行SLAVE no one,成为新的主节点,负责处理槽,告知其他节点;</p>
+<h2 id="3-5-消息"><a href="#3-5-消息" class="headerlink" title="3.5 消息"></a>3.5 消息</h2><p>节点间主要有MEET,PING,PONG,FAIL,PUBLISH五种消息.</p>
+<h2 id="3-6-ASK错误和MOVED错误"><a href="#3-6-ASK错误和MOVED错误" class="headerlink" title="3.6 ASK错误和MOVED错误"></a>3.6 ASK错误和MOVED错误</h2><p>MOVED错误表示槽的负责权已经从一个节点转移到了另一个节点;<br>ASK错误只是两个节点在迁移槽的过程中使用的一种临时措施.</p>
+<h1 id="4-参考文献"><a href="#4-参考文献" class="headerlink" title="4 参考文献"></a>4 参考文献</h1><p>&lt;&lt; Redis设计与实现 &gt;&gt; (黄健宏 著)</p>
+<p><a href="https://blog.csdn.net/weixin_39420024/article/details/80199657" target="_blank" rel="noopener">《Redis设计与实现》读书笔记——复制、Sentinel、集群</a></p>
 
       
     </div>
@@ -504,7 +534,7 @@
           
             <a href="/tags/基础储备/" rel="tag"># 基础储备</a>
           
-            <a href="/tags/Maven/" rel="tag"># Maven</a>
+            <a href="/tags/Redis/" rel="tag"># Redis</a>
           
         </div>
       
@@ -517,8 +547,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2018/10/12/Maven实战(四)--生命周期和插件/" rel="next" title="Maven实战(四)--生命周期和插件">
-                <i class="fa fa-chevron-left"></i> Maven实战(四)--生命周期和插件
+              <a href="/2019/03/16/Redis设计与实现--单机数据库的实现/" rel="next" title="Redis设计与实现--单机数据库的实现">
+                <i class="fa fa-chevron-left"></i> Redis设计与实现--单机数据库的实现
               </a>
             
           </div>
@@ -526,10 +556,6 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
-            
-              <a href="/2018/11/15/Spring IoC和DI/" rel="prev" title="Spring IoC和DI">
-                Spring IoC和DI <i class="fa fa-chevron-right"></i>
-              </a>
             
           </div>
         </div>
@@ -739,7 +765,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#1-前言"><span class="nav-text">1. 前言</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#2-基本概述"><span class="nav-text">2. 基本概述</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#3-聚合"><span class="nav-text">3. 聚合</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#4-继承"><span class="nav-text">4. 继承</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#5-依赖管理"><span class="nav-text">5. 依赖管理</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#6-参考链接"><span class="nav-text">6. 参考链接</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#1-复制"><span class="nav-text">1. 复制</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-1-旧版复制实现"><span class="nav-text">1.1 旧版复制实现</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#1-2-新版复制实现"><span class="nav-text">1.2 新版复制实现</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#1-3-复制步骤"><span class="nav-text">1.3 复制步骤</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#1-4-心跳检测"><span class="nav-text">1.4 心跳检测</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#2-Sentinel"><span class="nav-text">2. Sentinel</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#3-集群"><span class="nav-text">3. 集群</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#3-1-节点"><span class="nav-text">3.1 节点</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-2-槽指派"><span class="nav-text">3.2 槽指派</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-3-重新分片"><span class="nav-text">3.3 重新分片</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-4-复制和故障转移"><span class="nav-text">3.4 复制和故障转移</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-5-消息"><span class="nav-text">3.5 消息</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-6-ASK错误和MOVED错误"><span class="nav-text">3.6 ASK错误和MOVED错误</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#4-参考文献"><span class="nav-text">4 参考文献</span></a></li></ol></div>
             
 
           </div>
