@@ -1,6 +1,61 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title><![CDATA[gRPC框架]]></title>
+    <url>%2F2019%2F06%2F04%2FgRPC%E6%A1%86%E6%9E%B6%2F</url>
+    <content type="text"><![CDATA[1. 简介1.1 认识RPC1.1.1 什么是RPCRPC(Remote Procedure Call)中文名「远程过程调用」.「过程」也叫方法或函数,「远程」就是说方法不在当前进程里,而是在其他进程或机器上面. 合起来 RPC 就是调用其他进程或机器上面的函数. 在没有网络的时代,程序都是单机版的,所有逻辑都必须在同一个进程里.进程之间就像高楼大厦里面陌生的邻居,大家无法共享,遇到同样的功能只能重复实现一次.显然进程的障碍是逆天的,不符合先进生产力的发展方向,这个时候「进程间通信」的需求出现了,大家要求进程之间能够相互交流,相互共享和调用.这样再写程序,就可以利用进程间通信机制来调用和共享已经存在的功能了.随着网络的出现,进程的隔阂进一步消除,不光同一栋楼里的邻居可以共享资源,其他小区,甚至其他城市的居民都可以通过互联网互相调用,这就是 RPC.概念很容易理解,但是远程和本地的实现原理有很大区别,架构设计者的职责就是设计一个机制让远程调用服务就像调本地服务一样简单,这就是 RPC 框架. 1.1.2 基本原理RPC 框架的目标就是让远程服务调用更加简单,透明,RPC 框架负责屏蔽底层的传输方式(TCP 或者 UDP),序列化方式(XML/Json/ 二进制)和通信细节.服务调用者可以像调用本地接口一样调用远程的服务提供者,而不需要关心底层通信细节和调用过程. RPC 首要解决的是通讯的问题,主流的 RPC 框架分为基于 HTTP 和基于 TCP 的两种. 基于 HTTP 的 RPC 调用很简单,就和我们访问网页一样,只是它的返回结果更单一(JSON 或 XML).它的优点在于实现简单,标准化和跨语言,比较适合对外提供 OpenAPI 的场景,而它的缺点是 HTTP 协议传输效率较低,短连接开销较大(HTTP 2.0 后有很大改进). 基于 TCP 的 RPC 调用,由于 TCP 协议处于协议栈的下层,能够更加灵活地对协议字段进行定制,减少网络开销,提高性能,实现更大的吞吐量和并发数.但是需要更多地关注底层复杂的细节,跨语言和跨平台难度大,实现的代价更高,它比较适合内部系统之间追求极致性能的场景. RPC 调用的基本流程: 调用方(Client)通过本地的 RPC 代理(Proxy)调用相应的接口 本地代理将 RPC 的服务名,方法名和参数等等信息转换成一个标准的 RPC Request 对象交给 RPC 框架 RPC 框架采用 RPC 协议(RPC Protocol)将 RPC Request 对象序列化成二进制形式,然后通过 TCP 通道传递给服务提供方 (Server) 服务端(Server)收到二进制数据后,将它反序列化成 RPC Request 对象 服务端(Server)根据 RPC Request 中的信息找到本地对应的方法,传入参数执行,得到结果,并将结果封装成 RPC Response 交给 RPC 框架 RPC 框架通过 RPC 协议(RPC Protocol)将 RPC Response 对象序列化成二进制形式,然后通过 TCP 通道传递给服务调用方(Client) 调用方(Client)收到二进制数据后,将它反序列化成 RPC Response 对象,并且将结果通过本地代理(Proxy)返回给业务代码 因为在 TCP 通道里传输的数据只能是二进制形式的,所以必须将数据结构或对象转换成二进制串传递给对方,这个过程就叫「序列化」.而相反,收到对方的二进制串后把它转换成数据结构或对象的过程叫「反序列化」.而序列化和反序列化的规则就叫「协议」. 1.2 认识gRPC1.2.1 gRPC简介gRPC 是一个高性能,开源和通用的 RPC 框架,面向服务端和移动端,基于 HTTP/2 设计. gRPC 的调用示例如下所示: 1.2.2 gRPC特点 语言中立,支持多种语言; 基于 IDL 文件定义服务,通过 proto3 工具生成指定语言的数据结构,服务端接口以及客户端 Stub; 通信协议基于标准的 HTTP/2 设计,支持双向流,消息头压缩,单 TCP 的多路复用,服务端推送等特性,这些特性使得 gRPC 在移动端设备上更加省电和节省网络流量; 序列化支持 PB(Protocol Buffer)和 JSON,PB 是一种语言无关的高性能序列化框架,基于 HTTP/2 + PB, 保障了 RPC 调用的高性能. 1.2.3 gRPC原理一个RPC框架必须有两个基础的组成部分:数据的序列化和进程数据通信的交互方式. 对于序列化gRPC采用了自家公司开源的Protobuf. 关于进程间的通讯,无疑是Socket.Java方面gRPC同样使用了成熟的开源框架Netty,使用Netty Channel作为数据通道,传输协议使用了HTTP2. 通过以上的分析,可以将一个完整的gRPC流程总结为以下几步: 通过.proto文件定义传输的接口和消息体. 通过protocol编译器生成server端和client端的stub程序. 将请求封装成HTTP2的Stream. 通过Channel作为数据通信通道使用Socket进行数据传输. 2. 示例2.1 Maven配置1234567891011121314151617181920212223242526272829303132333435363738394041424344454647484950515253545556&lt;!--添加grpc依赖（包含TCP通信和protobuf序列化和反序列化）--&gt;&lt;dependencies&gt; &lt;dependency&gt; &lt;groupId&gt;io.grpc&lt;/groupId&gt; &lt;artifactId&gt;grpc-netty-shaded&lt;/artifactId&gt; &lt;version&gt;1.21.0&lt;/version&gt; &lt;/dependency&gt; &lt;dependency&gt; &lt;groupId&gt;io.grpc&lt;/groupId&gt; &lt;artifactId&gt;grpc-protobuf&lt;/artifactId&gt; &lt;version&gt;1.21.0&lt;/version&gt; &lt;/dependency&gt; &lt;dependency&gt; &lt;groupId&gt;io.grpc&lt;/groupId&gt; &lt;artifactId&gt;grpc-stub&lt;/artifactId&gt; &lt;version&gt;1.21.0&lt;/version&gt; &lt;/dependency&gt;&lt;/dependencies&gt;&lt;!--添加编译proto文件的编译程序和对应的编译插件。--&gt;&lt;build&gt; &lt;extensions&gt; &lt;extension&gt; &lt;groupId&gt;kr.motd.maven&lt;/groupId&gt; &lt;artifactId&gt;os-maven-plugin&lt;/artifactId&gt; &lt;version&gt;1.5.0.Final&lt;/version&gt; &lt;/extension&gt; &lt;/extensions&gt; &lt;plugins&gt; &lt;plugin&gt; &lt;groupId&gt;org.xolstice.maven.plugins&lt;/groupId&gt; &lt;artifactId&gt;protobuf-maven-plugin&lt;/artifactId&gt; &lt;version&gt;0.5.1&lt;/version&gt; &lt;configuration&gt; &lt;protocArtifact&gt;com.google.protobuf:protoc:3.7.1:exe:$&#123;os.detected.classifier&#125;&lt;/protocArtifact&gt; &lt;pluginId&gt;grpc-java&lt;/pluginId&gt; &lt;pluginArtifact&gt;io.grpc:protoc-gen-grpc-java:1.21.0:exe:$&#123;os.detected.classifier&#125;&lt;/pluginArtifact&gt; &lt;/configuration&gt; &lt;executions&gt; &lt;execution&gt; &lt;goals&gt; &lt;goal&gt;compile&lt;/goal&gt; &lt;goal&gt;compile-custom&lt;/goal&gt; &lt;/goals&gt; &lt;/execution&gt; &lt;/executions&gt; &lt;/plugin&gt; &lt;plugin&gt; &lt;groupId&gt;org.apache.maven.plugins&lt;/groupId&gt; &lt;artifactId&gt;maven-compiler-plugin&lt;/artifactId&gt; &lt;configuration&gt; &lt;source&gt;6&lt;/source&gt; &lt;target&gt;6&lt;/target&gt; &lt;/configuration&gt; &lt;/plugin&gt; &lt;/plugins&gt;&lt;/build&gt; 2.2 编写并编译proto文件2.2.1 编写proto文件123456789101112131415161718192021222324syntax = &quot;proto3&quot;;option java_multiple_files = true;option java_package = &quot;io.grpc.examples.helloworld&quot;;option java_outer_classname = &quot;HelloWorldProto&quot;;option objc_class_prefix = &quot;HLW&quot;;package helloworld;// The greeting service definition.service Greeter &#123; // Sends a greeting rpc SayHello (HelloRequest) returns (HelloReply) &#123;&#125;&#125;// The request message containing the user&apos;s name.message HelloRequest &#123; string name = 1;&#125;// The response message containing the greetingsmessage HelloReply &#123; string message = 1;&#125; 2.2.2 编译proto文件参考java下使用gRPC的helloworld的demo实现 编译proto文件生成对应的java文件,方法是: 右击Maven.Projects\protobuf\protobuf:compile,选择run,生成用于序列化的java文件. 再右击Maven.Projects\protobuf\protobuf:compile-custom,选择run,生成用于rpc的java代码. 2.3 客户端Java代码12345678910111213141516171819202122232425262728293031323334353637import io.grpc.ManagedChannel;import io.grpc.ManagedChannelBuilder;import io.grpc.examples.helloworld.GreeterGrpc;import io.grpc.examples.helloworld.HelloReply;import io.grpc.examples.helloworld.HelloRequest;import java.util.concurrent.TimeUnit;import java.util.logging.Logger;public class HelloWorldClient &#123; private final ManagedChannel channel; private final GreeterGrpc.GreeterBlockingStub blockingStub; private static final Logger logger = Logger.getLogger(HelloWorldClient.class.getName()); public HelloWorldClient(String host,int port)&#123; channel = ManagedChannelBuilder.forAddress(host,port) .usePlaintext(true) .build(); blockingStub = GreeterGrpc.newBlockingStub(channel); &#125; public void greet(String name)&#123; HelloRequest request = HelloRequest.newBuilder().setName(name).build(); HelloReply response; response = blockingStub.sayHello(request); logger.info("Message from gRPC-Server: "+response.getMessage()); &#125; public void shutdown() throws InterruptedException &#123; channel.shutdown().awaitTermination(5, TimeUnit.SECONDS); &#125; public static void main(String[] args) throws Exception&#123; HelloWorldClient client = new HelloWorldClient("127.0.0.1",50051); String user = "world"; client.greet(user); client.shutdown(); &#125;&#125; 2.4 服务端Java代码123456789101112131415161718192021222324252627282930313233343536373839404142import io.grpc.Server;import io.grpc.ServerBuilder;import io.grpc.examples.helloworld.GreeterGrpc;import io.grpc.examples.helloworld.HelloReply;import io.grpc.examples.helloworld.HelloRequest;import io.grpc.stub.StreamObserver;import java.io.IOException;import java.util.logging.Logger;public class HelloWorldServer &#123; private static final Logger logger = Logger.getLogger(HelloWorldServer.class.getName()); private int port = 50051; private Server server; private void start() throws IOException &#123; server = ServerBuilder.forPort(port) .addService(new GreeterImpl()) .build() .start(); logger.info("Server started, listening on "+ port); &#125; public static void main(String[] args) throws Exception&#123; final HelloWorldServer server = new HelloWorldServer(); server.start(); Thread.sleep(3600000); &#125; // 实现 定义一个实现服务接口的类 private class GreeterImpl extends GreeterGrpc.GreeterImplBase &#123; @Override public void sayHello(HelloRequest req, StreamObserver&lt;HelloReply&gt; responseObserver)&#123; HelloReply reply = HelloReply.newBuilder().setMessage(("Hello "+req.getName())).build(); responseObserver.onNext(reply); responseObserver.onCompleted(); System.out.println("Message from gRPC-Client:" + req.getName()); &#125; &#125;&#125; 3. 参考链接聊聊 Node.js RPC（一）— 协议gRPC基于Golang和Java的简单实现gRPC 官方文档中文版深入浅出 gRPC 01：gRPC 服务端创建和调用原理java下使用gRPC的helloworld的demo实现Github官方示例代码:grpc-java/examples/]]></content>
+      <categories>
+        <category>技术储备</category>
+      </categories>
+      <tags>
+        <tag>gRPC</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[Shiro框架入门]]></title>
+    <url>%2F2019%2F06%2F04%2FShiro%E6%A1%86%E6%9E%B6%E5%85%A5%E9%97%A8%2F</url>
+    <content type="text"><![CDATA[1. 介绍Apache Shiro是Java的一个安全框架. 对比Spring Security: 没有Spring Security做的功能强大,但是在实际工作时可能并不需要那么复杂的东西,所以使用小而简单的Shiro就足够了. Shiro可以帮助完成:认证,授权,加密,会话管理,与Web集成,缓存等. 1.1 基本功能点 Authentication:身份认证/登录,验证用户是不是拥有相应的身份;Authorization:授权,即权限验证,验证某个已认证的用户是否拥有某个权限,即判断用户是否能做事情;Session Manager:会话管理,即用户登录后就是一次会话,在没有退出之前,它的所有信息都在会话中;Cryptography：加密,保护数据的安全性,如密码加密存储到数据库,而不是明文存储;Web Support：Web支持,可以非常容易的集成到Web环境;Caching：缓存,比如用户登录后,其用户信息,拥有的角色/权限不必每次去查,这样可以提高效率;Concurrency：shiro支持多线程应用的并发验证,即如在一个线程中开启另一个线程,能把权限自动传播过去;Testing：提供测试支持;Run As：允许一个用户假装为另一个用户(如果他们允许)的身份进行访问;Remember Me：记住我,这个是非常常见的功能,即一次登录后,下次再来的话不用登录了. 1.2 工作机制 应用代码直接交互的对象是Subject,也就是说Shiro的对外API核心就是Subject; Subject:主体.代表了当前”用户”,与当前应用交互的任何东西都是Subject,所有Subject都绑定到SecurityManager,与Subject的所有交互都会委托给SecurityManager,可以把Subject认为是一个门面,SecurityManager才是实际的执行者; SecurityManager:安全管理器.即所有与安全有关的操作都会与SecurityManager交互,它管理着所有Subject,可以看出它是Shiro的核心,它还负责与其他组件进行交互; Realm:域.Shiro从从Realm获取安全数据,就是说SecurityManager要验证用户身份,那么它需要从Realm获取相应的用户进行比较以确定用户身份是否合法,也需要从Realm得到用户相应的角色/权限进行验证用户是否能进行操作,可以把Realm看成DataSource,即安全数据源. 最简单的一个Shiro应用工程流程: 应用代码通过Subject来进行认证和授权,而Subject又委托给SecurityManager; 给Shiro的SecurityManager注入Realm,从而让SecurityManager能得到合法的用户及其权限进行判断. 2. 入门使用2.1 Maven环境123456789101112&lt;dependencies&gt; &lt;dependency&gt; &lt;groupId&gt;org.apache.shiro&lt;/groupId&gt; &lt;artifactId&gt;shiro-core&lt;/artifactId&gt; &lt;version&gt;1.4.0&lt;/version&gt; &lt;/dependency&gt; &lt;dependency&gt; &lt;groupId&gt;junit&lt;/groupId&gt; &lt;artifactId&gt;junit&lt;/artifactId&gt; &lt;version&gt;4.12&lt;/version&gt; &lt;/dependency&gt;&lt;/dependencies&gt; 2.2 身份认证2.2.1 Java代码12345678910111213141516171819202122232425262728293031import org.apache.shiro.SecurityUtils;import org.apache.shiro.authc.UsernamePasswordToken;import org.apache.shiro.mgt.DefaultSecurityManager;import org.apache.shiro.realm.SimpleAccountRealm;import org.apache.shiro.subject.Subject;import org.junit.Before;import org.junit.Test;public class AuthenticationTest &#123; SimpleAccountRealm simpleAccountRealm = new SimpleAccountRealm(); @Before // 在方法开始前添加一个用户 public void addUser() &#123; simpleAccountRealm.addAccount("ganlu", "123456"); &#125; @Test public void testAuthentication() &#123; // 1.构建SecurityManager环境 DefaultSecurityManager defaultSecurityManager = new DefaultSecurityManager(); defaultSecurityManager.setRealm(simpleAccountRealm); // 2.主体提交认证请求 SecurityUtils.setSecurityManager(defaultSecurityManager); // 设置SecurityManager环境 Subject subject = SecurityUtils.getSubject(); // 获取当前主体 UsernamePasswordToken token = new UsernamePasswordToken("ganlu", "123456"); subject.login(token); // 登录 // subject.isAuthenticated()方法返回一个boolean值,用于判断用户是否认证成功 System.out.println("isAuthenticated:" + subject.isAuthenticated()); // 输出true subject.logout(); // 登出 System.out.println("isAuthenticated:" + subject.isAuthenticated()); // 输出false &#125;&#125; 2.3 授权2.3.1 Java代码123456789101112131415161718192021222324252627282930313233import org.apache.shiro.SecurityUtils;import org.apache.shiro.authc.UsernamePasswordToken;import org.apache.shiro.mgt.DefaultSecurityManager;import org.apache.shiro.realm.SimpleAccountRealm;import org.apache.shiro.subject.Subject;import org.junit.Before;import org.junit.Test;public class AuthorizationTest &#123; SimpleAccountRealm simpleAccountRealm = new SimpleAccountRealm(); @Before // 在方法开始前添加一个用户,让它具备admin和user两个角色 public void addUser() &#123; simpleAccountRealm.addAccount("ganlu", "123456", "admin", "user"); &#125; @Test public void testAuthentication() &#123; // 1.构建SecurityManager环境 DefaultSecurityManager defaultSecurityManager = new DefaultSecurityManager(); defaultSecurityManager.setRealm(simpleAccountRealm); // 2.主体提交认证请求 SecurityUtils.setSecurityManager(defaultSecurityManager); // 设置SecurityManager环境 Subject subject = SecurityUtils.getSubject(); // 获取当前主体 UsernamePasswordToken token = new UsernamePasswordToken("ganlu", "123456"); subject.login(token); // 登录 // subject.isAuthenticated()方法返回一个boolean值,用于判断用户是否认证成功 System.out.println("isAuthenticated:" + subject.isAuthenticated()); // 输出true // 判断subject是否具有admin和user两个角色权限,如没有则会报错 subject.checkRoles("admin","user"); // subject.checkRole("xxx"); // 报错 &#125;&#125; 2.4 自定义Realm2.4.1 Java代码123456789101112131415161718192021222324252627282930313233343536373839404142434445464748495051525354555657585960616263646566676869707172737475767778798081828384858687888990919293import org.apache.shiro.authc.AuthenticationException;import org.apache.shiro.authc.AuthenticationInfo;import org.apache.shiro.authc.AuthenticationToken;import org.apache.shiro.authc.SimpleAuthenticationInfo;import org.apache.shiro.authz.AuthorizationInfo;import org.apache.shiro.authz.SimpleAuthorizationInfo;import org.apache.shiro.realm.AuthorizingRealm;import org.apache.shiro.subject.PrincipalCollection;import java.util.HashMap;import java.util.HashSet;import java.util.Map;import java.util.Set;public class MyRealm extends AuthorizingRealm &#123; super.setName("myRealm"); // 设置自定义Realm的名称，取什么无所谓.. /** * 授权 * * @param principalCollection * @return */ protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection principalCollection) &#123; String userName = (String) principalCollection.getPrimaryPrincipal(); // 从数据库获取角色和权限数据 Set&lt;String&gt; roles = getRolesByUserName(userName); Set&lt;String&gt; permissions = getPermissionsByUserName(userName); SimpleAuthorizationInfo simpleAuthorizationInfo = new SimpleAuthorizationInfo(); simpleAuthorizationInfo.setStringPermissions(permissions); simpleAuthorizationInfo.setRoles(roles); return simpleAuthorizationInfo; &#125; /** * 模拟从数据库中获取权限数据 * * @param userName * @return */ private Set&lt;String&gt; getPermissionsByUserName(String userName) &#123; Set&lt;String&gt; permissions = new HashSet&lt;&gt;(); permissions.add("user:delete"); permissions.add("user:add"); return permissions; &#125; /** * 模拟从数据库中获取角色数据 * * @param userName * @return */ private Set&lt;String&gt; getRolesByUserName(String userName) &#123; Set&lt;String&gt; roles = new HashSet&lt;&gt;(); roles.add("admin"); roles.add("user"); return roles; &#125; /** * 认证 * * @param authenticationToken 主体传过来的认证信息 * @return * @throws AuthenticationException */ protected AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken authenticationToken) throws AuthenticationException &#123; // 1.从主体传过来的认证信息中，获得用户名 String userName = (String) authenticationToken.getPrincipal(); // 2.通过用户名到数据库中获取凭证 String password = getPasswordByUserName(userName); if (password == null) &#123; return null; &#125; SimpleAuthenticationInfo authenticationInfo = new SimpleAuthenticationInfo(userName, password, "myRealm"); return authenticationInfo; &#125; /** * 模拟从数据库取凭证的过程 * * @param userName * @return */ private String getPasswordByUserName(String userName) &#123; /** * 模拟数据库数据 */ Map&lt;String, String&gt; userMap = new HashMap&lt;&gt;(16); userMap.put("ganlu", "123456"); return userMap.get(userName); &#125;&#125; 123456789101112131415161718192021222324252627282930313233import org.apache.shiro.SecurityUtils;import org.apache.shiro.authc.UsernamePasswordToken;import org.apache.shiro.mgt.DefaultSecurityManager;import org.apache.shiro.realm.SimpleAccountRealm;import org.apache.shiro.subject.Subject;import org.junit.Before;import org.junit.Test;public class AuthenticationTest &#123; @Test public void testAuthentication() &#123; MyRealm myRealm = new MyRealm(); // 实现自己的 Realm 实例 // 1.构建SecurityManager环境 DefaultSecurityManager defaultSecurityManager = new DefaultSecurityManager(); defaultSecurityManager.setRealm(myRealm); // 2.主体提交认证请求 SecurityUtils.setSecurityManager(defaultSecurityManager); // 设置SecurityManager环境 Subject subject = SecurityUtils.getSubject(); // 获取当前主体 UsernamePasswordToken token = new UsernamePasswordToken("ganlu", "123456"); subject.login(token); // 登录 // subject.isAuthenticated()方法返回一个boolean值,用于判断用户是否认证成功 System.out.println("isAuthenticated:" + subject.isAuthenticated()); // 输出true // 判断subject是否具有admin和user两个角色权限,如没有则会报错 subject.checkRoles("admin", "user");// subject.checkRole("xxx"); // 报错 // 判断subject是否具有user:add权限 subject.checkPermission("user:add"); &#125;&#125; 2.4.2 流程分析1234567subject.login(token)当上述代码执行时,doGetAuthorizationInfo(PrincipalCollection principalCollection)会被调用subject.isAuthenticated()subject.checkRoles("admin", "user")subject.checkPermission("user:add")当上述代码执行时,doGetAuthenticationInfo(AuthenticationToken authenticationToken)会被调用 3. 参考链接Shiro入门这篇就够了【Shiro的基础知识、回顾URL拦截】跟我学Shiro教程Shiro安全框架【快速入门】就这一篇！]]></content>
+      <categories>
+        <category>技术储备</category>
+      </categories>
+      <tags>
+        <tag>Shiro</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[Jersey框架]]></title>
+    <url>%2F2019%2F06%2F03%2FJersey%E6%A1%86%E6%9E%B6%2F</url>
+    <content type="text"><![CDATA[1. 简介开发RESTful WebService意味着需要抽象和实现底层的客户端-服务器通信细节,如果没有一个好的工具包可用,这将是一个困难的任务. 为了简化使用JAVA开发RESTful WebService及其客户端, 一个轻量级的标准被提出: JAX-RS API. Jersey RESTful WebService框架是一个开源的,产品级别的JAVA框架,支持JAX-RS API并且是一个JAX-RS(JSR 311和 JSR 339)的参考实现 Jersey不仅仅是一个JAX-RS的参考实现,Jersey提供自己的API,其API继承自JAX-RS,提供更多的特性和功能以进一步简化RESTful service和客户端的开发. 2. 服务端使用示例2.1 通过Maven导入必要的依赖包1234567891011121314&lt;dependencies&gt; &lt;!-- https://mvnrepository.com/artifact/com.sun.jersey/jersey-server --&gt; &lt;dependency&gt; &lt;groupId&gt;com.sun.jersey&lt;/groupId&gt; &lt;artifactId&gt;jersey-server&lt;/artifactId&gt; &lt;version&gt;1.19.4&lt;/version&gt; &lt;/dependency&gt; &lt;!-- https://mvnrepository.com/artifact/com.sun.jersey/jersey-grizzly2 --&gt; &lt;dependency&gt; &lt;groupId&gt;com.sun.jersey&lt;/groupId&gt; &lt;artifactId&gt;jersey-grizzly2&lt;/artifactId&gt; &lt;version&gt;1.19.4&lt;/version&gt; &lt;/dependency&gt;&lt;/dependencies&gt; 2.2 服务端程序123456789101112131415161718192021222324252627282930313233343536373839404142434445464748495051import com.sun.jersey.api.container.grizzly2.GrizzlyServerFactory;import com.sun.jersey.api.core.PackagesResourceConfig;import com.sun.jersey.api.core.ResourceConfig;import com.sun.jersey.spi.resource.Singleton;import org.glassfish.grizzly.http.server.HttpServer;import javax.ws.rs.*;import javax.ws.rs.core.*;import java.net.URI;import java.util.Iterator;@Singleton@Path("service")public class Server &#123; @Path("&#123;sub_path:[a-zA-Z0-9]*&#125;") @GET @Consumes(&#123;MediaType.TEXT_PLAIN, MediaType.APPLICATION_JSON&#125;) @Produces(MediaType.TEXT_PLAIN) public String getResourceName( @PathParam("sub_path") String resourceName, @DefaultValue("Just a test!") @QueryParam("desc") String description, @Context Request request, @Context UriInfo uriInfo, @Context HttpHeaders httpHeader) &#123; System.out.println(this.hashCode()); // 将HTTP请求打印出来 System.out.println("****** HTTP request ******"); StringBuilder strBuilder = new StringBuilder(); strBuilder.append(request.getMethod() + " "); strBuilder.append(uriInfo.getRequestUri().toString() + " "); strBuilder.append("HTTP/1.1[\\r\\n]"); System.out.println(strBuilder.toString()); MultivaluedMap&lt;String, String&gt; headers = httpHeader.getRequestHeaders(); Iterator&lt;String&gt; iterator = headers.keySet().iterator(); while(iterator.hasNext())&#123; String headName = iterator.next(); System.out.println(headName + ":" + headers.get(headName) + "[\\r\\n]"); &#125; System.out.println("[\\r\\n]"); String responseStr =resourceName + "[" + description + "]"; return responseStr; &#125; public static void main(String[] args) throws Exception&#123; URI uri = UriBuilder.fromUri("http://127.0.0.1").port(10000).build(); ResourceConfig rc = new PackagesResourceConfig(""); HttpServer server = GrizzlyServerFactory.createHttpServer(uri, rc); server.start(); Thread.sleep(1000 * 1000); &#125;&#125; 3. 客户端使用示例(可选)3.1 通过Maven导入必要的依赖包1234567891011121314&lt;dependencies&gt; &lt;!-- https://mvnrepository.com/artifact/com.sun.jersey/jersey-grizzly2 --&gt; &lt;dependency&gt; &lt;groupId&gt;com.sun.jersey&lt;/groupId&gt; &lt;artifactId&gt;jersey-grizzly2&lt;/artifactId&gt; &lt;version&gt;1.19.4&lt;/version&gt; &lt;/dependency&gt; &lt;!-- https://mvnrepository.com/artifact/com.sun.jersey/jersey-client --&gt; &lt;dependency&gt; &lt;groupId&gt;com.sun.jersey&lt;/groupId&gt; &lt;artifactId&gt;jersey-client&lt;/artifactId&gt; &lt;version&gt;1.19.4&lt;/version&gt; &lt;/dependency&gt;&lt;/dependencies&gt; 3.2 客户端程序12345678910111213141516171819202122232425262728293031323334353637383940414243444546474849505152535455565758596061626364import com.sun.jersey.api.client.Client;import com.sun.jersey.api.client.ClientResponse;import com.sun.jersey.api.client.WebResource;import com.sun.jersey.api.client.config.ClientConfig;import com.sun.jersey.api.client.config.DefaultClientConfig;import javax.ws.rs.core.MediaType;import javax.ws.rs.core.MultivaluedMap;import javax.ws.rs.core.UriBuilder;import java.net.URI;import java.util.Iterator;public class Client &#123; public static void main(String[] args) &#123; // 要使用Jersey Client API，必须首先创建Client的实例 // 有以下两种创建Client实例的方式 // 方式一 ClientConfig cc = new DefaultClientConfig(); cc.getProperties().put(ClientConfig.PROPERTY_CONNECT_TIMEOUT, 10*1000); // Client实例很消耗系统资源，需要重用 // 创建web资源，创建请求，接受响应都是线程安全的 // 所以Client实例和WebResource实例可以在多个线程间安全的共享 Client client = Client.create(cc); // 方式二 // Client client = Client.create(); // client.setConnectTimeout(10*1000); // client.getProperties().put(ClientConfig.PROPERTY_CONNECT_TIMEOUT, 10*1000); // WebResource将会继承Client中timeout的配置 // 由Client发起请求到Server // 方式一 // WebResource resource = client.resource("http://127.0.0.1:10000/service/sean?desc=description"); // String str = resource // .accept(MediaType.TEXT_PLAIN) // .type(MediaType.TEXT_PLAIN) // .get(String.class); // System.out.println("String:" + str); // 方式二 URI uri = UriBuilder.fromUri("http://127.0.0.1/service/sean").port(10000) .queryParam("desc", "description").build(); WebResource resource = client.resource(uri); // header方法可用来添加HTTP头 ClientResponse response = resource.header("auth", "123456") .accept(MediaType.TEXT_PLAIN) .type(MediaType.TEXT_PLAIN) .get(ClientResponse.class); // 将HTTP响应打印出来 System.out.println("****** HTTP response ******"); StringBuilder strBuilder = new StringBuilder(); strBuilder.append("HTTP/1.1 "); strBuilder.append(response.getStatus() + " "); strBuilder.append(response.getStatusInfo() + "[\\r\\n]"); System.out.println(strBuilder.toString()); MultivaluedMap&lt;String, String&gt; headers = response.getHeaders(); Iterator&lt;String&gt; iterator = headers.keySet().iterator(); while(iterator.hasNext())&#123; String headName = iterator.next(); System.out.println(headName + ":" + headers.get(headName) + "[\\r\\n]"); &#125; System.out.println("[\\r\\n]"); System.out.println(response.getEntity(String.class) + "[\\r\\n]"); &#125;&#125; 4. 参考链接Jersey框架一：Jersey RESTful WebService框架简介Jersey框架二：Jersey对JSON的支持]]></content>
+      <categories>
+        <category>技术储备</category>
+      </categories>
+      <tags>
+        <tag>Jersey</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[加密算法学习]]></title>
+    <url>%2F2019%2F06%2F03%2F%E5%8A%A0%E5%AF%86%E7%AE%97%E6%B3%95%E5%AD%A6%E4%B9%A0%2F</url>
+    <content type="text"><![CDATA[1. 加密算法对称加密: 加密和解密用到的密钥是相同的, 这种加密方式加密速度非常快, 适合经常发送数据的场合. 缺点是密钥的传输比较麻烦.非对称加密: 加密和解密用的密钥是不同的, 这种加密方式是用数学上的难解问题构造的, 通常加密解密的速度比较慢, 适合偶尔发送数据的场合. 优点是密钥传输方便. 2. 对称加密算法2.1 AES2.1.1 简介AES(Advanced Encryption Standard)为最常见的对称加密算法(微信小程序加密传输就是用这个加密算法的).对称加密算法也就是加密和解密用相同的密钥,具体的加密流程如下图: 实际中, 一般是通过RSA加密AES的密钥, 传输到接收方, 接收方解密得到AES密钥, 然后发送方和接收方用AES密钥来通信. 2.1.2 Java中使用AES12345678910111213141516171819202122232425262728293031323334353637383940414243444546474849505152535455565758596061626364656667import javax.crypto.Cipher;import javax.crypto.KeyGenerator;import javax.crypto.SecretKey;import javax.crypto.spec.SecretKeySpec;import java.security.SecureRandom;import java.util.Base64;public class Main &#123; /** * 获得一个 密钥长度为 256 位的 AES 密钥， * @return 返回经 BASE64 处理之后的密钥字符串 */ public static String getStrKeyAES() throws Exception&#123; KeyGenerator keyGen = KeyGenerator.getInstance("AES"); SecureRandom secureRandom = new SecureRandom(String.valueOf(System.currentTimeMillis()).getBytes("utf-8")); keyGen.init(256, secureRandom); // 这里可以是 128、192、256、越大越安全 SecretKey secretKey = keyGen.generateKey(); return Base64.getEncoder().encodeToString(secretKey.getEncoded()); &#125; /** * 将使用 Base64 加密后的字符串类型的 secretKey 转为 SecretKey * @param strKey * @return SecretKey */ public static SecretKey strKey2SecretKey(String strKey)&#123; byte[] bytes = Base64.getDecoder().decode(strKey); SecretKeySpec secretKey = new SecretKeySpec(bytes, "AES"); return secretKey; &#125; /** * 加密 * @param content 待加密内容 * @param secretKey 加密使用的 AES 密钥 * @return 加密后的密文 byte[] */ public static byte[] encryptAES(byte[] content, SecretKey secretKey) throws Exception &#123; Cipher cipher = Cipher.getInstance("AES"); cipher.init(Cipher.ENCRYPT_MODE, secretKey); return cipher.doFinal(content); &#125; /** * 解密 * @param content 待解密内容 * @param secretKey 解密使用的 AES 密钥 * @return 解密后的明文 byte[] */ public static byte[] decryptAES(byte[] content, SecretKey secretKey) throws Exception &#123; Cipher cipher = Cipher.getInstance("AES"); cipher.init(Cipher.DECRYPT_MODE, secretKey); return cipher.doFinal(content); &#125; public static void main(String[] args) throws Exception&#123; // 生成密钥 String AESKey = getStrKeyAES(); SecretKey AESSecretKey = strKey2SecretKey(AESKey); byte[] content = "Hello World!".getBytes(); // AES加密 byte[] C = encryptAES(content, AESSecretKey); // AES解密 byte[] M = decryptAES(C, AESSecretKey); System.out.println(new String(M)); &#125;&#125; 3. 非对称加密算法3.1 RSA3.1.1 算法步骤 找出质数 P, Q 计算公共模数 N = P * Q 计算欧拉函数 φ(N) = (P - 1) (Q - 1) , 说明: 符号φ(N)表示小于 N 且与 N 互质的正整数的个数 计算公钥E: 1 &lt; E &lt; φ(N), 其中, E 的取值必须是整数, E 和 φ(N) 必须是互质数 计算私钥D: E * D % φ(N) = 1 加密: C ＝ M^E mod N, 其中, C-密文 M-明文 解密: M ＝C^D mod N, 其中, C-密文 M-明文 公钥＝(E, N) , 私钥＝(D, N) 3.1.2 算法示例 找出质数 P,Q (P=3, Q=11) 计算公共模数, N = P Q = 3 11 = 33 计算欧拉函数 φ(N) = (P - 1) (Q - 1) = 2 * 10 = 20 计算公钥E: 1 &lt; E &lt; 20, 因为 E 和 φ(N) 必须是互质数, 所以E 的取值范围 {3, 7, 9, 11, 13, 17, 19} 任取 E =3, 满足条件 计算私钥D: E D % φ(N) = 1, 即 3 D % 20 = 1, 取 D = 7 满足条件 公钥加密: 设 M = 2, C ＝ M^E mod N = 2^3 % 33 = 8 私钥解密: M ＝C^D mod N = 8^7 % 33 = 2 公钥＝(E, N) = (3, 33), 私钥＝(D, N) = (7, 33) 3.1.3 JDK 自带 RSA 算法示例12345678910111213141516171819202122232425262728293031323334353637383940414243444546474849505152535455565758596061626364656667686970717273747576777879808182838485868788899091929394import sun.misc.BASE64Decoder;import sun.misc.BASE64Encoder;import javax.crypto.Cipher;import java.io.*;import java.security.*;import java.security.spec.PKCS8EncodedKeySpec;import java.security.spec.X509EncodedKeySpec;public class Main &#123; public static void main(String[] args) throws Exception&#123; // 1.生成RSA密钥对 // 1.1 生成密钥对 // 获取指定算法的密钥对生成器 KeyPairGenerator gen = KeyPairGenerator.getInstance("RSA"); // 初始化密钥对生成器（指定密钥长度, 使用默认的安全随机数源） gen.initialize(2048); // 随机生成一对密钥（包含公钥和私钥） KeyPair keyPair = gen.generateKeyPair(); // 获取 公钥 和 私钥 PublicKey pubKey = keyPair.getPublic(); PrivateKey priKey = keyPair.getPrivate(); // 1.2 保存密钥 // 1.2.1 Base64 编码保存 // 获取 公钥和私钥 的 编码格式（通过该 编码格式 可以反过来 生成公钥和私钥对象） byte[] pubEncBytes = pubKey.getEncoded(); byte[] priEncBytes = priKey.getEncoded(); // 把 公钥和私钥 的 编码格式 转换为 Base64文本 方便保存 String pubEncBase64 = new BASE64Encoder().encode(pubEncBytes); String priEncBase64 = new BASE64Encoder().encode(priEncBytes); // 保存 公钥和私钥 到指定文件 IOUtils.writeFile(pubEncBase64, new File("pub.txt")); IOUtils.writeFile(priEncBase64, new File("pri.txt")); // 1.2.2 对象序列化保存 // 创建对象输出流, 保存到指定的文件 ObjectOutputStream pubOut = new ObjectOutputStream(new FileOutputStream("pub.obj")); ObjectOutputStream priOut = new ObjectOutputStream(new FileOutputStream("pri.obj")); // 将 公钥/私钥 对象序列号写入 对象输出流 pubOut.writeObject(pubKey); priOut.writeObject(priKey); // 刷新并关闭流 pubOut.flush(); priOut.flush(); pubOut.close(); priOut.close(); // 1.3 读取密钥 // 1.3.1 读取密钥的 Base64 文本生成密钥对象 // 读取公钥 // 从 公钥保存的文件 读取 公钥的Base64文本 String pubKeyBase64 = IOUtils.readFile(new File("pub.txt")); // 把 公钥的Base64文本 转换为已编码的 公钥bytes byte[] encPubKey = new BASE64Decoder().decodeBuffer(pubKeyBase64); // 创建 已编码的公钥规格 X509EncodedKeySpec encPubKeySpec = new X509EncodedKeySpec(encPubKey); // 获取指定算法的密钥工厂, 根据 已编码的公钥规格, 生成公钥对象 PublicKey pubKey_1 = KeyFactory.getInstance("RSA").generatePublic(encPubKeySpec); // 读取私钥 // 从 私钥保存的文件 读取 私钥的base文本 String priKeyBase64 = IOUtils.readFile(new File("pri.txt")); // 把 私钥的Base64文本 转换为已编码的 私钥bytes byte[] encPriKey = new BASE64Decoder().decodeBuffer(priKeyBase64); // 创建 已编码的私钥规格 PKCS8EncodedKeySpec encPriKeySpec = new PKCS8EncodedKeySpec(encPriKey); // 获取指定算法的密钥工厂, 根据 已编码的私钥规格, 生成私钥对象 PrivateKey priKey_1 = KeyFactory.getInstance("RSA").generatePrivate(encPriKeySpec); // 1.3.2 反序列化生成密钥对象 // 公钥和私钥对象被序列号保存后，可以通过反序列化生成回对象。 // 创建对象输如流, 读取保存到指定文件的序列化对象 ObjectInputStream pubIn = new ObjectInputStream(new FileInputStream("pub.obj")); ObjectInputStream priIn = new ObjectInputStream(new FileInputStream("pri.obj")); // 从读取输如流读取对象, 反序列化生成 公钥/私钥 对象 PublicKey pubKey_2 = (PublicKey) pubIn.readObject(); PrivateKey priKey_2 = (PrivateKey) priIn.readObject(); // 关闭流 pubIn.close(); priIn.close(); // 2. RSA 加密/解密数据 // 2.1 公钥加密 // 获取指定算法的密码器 Cipher cipher = Cipher.getInstance("RSA"); // 初始化密码器（公钥加密模型） cipher.init(Cipher.ENCRYPT_MODE, pubKey); // 加密数据, 返回加密后的密文 byte[] plainData = "Hello World!".getBytes(); byte[] cipherData = cipher.doFinal(plainData); // 2.2 私钥解密 // 获取指定算法的密码器 Cipher cipher_2 = Cipher.getInstance("RSA"); // 初始化密码器（私钥解密模型） cipher_2.init(Cipher.DECRYPT_MODE, priKey); // 解密数据, 返回解密后的明文 byte[] plainData_2 = cipher_2.doFinal(cipherData); System.out.println(new String(plainData_2)); &#125;&#125; 3.2 MD5算法MD5的英文全称是Message Digest Algorithm MD5,译为消息摘要算法第五版,是众多哈希算法中的一种(哈希算法是一种可以将任意长度的输入转化为固定长度输出的算法)因此MD5算法是一种哈希算法,严格来说不能称之为一种加密算法. 3.2.1 MD5算法的优点 容易计算:主流的编程语言基本都支持MD5算法的实现,所以非常容易计算出一个数据的MD5值. 不可逆性:无法通过常规的方式从MD5值倒推出它的原文. 压缩性:任意长度的数据,其MD5值都是一个32位长度的十六进制字符串,区分大小写. 抗修改性:对原数据做一丁点的改动,MD5值就会有巨大的变动. 抗碰撞性:知道了原数据的MD5值,想要碰撞出这个MD5值,从而猜测出原数据,是非常困难的.所有的MD5值一共有2的128次方种可能性. 3.2.2 MD5算法的不足目前存在比较优的碰撞算法,因此在对安全性要求较高的场合,不建议直接使用MD5算法. 3.2.3 应用场景数据库中用户信息的存储. 但是因为彩虹表的存在,所以也并不可靠.(彩虹表就是一个庞大的数据库,这个数据库里收集了着所有人常用的密码,以及这些密码对应的MD5值,SHA-X值等哈希值) 针对彩虹表问题,可以使用加盐的解决方案. 加盐一般的做法: 客户端MD5(pwd) 服务端MD5(客户端MD5(pwd)+salt),服务端保存密码 和 盐 3.2.4 Java中的使用MD51234567891011121314151617181920212223import java.security.MessageDigest;public class Main &#123; public static String string2MD5(String inStr) throws Exception&#123; MessageDigest md5 = MessageDigest.getInstance("MD5"); char[] charArray = inStr.toCharArray(); byte[] byteArray = new byte[charArray.length]; for (int i = 0; i &lt; charArray.length; i++) byteArray[i] = (byte) charArray[i]; byte[] md5Bytes = md5.digest(byteArray); StringBuffer hexValue = new StringBuffer(); for (int i = 0; i &lt; md5Bytes.length; i++)&#123; int val = ((int) md5Bytes[i]) &amp; 0xff; if (val &lt; 16) hexValue.append("0"); hexValue.append(Integer.toHexString(val)); &#125; return hexValue.toString(); &#125; public static void main(String args[]) throws Exception&#123; String input = "Glenn"; System.out.println("MD5:"+string2MD5(input)); &#125;&#125; 3.2.5 MD5算法原理 数据填充: 对消息进行数据填充,使消息的长度对512取模得448,设消息长度为X, 即满足X mod 512=448. 根据此公式得出需要填充的数据长度. 填充方法:在消息后面进行填充, 填充第一位为1, 其余为0. 填充完后, 信息的长度就是512 * N+448. 添加消息长度: 用剩余的位置(512-448=64位)记录原文的真正长度,把长度的二进制值补在最后.这样处理后的信息长度就是512*(N+1). 如果消息长度大于2^64, 则只使用其低64位的值, 即 消息长度 对 2^64取模. 在此步骤进行完毕后, 最终消息长度就是512的整数倍. 数据处理(设置初始值):MD5的哈希结果长度为128位,按每32位分成一组共4组.这4组结果是由4个初始值A,B,C,D经过不断演变得到.MD5的官方实现中,A,B,C,D的初始值如下(16进制):4个常数:A = 0x01234567B = 0x89ABCDEFC = 0xFEDCBA98D = 0x76543210 数据处理(循环加工):使用如下四个函数循环加工,每一次循环都会让旧的ABCD产生新的ABCD.最后一次循环的结果即为MD5值.4个函数：F(X,Y,Z)=(X &amp; Y) | ((~X) &amp; Z)G(X,Y,Z)=(X &amp; Z) | (Y &amp; (~Z))H(X,Y,Z)=X ^ Y ^ ZI(X,Y,Z)=Y ^ (X | (~Z)) 4. 参考文献AES 加密算法的原理详解Java实现AES和RSA算法RSA公钥密码体制的原理及应用RSA 非对称加密原理（小白也能看懂哦~）Java 实现 RSA 非对称加密算法：生成密钥对、保存/读取密钥、加密/解密第一篇、MD5算法和SHA-1算法java中使用MD5加密技术MD5算法底层原理MD5加密算法原理及实现]]></content>
+      <categories>
+        <category>技术储备</category>
+      </categories>
+      <tags>
+        <tag>加密算法</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[ProtoBuf学习]]></title>
+    <url>%2F2019%2F06%2F03%2FProtoBuf%E5%AD%A6%E4%B9%A0%2F</url>
+    <content type="text"><![CDATA[1. 简介1.1 ProtoBuf是什么Protocol Buffers是一种平台无关, 语言无关, 可扩展且轻便高效的序列化数据结构的协议, 可以用于网络通信和数据存储. 1.2 ProtoBuf, XML, JSON比较将ProtoBuf, XML, JSON三者放到一起去比较, 应该区分两个维度.一个是数据结构化, 另一个是数据序列化.这里的数据结构化主要面向开发或业务层面, 数据序列化面向通信或存储层面, 当然数据序列化也需要”结构”和”格式”, 所以这两者之间的区别主要在于面向领域和场景不同, 一般要求和侧重点也会有所不同.数据结构化侧重人类可读性甚至有时会强调语义表达能力, 而数据序列化侧重效率和压缩. XML, JSON, ProtoBuf 都具有数据结构化和数据序列化的能力XML, JSON 更注重数据结构化, 关注人类可读性和语义表达能力.ProtoBuf 更注重数据序列化, 关注效率, 空间, 速度, 人类可读性差, 语义表达能力不足(为保证极致的效率, 会舍弃一部分元信息) 2. 语法参考Protocol Buffers 3.0 技术手册离线备份:Protocol Buffers 3.0 技术手册 3. 参考链接[索引]文章索引[翻译] ProtoBuf 官方文档（二）- 语法指引（proto2）Language Guide (proto3)Protocol Buffers 3.0 技术手册]]></content>
+      <categories>
+        <category>技术储备</category>
+      </categories>
+      <tags>
+        <tag>ProtoBuf</tag>
+      </tags>
+  </entry>
+  <entry>
     <title><![CDATA[Redis设计与实现--多机数据库的实现]]></title>
     <url>%2F2019%2F03%2F19%2FRedis%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0--%E5%A4%9A%E6%9C%BA%E6%95%B0%E6%8D%AE%E5%BA%93%E7%9A%84%E5%AE%9E%E7%8E%B0%2F</url>
     <content type="text"><![CDATA[1. 复制Redis支持主从复制功能,当Redis主服务器更新数据时能将数据同步到Redis从服务器. 通过命令: slaveof 主服务器ip地址, 形成主从关系, 完成复制. 旧版:Redis 2.8 以前的版本;新版:从Redis 2.8开始使用的版本. 1.1 旧版复制实现复制分为同步(sync)和命令传播(command propagate)两个操作. 同步操作用于将从服务器的数据库状态更新至主服务器当前所处的数据库状态.命令传播操作则用于在主服务器的数据库状态被修改,导致主从服务器的数据库状态出现不一致时,让主从服务器的数据库重新回到一致状态. 同步从向主服务器发送sync命令;主服务器收到sync命令执行BGSAVE,生成RDB文件,缓冲区同时记录从现在开始执行的所有命令;主服务器执行完毕BGSAVE命令,会将RDB文件发送给从服务器,从服务器接收并载入这个RDB文件,同步至主服务器状态;主服务器发送缓冲区的命令给从服务器,从服务器执行当前命令,保持数据最终一致. 命令传播主服务器会将客户端对它执行的写命令,发送给从服务器,使主从服务器状态保持一致. 旧版复制的缺点:从服务器断线后,并在重连之后,从服务需要完全重新复制主服务器的数据,效率非常低. 旧版复制的命令是SYNC,这是非常消耗资源的操作,理由如下: 主服务器需要执行BGSAVE来生成RDB文件,这个操作会消耗主服务器大量的CPU,内存和磁盘I/O资源. 主服务器将生成的RDB发送给从服务器,这个操作会消费主从服务器大量的网络资源. 接收到RDB文件的从服务器需要载入主服务器发来的RDB文件,并且在载入期间,从服务器会处于阻塞状态. 1.2 新版复制实现使用PSYNC命令替代了SYNC.该命令具有 完整重同步 和 部分重同步 两种模式.其中完整重同步用于处理初次复制情况,和SYNC类似而部分重同步则用于断线后重复制情况:当从服务器在断线后重新连接主服务器时,如果条件允许,主服务器可以将从服务器连接断开期间执行的写命令发送给从服务器,从服务器只要接收并执行这些写命令,就可以将数据更新至主服务器当前所处的状态. 部分重同步通过复制偏移量,复制积压缓冲区,服务器运行ID三个部分来实现. 其中复制偏移量+复制积压缓冲区其实类似于滑动窗口.服务器运行ID其实就是身份确认,用来说明当前服务器就是从服务器断线前连接的那个服务器. PSYNC命令的实现 1.3 复制步骤步骤1:设置主服务器的地址和端口步骤2:建立套接字连接步骤3:发送PING命令步骤4:身份验证步骤5:发送端口信息步骤6:同步步骤7:命令传播 1.4 心跳检测三个作用: 检测主从服务器的网络连接状态; 辅助实现min-slaves选项;(用于防止主服务器在不安全的情况下执行写命令,比如三个从服务器的延迟都大于10秒时,主服务器将拒绝执行写命令) 检测命令丢失.(类似于滑动窗口的作用) 2. SentinelSentinel是Redis高可用解决方案,由一个或多个Sentinel实例组成的Sentinel系统可以监视任意多个主服务器,以及这些主服务器属下的所有从服务器,并在被监视的主服务器进入下线状态时,自动将下线主服务器属下的某个从服务器升级为新的主服务器,然后由新的主服务器代替已下线的主服务器继续处理命令请求. Sentinel本质上是运行在特殊模式下的Redis服务器,只是端口和命令表等不同. Sentinel会创建两个连向被监视主/从服务器的异步网络连接,一个是命令连接,一个是订阅连接.Sentinel默认10秒一次向被监视的主服务器发送INFO命令,通过回复获取主服务器的当前信息(包括各个主服务器的slaves). 另外, 服务器选举用的是Raft算法. 3. 集群Redis集群是Redis提供的分布式数据库方案,集群通过分片来进行数据共享,并提供复制和故障转移功能. 3.1 节点连接各个节点的工作通过CLUSTER MEET ip port命令完成,A和B握手后,A会将B的信息通过Gossip协议传播给A所在集群中其他节点,让其他节点也与B握手; 3.2 槽指派Redis集群通过分片保存键值对,集群的整个数据库分成16384(2^14)个槽,有任何一个槽没被节点处理,则集群处于下线状态.通过向节点发送CLUSTER ADDSLOTS 0 1 2 3 …… 100命令,可以将一个或多个槽指派给节点负责.一个节点除了会将自己负责的槽记录在clusterNode的slots里,还会发送消息告知集群其他节点; 123456struct clusterNode&#123; // 用bitmap保存节点的槽 unsigned char slots[16384/8]; int numslots;&#125;; clusterState中的slots数组记录了集群所有槽的指派信息,而clusterNode.slots数组只记录了一个节点的槽指派; 123456typedef struct clusterState&#123; // 记录了每个槽由哪个clusterNode管理 clusterNode *slots[16384]; zskiplist *slots_to_keys;&#125; clusterState; 节点用键的CRC-16校验和计算槽号, CRC16(key) &amp; 16383;客户端向节点发送命令时,如果键所在槽没有指派给当前节点,返回MOVED错误,指引客户端重定向到正确节点; 集群节点和单机数据库类似,也保存键值对字典和过期字典,节点只能使用0号数据库.节点还会用clusterState中的slots_to_keys跳表来保存槽与键的关系,保存哪个键在哪个槽里,分值是槽号,可以快速获得同一个槽里的若干个键; 3.3 重新分片Redis集群的重新分片操作可以将任意数量已经指派给某个节点(源节点)的槽改为指派给另一个节点(目标节点),并且相关槽所属的键值对也会从源节点被移动到目标节点. 重新分片可以在线进行,在重新分片的过程中,集群不需要下线,并且源节点和目标节点都可以继续处理命令请求. 3.4 复制和故障转移集群中可以用CLUSTER REPLICATE node_id 让节点成为node_id的从节点,并开始对主节点复制,并告知集群其他节点; 每个节点定期向其他节点发送PING,如果一个主节点被半数以上主节点标记为下线,则标记为已下线.从它的从节点选举出新的主节点,和领头Sentinel的选举类似,先到先得,超过半数.然后执行SLAVE no one,成为新的主节点,负责处理槽,告知其他节点; 3.5 消息节点间主要有MEET,PING,PONG,FAIL,PUBLISH五种消息. 3.6 ASK错误和MOVED错误MOVED错误表示槽的负责权已经从一个节点转移到了另一个节点;ASK错误只是两个节点在迁移槽的过程中使用的一种临时措施. 4 参考文献&lt;&lt; Redis设计与实现 &gt;&gt; (黄健宏 著) 《Redis设计与实现》读书笔记——复制、Sentinel、集群]]></content>
@@ -56,9 +111,9 @@
         <category>高并发程序设计</category>
       </categories>
       <tags>
+        <tag>基础储备</tag>
         <tag>Java</tag>
         <tag>并发设计</tag>
-        <tag>基础储备</tag>
       </tags>
   </entry>
   <entry>
@@ -69,8 +124,8 @@
         <category>Java基础</category>
       </categories>
       <tags>
-        <tag>Java</tag>
         <tag>基础储备</tag>
+        <tag>Java</tag>
       </tags>
   </entry>
   <entry>
@@ -81,9 +136,9 @@
         <category>高并发程序设计</category>
       </categories>
       <tags>
+        <tag>基础储备</tag>
         <tag>Java</tag>
         <tag>并发设计</tag>
-        <tag>基础储备</tag>
       </tags>
   </entry>
   <entry>
@@ -94,9 +149,9 @@
         <category>高并发程序设计</category>
       </categories>
       <tags>
+        <tag>基础储备</tag>
         <tag>Java</tag>
         <tag>并发设计</tag>
-        <tag>基础储备</tag>
       </tags>
   </entry>
   <entry>
@@ -107,9 +162,9 @@
         <category>高并发程序设计</category>
       </categories>
       <tags>
+        <tag>基础储备</tag>
         <tag>Java</tag>
         <tag>并发设计</tag>
-        <tag>基础储备</tag>
       </tags>
   </entry>
   <entry>
@@ -120,9 +175,9 @@
         <category>高并发程序设计</category>
       </categories>
       <tags>
+        <tag>基础储备</tag>
         <tag>Java</tag>
         <tag>并发设计</tag>
-        <tag>基础储备</tag>
       </tags>
   </entry>
   <entry>
@@ -133,9 +188,9 @@
         <category>高并发程序设计</category>
       </categories>
       <tags>
+        <tag>基础储备</tag>
         <tag>Java</tag>
         <tag>并发设计</tag>
-        <tag>基础储备</tag>
       </tags>
   </entry>
   <entry>
@@ -146,8 +201,8 @@
         <category>Java基础</category>
       </categories>
       <tags>
-        <tag>Java</tag>
         <tag>基础储备</tag>
+        <tag>Java</tag>
       </tags>
   </entry>
   <entry>
@@ -158,8 +213,8 @@
         <category>Java基础</category>
       </categories>
       <tags>
-        <tag>Java</tag>
         <tag>基础储备</tag>
+        <tag>Java</tag>
       </tags>
   </entry>
   <entry>
@@ -170,9 +225,9 @@
         <category>高并发程序设计</category>
       </categories>
       <tags>
+        <tag>基础储备</tag>
         <tag>Java</tag>
         <tag>并发设计</tag>
-        <tag>基础储备</tag>
       </tags>
   </entry>
   <entry>
@@ -183,8 +238,8 @@
         <category>高并发程序设计</category>
       </categories>
       <tags>
-        <tag>Java</tag>
         <tag>基础储备</tag>
+        <tag>Java</tag>
         <tag>高并发程序设计</tag>
       </tags>
   </entry>
@@ -196,9 +251,9 @@
         <category>高并发程序设计</category>
       </categories>
       <tags>
+        <tag>基础储备</tag>
         <tag>Java</tag>
         <tag>并发设计</tag>
-        <tag>基础储备</tag>
       </tags>
   </entry>
   <entry>
@@ -209,8 +264,8 @@
         <category>Java</category>
       </categories>
       <tags>
-        <tag>Java</tag>
         <tag>基础储备</tag>
+        <tag>Java</tag>
       </tags>
   </entry>
   <entry>
@@ -221,9 +276,9 @@
         <category>高并发程序设计</category>
       </categories>
       <tags>
+        <tag>基础储备</tag>
         <tag>Java</tag>
         <tag>并发设计</tag>
-        <tag>基础储备</tag>
       </tags>
   </entry>
   <entry>
@@ -234,9 +289,9 @@
         <category>高并发程序设计</category>
       </categories>
       <tags>
+        <tag>基础储备</tag>
         <tag>Java</tag>
         <tag>并发设计</tag>
-        <tag>基础储备</tag>
       </tags>
   </entry>
   <entry>
@@ -247,8 +302,8 @@
         <category>Java基础</category>
       </categories>
       <tags>
-        <tag>Java</tag>
         <tag>基础储备</tag>
+        <tag>Java</tag>
       </tags>
   </entry>
   <entry>
@@ -749,8 +804,8 @@
         <category>后台开发</category>
       </categories>
       <tags>
-        <tag>Java</tag>
         <tag>基础储备</tag>
+        <tag>Java</tag>
         <tag>解决方案</tag>
       </tags>
   </entry>
@@ -762,8 +817,8 @@
         <category>Java基础</category>
       </categories>
       <tags>
-        <tag>Java</tag>
         <tag>基础储备</tag>
+        <tag>Java</tag>
       </tags>
   </entry>
   <entry>
@@ -774,8 +829,8 @@
         <category>后台开发</category>
       </categories>
       <tags>
-        <tag>Java</tag>
         <tag>基础储备</tag>
+        <tag>Java</tag>
         <tag>解决方案</tag>
       </tags>
   </entry>
@@ -798,8 +853,8 @@
         <category>计算机基础</category>
       </categories>
       <tags>
-        <tag>Java</tag>
         <tag>基础储备</tag>
+        <tag>Java</tag>
         <tag>JVM</tag>
       </tags>
   </entry>
@@ -882,8 +937,8 @@
         <category>Java基础</category>
       </categories>
       <tags>
-        <tag>Java</tag>
         <tag>基础储备</tag>
+        <tag>Java</tag>
         <tag>JVM</tag>
       </tags>
   </entry>
@@ -895,8 +950,8 @@
         <category>Java基础</category>
       </categories>
       <tags>
-        <tag>Java</tag>
         <tag>基础储备</tag>
+        <tag>Java</tag>
         <tag>JVM</tag>
       </tags>
   </entry>
@@ -908,8 +963,8 @@
         <category>Java基础</category>
       </categories>
       <tags>
-        <tag>Java</tag>
         <tag>基础储备</tag>
+        <tag>Java</tag>
         <tag>JVM</tag>
       </tags>
   </entry>
@@ -921,8 +976,8 @@
         <category>Java基础</category>
       </categories>
       <tags>
-        <tag>Java</tag>
         <tag>基础储备</tag>
+        <tag>Java</tag>
         <tag>JVM</tag>
       </tags>
   </entry>
@@ -934,8 +989,8 @@
         <category>Java基础</category>
       </categories>
       <tags>
-        <tag>Java</tag>
         <tag>基础储备</tag>
+        <tag>Java</tag>
       </tags>
   </entry>
   <entry>
@@ -946,8 +1001,8 @@
         <category>Java基础</category>
       </categories>
       <tags>
-        <tag>Java</tag>
         <tag>基础储备</tag>
+        <tag>Java</tag>
         <tag>JVM</tag>
       </tags>
   </entry>
@@ -959,8 +1014,8 @@
         <category>Java基础</category>
       </categories>
       <tags>
-        <tag>Java</tag>
         <tag>基础储备</tag>
+        <tag>Java</tag>
       </tags>
   </entry>
   <entry>
@@ -971,8 +1026,8 @@
         <category>Java基础</category>
       </categories>
       <tags>
-        <tag>Java</tag>
         <tag>基础储备</tag>
+        <tag>Java</tag>
       </tags>
   </entry>
   <entry>
@@ -983,8 +1038,8 @@
         <category>Java基础</category>
       </categories>
       <tags>
-        <tag>Java</tag>
         <tag>基础储备</tag>
+        <tag>Java</tag>
       </tags>
   </entry>
   <entry>
@@ -995,8 +1050,8 @@
         <category>Java基础</category>
       </categories>
       <tags>
-        <tag>Java</tag>
         <tag>基础储备</tag>
+        <tag>Java</tag>
       </tags>
   </entry>
   <entry>
@@ -1007,8 +1062,8 @@
         <category>Java基础</category>
       </categories>
       <tags>
-        <tag>Java</tag>
         <tag>基础储备</tag>
+        <tag>Java</tag>
       </tags>
   </entry>
   <entry>
@@ -1019,8 +1074,8 @@
         <category>Java基础</category>
       </categories>
       <tags>
-        <tag>Java</tag>
         <tag>基础储备</tag>
+        <tag>Java</tag>
       </tags>
   </entry>
   <entry>
@@ -1031,8 +1086,8 @@
         <category>Java基础</category>
       </categories>
       <tags>
-        <tag>Java</tag>
         <tag>基础储备</tag>
+        <tag>Java</tag>
       </tags>
   </entry>
   <entry>
@@ -1043,8 +1098,8 @@
         <category>Java基础</category>
       </categories>
       <tags>
-        <tag>Java</tag>
         <tag>基础储备</tag>
+        <tag>Java</tag>
       </tags>
   </entry>
   <entry>
@@ -1055,8 +1110,8 @@
         <category>Java基础</category>
       </categories>
       <tags>
-        <tag>Java</tag>
         <tag>基础储备</tag>
+        <tag>Java</tag>
       </tags>
   </entry>
   <entry>
@@ -1067,8 +1122,8 @@
         <category>Java基础</category>
       </categories>
       <tags>
-        <tag>Java</tag>
         <tag>基础储备</tag>
+        <tag>Java</tag>
       </tags>
   </entry>
   <entry>
