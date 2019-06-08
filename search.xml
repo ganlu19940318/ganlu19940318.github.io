@@ -1,6 +1,41 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title><![CDATA[RSA乘法同态性]]></title>
+    <url>%2F2019%2F06%2F07%2FRSA%E4%B9%98%E6%B3%95%E5%90%8C%E6%80%81%E6%80%A7%2F</url>
+    <content type="text"><![CDATA[1. 什么是乘法同态性已知条件:a * b = c(基础等式)加密函数e() 解密函数d() (enctrypt:加密; decrypt:解密) 推导结论:e(a) e(b) = e(c) (乘法同态特性)c = d(e(c)) = d(e(a) e(b)) 限制条件:上述e(a), e(b) 必须是同一公钥加密. 2. RSA乘法同态性Java验证123456789101112131415161718192021222324252627282930313233343536373839import java.math.BigInteger;import java.security.KeyPair;import java.security.KeyPairGenerator;import java.security.interfaces.RSAPrivateKey;import java.security.interfaces.RSAPublicKey;import java.util.Random;public class Main &#123; public static void main(String[] args) throws Exception&#123; // 1. 生成RSA密钥对 // 获取指定算法的密钥对生成器 KeyPairGenerator gen = KeyPairGenerator.getInstance("RSA"); // 初始化密钥对生成器（指定密钥长度, 使用默认的安全随机数源） gen.initialize(2048); // 随机生成一对密钥（包含公钥和私钥） KeyPair keyPair = gen.generateKeyPair(); // 获取 公钥 和 私钥 RSAPublicKey pubKey = (RSAPublicKey)keyPair.getPublic(); RSAPrivateKey priKey = (RSAPrivateKey)keyPair.getPrivate(); // 获得公私钥 和 公共模数 BigInteger E = pubKey.getPublicExponent(); BigInteger D = priKey.getPrivateExponent(); BigInteger N = pubKey.getModulus(); BigInteger a = BigInteger.valueOf(new Random().nextInt(Integer.MAX_VALUE)); BigInteger b = BigInteger.valueOf(new Random().nextInt(Integer.MAX_VALUE)); // 加密 BigInteger Ca = a.modPow(E, N); BigInteger Cb = b.modPow(E, N); // 密文相乘 BigInteger Cc = Ca.multiply(Cb).mod(N); // 解密 BigInteger Mc = Cc.modPow(D, N); // 验证 BigInteger val = a.multiply(b); System.out.println(Mc.compareTo(val)); &#125;&#125; 2.1 证明1234567891011若: A * B = C则: (A^d ∗ B^d) mod n = C^d mod n左边 = ( ( A^d mod n ) * ( B^d mod n ) ) ( mod n ) = ( A的密文 * B的密文 ) ( mod n )右边 = C的密文因此,将密文A与密文B的乘积 对 模数N 取余 后的结果就是 C的密文.对其解密后得到C, C就是明文A和明文B的乘积.特殊说明:如果A * B 大于等于 公共模数N, 即 C 大于等于 公共模数N, 则该方法存在问题. 2.2 注意事项RSA乘法同态性只对正整数有效. 3. 参考链接RSA乘法同态加密的python实现深入理解RSA算法]]></content>
+      <categories>
+        <category>技术储备</category>
+      </categories>
+      <tags>
+        <tag>RSA</tag>
+        <tag>乘法同态性</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[HDFS]]></title>
+    <url>%2F2019%2F06%2F05%2FHDFS%2F</url>
+    <content type="text"><![CDATA[1. 入门1.1 HDFS是什么HDFS(Hadoop Distributed File System, Hadoop分布式文件系统). 1.2 HDFS优缺点优点： 高容错性:数据自动保存多个副本,它通过增加副本的形式,提高容错性,某一个副本丢失以后,它可以自动恢复. 适合批处理:它是通过移动计算而不是移动数据实现的,它会把数据位置暴露给计算框架. 适合大数据处理:处理数据达到 GB,TB,甚至PB级别的数据,能够处理百万规模以上的文件数量,数量相当之大,能够处理10K节点的规模. 流式文件访问:一次写入,多次读取.文件一旦写入不能修改,只能追加,它能保证数据的一致性. 可构建在廉价机器上,它通过多副本机制,提高可靠性.它提供了容错和恢复机制,比如某一个副本丢失,可以通过其它副本来恢复. 缺点: 低延时数据访问:比如毫秒级的来存储数据,这是不行的,它做不到.它适合高吞吐率的场景,就是在某一时间内写入大量的数据.但是它在低延时的情况下是不行的,比如毫秒级以内读取数据,这样它是很难做到的. 小文件存储:存储大量小文件(这里的小文件是指小于HDFS系统的Block大小的文件,默认64M)的话,它会占用 NameNode大量的内存来存储文件,目录和块信息.这样是不可取的,因为NameNode的内存总是有限的.小文件存储的寻道时间会超过读取时间,它违反了HDFS的设计目标. 并发写入,文件随机修改.一个文件只能有一个写,不允许多个线程同时写.仅支持数据 append,不支持文件的随机修改. 1.3 HDFS架构HDFS 采用Master/Slave的架构来存储数据,这种架构主要由四个部分组成,分别为HDFS Client,NameNode,DataNode和Secondary NameNode. Client文件切分.文件上传 HDFS 的时候,Client 将文件切分成 一个一个的Block,然后进行存储.与 NameNode 交互,获取文件的位置信息.与 DataNode 交互,读取或者写入数据.Client 提供一些命令来管理 HDFS,比如启动或者关闭HDFS.Client 可以通过一些命令来访问 HDFS. NameNode(Master)管理 HDFS 的名称空间管理数据块(Block)映射信息配置副本策略处理客户端读写请求. DataNode(Slave)NameNode 下达命令,DataNode 执行实际的操作.存储实际的数据块.执行数据块的读/写操作. Secondary NameNode并非 NameNode 的热备.当NameNode 挂掉的时候,它并不能马上替换 NameNode 并提供服务.辅助 NameNode,分担其工作量.定期合并 fsimage和fsedits,并推送给NameNode.在紧急情况下,可辅助恢复 NameNode. 1.4 HDFS读取文件流程 首先调用FileSystem对象的open方法,其实获取的是一个DistributedFileSystem的实例. DistributedFileSystem通过RPC获得文件的第一批block的locations,同一block按照重复数会返回多个locations,这些locations按照hadoop拓扑结构排序,距离客户端近的排在前面. 前两步会返回一个FSDataInputStream对象,该对象会被封装成 DFSInputStream对象,DFSInputStream可以方便的管理datanode和namenode数据流.客户端调用read方法,DFSInputStream就会找出离客户端最近的datanode并连接datanode. 数据从datanode源源不断的流向客户端. 如果第一个block块的数据读完了,就会关闭指向第一个block块的datanode连接,接着读取下一个block块.这些操作对客户端来说是透明的,从客户端的角度来看只是读一个持续不断的流. 如果第一批block都读完了,DFSInputStream就会去namenode拿下一批blocks的location,然后继续读,如果所有的block块都读完,这时就会关闭掉所有的流. 1.5 HDFS写入文件流程 客户端通过调用 DistributedFileSystem 的create方法,创建一个新的文件. DistributedFileSystem 通过 RPC调用 NameNode,去创建一个没有blocks关联的新文件.创建前,NameNode 会做各种校验,比如文件是否存在,客户端有无权限去创建等.如果校验通过,NameNode 就会记录下新文件,否则就会抛出IO异常. 前两步结束后会返回 FSDataOutputStream 的对象,和读文件的时候相似,FSDataOutputStream 被封装成 DFSOutputStream,DFSOutputStream 可以协调 NameNode和 DataNode.客户端开始写数据到DFSOutputStream,DFSOutputStream会把数据切成一个个小packet,然后排成队列 data queue. DataStreamer 会去处理接受 data queue,它先问询 NameNode 这个新的 block 最适合存储的在哪几个DataNode里,比如重复数是3,那么就找到3个最适合的 DataNode,把它们排成一个 pipeline.DataStreamer 把 packet 按队列输出到管道的第一个 DataNode 中,第一个 DataNode又把 packet 输出到第二个 DataNode 中,以此类推. DFSOutputStream 还有一个队列叫 ack queue,也是由 packet 组成,等待DataNode的收到响应,当pipeline中的所有DataNode都表示已经收到的时候,这时akc queue才会把对应的packet包移除掉. 客户端完成写数据后,调用close方法关闭写入流. DataStreamer 把剩余的包都刷到 pipeline 里,然后等待 ack 信息,收到最后一个 ack 后,通知 DataNode 把文件标示为已完成. 2. 参考文献&lt;&lt;Hadoop权威指南&gt;&gt;初步掌握HDFS的架构及原理]]></content>
+      <categories>
+        <category>技术储备</category>
+      </categories>
+      <tags>
+        <tag>HDFS</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[Yarn]]></title>
+    <url>%2F2019%2F06%2F05%2FYarn%2F</url>
+    <content type="text"><![CDATA[0. 前言概念了解参考&lt;&lt; 架构大数据 大数据技术及算法解析 &gt;&gt;深入理解参考&lt;&lt; Hadoop Yarn权威指南 &gt;&gt; 1. Hadoop MapReduceMapReduce是一种用于大规模数据集的并行运算的编程模型.它方便了编程人员在不会分布式并行编程的情况下,将自己的程序运行在分布式系统上. 1.1 Hadoop MapReduce第一代(MRv1)1.1.1 组件图 1.1.2 存在的问题 JobTracker是MapReduce的集中处理点,存在单点故障. JobTracker完成了太多的任务,造成了过多的资源消耗,当MapReduce作业非常多的时候,会造成很大的内存开销,也增加了JobTracker失败的风险. 在TaskTracker端,以Map/Reduce Task的数目作为资源的表示过于简单,没有考虑到CPU/内存的占用情况,如果两个大内存消耗的Task被调度到了一起,很容易出现内存不足. 在TaskTracker端,把资源强化分为Map Task Slot和Reduce Task Slot,如果系统中只有Map Task或者只有Reduce Task,会造成资源的浪费,也就是集群资源利用的问题. 其他:源代码层面分析时,会发现代码非常难读,常常因为一个class做了太多的事情,代码量达3000多行,造成class的任务不清晰,增加bug修复和版本维护的难度; 从操作的角度来看,MapReduce框架在有任何变化时,都会强制进行系统级别的升级更新.不管用户的喜好,强制让分布式集群系统的每一个用户端同时更新,这些更新会让用户为了验证他们之前的应用程序是不是适用新的Hadoop版本而浪费大量时间. 1.2 Hadoop MapReduce第二代(Yarn)1.2.1 组件图 2. Yarn的工作流程 步骤1: 用户向Yarn提交应用程序,其中包括用户程序、相关文件、启动ApplicationMaster命令、ApplicationMaster程序等. 步骤2: ResourceManager为该应用程序分配第一个Container,并且与Container所在的NodeManager通信,并且要求该NodeManager在这个Container中启动应用程序对应的ApplicationMaster. 步骤3: ApplicationMaster首先会向ResourceManager注册,这样用户才可以直接通过ResourceManager查看到应用程序的运行状态,然后它为准备为该应用程序的各个任务申请资源,并监控它们的运行状态直到运行结束,即重复后面4~7步骤. 步骤4: ApplicationMaster采用轮询的方式通过RPC协议向ResourceManager申请和领取资源. 步骤5: 一旦ApplicationMaster申请到资源后,便会与申请到的Container所对应的NodeManager进行通信,并且要求它在该Container中启动任务. 步骤6: 任务启动.NodeManager为要启动的任务配置好运行环境,包括环境变量、JAR包、二进制程序等,并且将启动命令写在一个脚本里,通过该脚本运行任务. 步骤7: 各个任务通过RPC协议向其对应的ApplicationMaster汇报自己的运行状态和进度,以让ApplicationMaster随时掌握各个任务的运行状态,从而可以再任务运行失败时重启任务. 步骤8: 应用程序运行完毕后,其对应的ApplicationMaster会向ResourceManager通信,要求注销和关闭自己. 3. MapReduce的几个阶段 整个流程可以分为 Split, Map, Shuffle, Reduce, Output 五个阶段. 3.1 Split在 Split 阶段会把需要处理的数据划分为不同的切片; 把个切片交给不同 Map 程序进行处理; 切片后数据会被解析为 key-value 对输入到 Map 进行处理. 3.2 Map在 Map 阶段可以对输入的 key-value 对进行处理后再以 key-value 对的形式输出. 3.3 Shuffleshuffle 的目的是保证 Reduce 处理的数据是有序的,并且尽可能的减少时间和资源消耗. Shuffle 过程需要分别在 Map 端和 Reduce 端进行. 3.3.1 Map Shuffle 在 Map 端的 Shuffle 过程是对 Map 的输出结果进行一系列处理,最终得到分区有序的文件.分区指的是需要同一个 Reduce 处理的数据存储在一起;有序指的是同一个分区内的数据按照 key 升序排列.整体流程如下: Partition: Partition 阶段计算并保存 Map 输出的每对 key-value 需要发送到的 Reduce 编号. Spill: Map 输出的数据需要先输出到一个叫做 kvbuffer 的内存缓冲区, 等缓冲区到达阈值的时候一次性把数据写入硬盘, 这个过程叫做 spill. kvbuffer 的大小默认是 100M, 阈值是 80%. 这样设计的目的是为了提高写数据的效率, 同时保证写数据的时候不会阻塞 Map 的输出. Sort: 在溢写之前会对缓冲区中的数据按照 Partition 和 key 进行升序排列,然后再写入硬盘.排序的结果就是 kvbuffer 中的数据是按照 Partition 聚集在一起,同一 Partition 中的数据按照 key 有序排列. Merge: 如果 Map 的输出数据量很大, 可能会进行好几次 Spill 操作, 产生很多溢写文件. Map 输出完毕后我们还需把所有的 Spill 文件 Merge 为一个文件.最终的合并结果仍然保证数据按照 Partition 聚集在一起,同一 Partition 中的数据按照 key 有序排列. 3.3.2 Reduce Shuffle在 Reduce 端 Shuffle 的目的是从不同的 Map 端获取数据,进行排序合并后输入给 Reduce. copy: Reduce 端会从 Map 端的合并文件中下载对应自己的那一部分数据.如果数据量较小会放在内存中,数据量较大的话会写入磁盘. megre &amp;&amp; sort &amp;&amp; grouping: 把来自不同 Map 的数据 边合并 边按照 key 进行排序.把所有 value 按照 key 聚合到一个个的迭代器中, 形成新的 key-value 对. 这些新的 key-value 对会输入给 Reduce 进行处理. 3.4 Reduce在 Reduce 阶段可以对输入的 key-value 对进行处理后再以 key-value 对的形式输出. 4. 参考链接&lt;&lt; 架构大数据 大数据技术及算法解析 &gt;&gt;&lt;&lt; Hadoop Yarn权威指南 &gt;&gt;MapReduce运行机制Yarn框架和工作流程研究]]></content>
+      <categories>
+        <category>技术储备</category>
+      </categories>
+      <tags>
+        <tag>Yarn</tag>
+        <tag>Hadoop</tag>
+      </tags>
+  </entry>
+  <entry>
     <title><![CDATA[gRPC框架]]></title>
     <url>%2F2019%2F06%2F04%2FgRPC%E6%A1%86%E6%9E%B6%2F</url>
     <content type="text"><![CDATA[1. 简介1.1 认识RPC1.1.1 什么是RPCRPC(Remote Procedure Call)中文名「远程过程调用」.「过程」也叫方法或函数,「远程」就是说方法不在当前进程里,而是在其他进程或机器上面. 合起来 RPC 就是调用其他进程或机器上面的函数. 在没有网络的时代,程序都是单机版的,所有逻辑都必须在同一个进程里.进程之间就像高楼大厦里面陌生的邻居,大家无法共享,遇到同样的功能只能重复实现一次.显然进程的障碍是逆天的,不符合先进生产力的发展方向,这个时候「进程间通信」的需求出现了,大家要求进程之间能够相互交流,相互共享和调用.这样再写程序,就可以利用进程间通信机制来调用和共享已经存在的功能了.随着网络的出现,进程的隔阂进一步消除,不光同一栋楼里的邻居可以共享资源,其他小区,甚至其他城市的居民都可以通过互联网互相调用,这就是 RPC.概念很容易理解,但是远程和本地的实现原理有很大区别,架构设计者的职责就是设计一个机制让远程调用服务就像调本地服务一样简单,这就是 RPC 框架. 1.1.2 基本原理RPC 框架的目标就是让远程服务调用更加简单,透明,RPC 框架负责屏蔽底层的传输方式(TCP 或者 UDP),序列化方式(XML/Json/ 二进制)和通信细节.服务调用者可以像调用本地接口一样调用远程的服务提供者,而不需要关心底层通信细节和调用过程. RPC 首要解决的是通讯的问题,主流的 RPC 框架分为基于 HTTP 和基于 TCP 的两种. 基于 HTTP 的 RPC 调用很简单,就和我们访问网页一样,只是它的返回结果更单一(JSON 或 XML).它的优点在于实现简单,标准化和跨语言,比较适合对外提供 OpenAPI 的场景,而它的缺点是 HTTP 协议传输效率较低,短连接开销较大(HTTP 2.0 后有很大改进). 基于 TCP 的 RPC 调用,由于 TCP 协议处于协议栈的下层,能够更加灵活地对协议字段进行定制,减少网络开销,提高性能,实现更大的吞吐量和并发数.但是需要更多地关注底层复杂的细节,跨语言和跨平台难度大,实现的代价更高,它比较适合内部系统之间追求极致性能的场景. RPC 调用的基本流程: 调用方(Client)通过本地的 RPC 代理(Proxy)调用相应的接口 本地代理将 RPC 的服务名,方法名和参数等等信息转换成一个标准的 RPC Request 对象交给 RPC 框架 RPC 框架采用 RPC 协议(RPC Protocol)将 RPC Request 对象序列化成二进制形式,然后通过 TCP 通道传递给服务提供方 (Server) 服务端(Server)收到二进制数据后,将它反序列化成 RPC Request 对象 服务端(Server)根据 RPC Request 中的信息找到本地对应的方法,传入参数执行,得到结果,并将结果封装成 RPC Response 交给 RPC 框架 RPC 框架通过 RPC 协议(RPC Protocol)将 RPC Response 对象序列化成二进制形式,然后通过 TCP 通道传递给服务调用方(Client) 调用方(Client)收到二进制数据后,将它反序列化成 RPC Response 对象,并且将结果通过本地代理(Proxy)返回给业务代码 因为在 TCP 通道里传输的数据只能是二进制形式的,所以必须将数据结构或对象转换成二进制串传递给对方,这个过程就叫「序列化」.而相反,收到对方的二进制串后把它转换成数据结构或对象的过程叫「反序列化」.而序列化和反序列化的规则就叫「协议」. 1.2 认识gRPC1.2.1 gRPC简介gRPC 是一个高性能,开源和通用的 RPC 框架,面向服务端和移动端,基于 HTTP/2 设计. gRPC 的调用示例如下所示: 1.2.2 gRPC特点 语言中立,支持多种语言; 基于 IDL 文件定义服务,通过 proto3 工具生成指定语言的数据结构,服务端接口以及客户端 Stub; 通信协议基于标准的 HTTP/2 设计,支持双向流,消息头压缩,单 TCP 的多路复用,服务端推送等特性,这些特性使得 gRPC 在移动端设备上更加省电和节省网络流量; 序列化支持 PB(Protocol Buffer)和 JSON,PB 是一种语言无关的高性能序列化框架,基于 HTTP/2 + PB, 保障了 RPC 调用的高性能. 1.2.3 gRPC原理一个RPC框架必须有两个基础的组成部分:数据的序列化和进程数据通信的交互方式. 对于序列化gRPC采用了自家公司开源的Protobuf. 关于进程间的通讯,无疑是Socket.Java方面gRPC同样使用了成熟的开源框架Netty,使用Netty Channel作为数据通道,传输协议使用了HTTP2. 通过以上的分析,可以将一个完整的gRPC流程总结为以下几步: 通过.proto文件定义传输的接口和消息体. 通过protocol编译器生成server端和client端的stub程序. 将请求封装成HTTP2的Stream. 通过Channel作为数据通信通道使用Socket进行数据传输. 2. 示例2.1 Maven配置1234567891011121314151617181920212223242526272829303132333435363738394041424344454647484950515253545556&lt;!--添加grpc依赖（包含TCP通信和protobuf序列化和反序列化）--&gt;&lt;dependencies&gt; &lt;dependency&gt; &lt;groupId&gt;io.grpc&lt;/groupId&gt; &lt;artifactId&gt;grpc-netty-shaded&lt;/artifactId&gt; &lt;version&gt;1.21.0&lt;/version&gt; &lt;/dependency&gt; &lt;dependency&gt; &lt;groupId&gt;io.grpc&lt;/groupId&gt; &lt;artifactId&gt;grpc-protobuf&lt;/artifactId&gt; &lt;version&gt;1.21.0&lt;/version&gt; &lt;/dependency&gt; &lt;dependency&gt; &lt;groupId&gt;io.grpc&lt;/groupId&gt; &lt;artifactId&gt;grpc-stub&lt;/artifactId&gt; &lt;version&gt;1.21.0&lt;/version&gt; &lt;/dependency&gt;&lt;/dependencies&gt;&lt;!--添加编译proto文件的编译程序和对应的编译插件。--&gt;&lt;build&gt; &lt;extensions&gt; &lt;extension&gt; &lt;groupId&gt;kr.motd.maven&lt;/groupId&gt; &lt;artifactId&gt;os-maven-plugin&lt;/artifactId&gt; &lt;version&gt;1.5.0.Final&lt;/version&gt; &lt;/extension&gt; &lt;/extensions&gt; &lt;plugins&gt; &lt;plugin&gt; &lt;groupId&gt;org.xolstice.maven.plugins&lt;/groupId&gt; &lt;artifactId&gt;protobuf-maven-plugin&lt;/artifactId&gt; &lt;version&gt;0.5.1&lt;/version&gt; &lt;configuration&gt; &lt;protocArtifact&gt;com.google.protobuf:protoc:3.7.1:exe:$&#123;os.detected.classifier&#125;&lt;/protocArtifact&gt; &lt;pluginId&gt;grpc-java&lt;/pluginId&gt; &lt;pluginArtifact&gt;io.grpc:protoc-gen-grpc-java:1.21.0:exe:$&#123;os.detected.classifier&#125;&lt;/pluginArtifact&gt; &lt;/configuration&gt; &lt;executions&gt; &lt;execution&gt; &lt;goals&gt; &lt;goal&gt;compile&lt;/goal&gt; &lt;goal&gt;compile-custom&lt;/goal&gt; &lt;/goals&gt; &lt;/execution&gt; &lt;/executions&gt; &lt;/plugin&gt; &lt;plugin&gt; &lt;groupId&gt;org.apache.maven.plugins&lt;/groupId&gt; &lt;artifactId&gt;maven-compiler-plugin&lt;/artifactId&gt; &lt;configuration&gt; &lt;source&gt;6&lt;/source&gt; &lt;target&gt;6&lt;/target&gt; &lt;/configuration&gt; &lt;/plugin&gt; &lt;/plugins&gt;&lt;/build&gt; 2.2 编写并编译proto文件2.2.1 编写proto文件123456789101112131415161718192021222324syntax = &quot;proto3&quot;;option java_multiple_files = true;option java_package = &quot;io.grpc.examples.helloworld&quot;;option java_outer_classname = &quot;HelloWorldProto&quot;;option objc_class_prefix = &quot;HLW&quot;;package helloworld;// The greeting service definition.service Greeter &#123; // Sends a greeting rpc SayHello (HelloRequest) returns (HelloReply) &#123;&#125;&#125;// The request message containing the user&apos;s name.message HelloRequest &#123; string name = 1;&#125;// The response message containing the greetingsmessage HelloReply &#123; string message = 1;&#125; 2.2.2 编译proto文件参考java下使用gRPC的helloworld的demo实现 编译proto文件生成对应的java文件,方法是: 右击Maven.Projects\protobuf\protobuf:compile,选择run,生成用于序列化的java文件. 再右击Maven.Projects\protobuf\protobuf:compile-custom,选择run,生成用于rpc的java代码. 2.3 客户端Java代码12345678910111213141516171819202122232425262728293031323334353637import io.grpc.ManagedChannel;import io.grpc.ManagedChannelBuilder;import io.grpc.examples.helloworld.GreeterGrpc;import io.grpc.examples.helloworld.HelloReply;import io.grpc.examples.helloworld.HelloRequest;import java.util.concurrent.TimeUnit;import java.util.logging.Logger;public class HelloWorldClient &#123; private final ManagedChannel channel; private final GreeterGrpc.GreeterBlockingStub blockingStub; private static final Logger logger = Logger.getLogger(HelloWorldClient.class.getName()); public HelloWorldClient(String host,int port)&#123; channel = ManagedChannelBuilder.forAddress(host,port) .usePlaintext(true) .build(); blockingStub = GreeterGrpc.newBlockingStub(channel); &#125; public void greet(String name)&#123; HelloRequest request = HelloRequest.newBuilder().setName(name).build(); HelloReply response; response = blockingStub.sayHello(request); logger.info("Message from gRPC-Server: "+response.getMessage()); &#125; public void shutdown() throws InterruptedException &#123; channel.shutdown().awaitTermination(5, TimeUnit.SECONDS); &#125; public static void main(String[] args) throws Exception&#123; HelloWorldClient client = new HelloWorldClient("127.0.0.1",50051); String user = "world"; client.greet(user); client.shutdown(); &#125;&#125; 2.4 服务端Java代码123456789101112131415161718192021222324252627282930313233343536373839404142import io.grpc.Server;import io.grpc.ServerBuilder;import io.grpc.examples.helloworld.GreeterGrpc;import io.grpc.examples.helloworld.HelloReply;import io.grpc.examples.helloworld.HelloRequest;import io.grpc.stub.StreamObserver;import java.io.IOException;import java.util.logging.Logger;public class HelloWorldServer &#123; private static final Logger logger = Logger.getLogger(HelloWorldServer.class.getName()); private int port = 50051; private Server server; private void start() throws IOException &#123; server = ServerBuilder.forPort(port) .addService(new GreeterImpl()) .build() .start(); logger.info("Server started, listening on "+ port); &#125; public static void main(String[] args) throws Exception&#123; final HelloWorldServer server = new HelloWorldServer(); server.start(); Thread.sleep(3600000); &#125; // 实现 定义一个实现服务接口的类 private class GreeterImpl extends GreeterGrpc.GreeterImplBase &#123; @Override public void sayHello(HelloRequest req, StreamObserver&lt;HelloReply&gt; responseObserver)&#123; HelloReply reply = HelloReply.newBuilder().setMessage(("Hello "+req.getName())).build(); responseObserver.onNext(reply); responseObserver.onCompleted(); System.out.println("Message from gRPC-Client:" + req.getName()); &#125; &#125;&#125; 3. 参考链接聊聊 Node.js RPC（一）— 协议gRPC基于Golang和Java的简单实现gRPC 官方文档中文版深入浅出 gRPC 01：gRPC 服务端创建和调用原理java下使用gRPC的helloworld的demo实现Github官方示例代码:grpc-java/examples/]]></content>
@@ -111,9 +146,9 @@
         <category>高并发程序设计</category>
       </categories>
       <tags>
-        <tag>基础储备</tag>
         <tag>Java</tag>
         <tag>并发设计</tag>
+        <tag>基础储备</tag>
       </tags>
   </entry>
   <entry>
@@ -124,8 +159,8 @@
         <category>Java基础</category>
       </categories>
       <tags>
-        <tag>基础储备</tag>
         <tag>Java</tag>
+        <tag>基础储备</tag>
       </tags>
   </entry>
   <entry>
@@ -136,9 +171,9 @@
         <category>高并发程序设计</category>
       </categories>
       <tags>
-        <tag>基础储备</tag>
         <tag>Java</tag>
         <tag>并发设计</tag>
+        <tag>基础储备</tag>
       </tags>
   </entry>
   <entry>
@@ -149,9 +184,9 @@
         <category>高并发程序设计</category>
       </categories>
       <tags>
-        <tag>基础储备</tag>
         <tag>Java</tag>
         <tag>并发设计</tag>
+        <tag>基础储备</tag>
       </tags>
   </entry>
   <entry>
@@ -162,9 +197,9 @@
         <category>高并发程序设计</category>
       </categories>
       <tags>
-        <tag>基础储备</tag>
         <tag>Java</tag>
         <tag>并发设计</tag>
+        <tag>基础储备</tag>
       </tags>
   </entry>
   <entry>
@@ -175,9 +210,9 @@
         <category>高并发程序设计</category>
       </categories>
       <tags>
-        <tag>基础储备</tag>
         <tag>Java</tag>
         <tag>并发设计</tag>
+        <tag>基础储备</tag>
       </tags>
   </entry>
   <entry>
@@ -188,9 +223,9 @@
         <category>高并发程序设计</category>
       </categories>
       <tags>
-        <tag>基础储备</tag>
         <tag>Java</tag>
         <tag>并发设计</tag>
+        <tag>基础储备</tag>
       </tags>
   </entry>
   <entry>
@@ -201,8 +236,8 @@
         <category>Java基础</category>
       </categories>
       <tags>
-        <tag>基础储备</tag>
         <tag>Java</tag>
+        <tag>基础储备</tag>
       </tags>
   </entry>
   <entry>
@@ -213,8 +248,8 @@
         <category>Java基础</category>
       </categories>
       <tags>
-        <tag>基础储备</tag>
         <tag>Java</tag>
+        <tag>基础储备</tag>
       </tags>
   </entry>
   <entry>
@@ -225,9 +260,9 @@
         <category>高并发程序设计</category>
       </categories>
       <tags>
-        <tag>基础储备</tag>
         <tag>Java</tag>
         <tag>并发设计</tag>
+        <tag>基础储备</tag>
       </tags>
   </entry>
   <entry>
@@ -238,8 +273,8 @@
         <category>高并发程序设计</category>
       </categories>
       <tags>
-        <tag>基础储备</tag>
         <tag>Java</tag>
+        <tag>基础储备</tag>
         <tag>高并发程序设计</tag>
       </tags>
   </entry>
@@ -251,9 +286,9 @@
         <category>高并发程序设计</category>
       </categories>
       <tags>
-        <tag>基础储备</tag>
         <tag>Java</tag>
         <tag>并发设计</tag>
+        <tag>基础储备</tag>
       </tags>
   </entry>
   <entry>
@@ -264,8 +299,8 @@
         <category>Java</category>
       </categories>
       <tags>
-        <tag>基础储备</tag>
         <tag>Java</tag>
+        <tag>基础储备</tag>
       </tags>
   </entry>
   <entry>
@@ -276,9 +311,9 @@
         <category>高并发程序设计</category>
       </categories>
       <tags>
-        <tag>基础储备</tag>
         <tag>Java</tag>
         <tag>并发设计</tag>
+        <tag>基础储备</tag>
       </tags>
   </entry>
   <entry>
@@ -289,9 +324,9 @@
         <category>高并发程序设计</category>
       </categories>
       <tags>
-        <tag>基础储备</tag>
         <tag>Java</tag>
         <tag>并发设计</tag>
+        <tag>基础储备</tag>
       </tags>
   </entry>
   <entry>
@@ -302,8 +337,8 @@
         <category>Java基础</category>
       </categories>
       <tags>
-        <tag>基础储备</tag>
         <tag>Java</tag>
+        <tag>基础储备</tag>
       </tags>
   </entry>
   <entry>
@@ -804,8 +839,8 @@
         <category>后台开发</category>
       </categories>
       <tags>
-        <tag>基础储备</tag>
         <tag>Java</tag>
+        <tag>基础储备</tag>
         <tag>解决方案</tag>
       </tags>
   </entry>
@@ -817,8 +852,8 @@
         <category>Java基础</category>
       </categories>
       <tags>
-        <tag>基础储备</tag>
         <tag>Java</tag>
+        <tag>基础储备</tag>
       </tags>
   </entry>
   <entry>
@@ -829,8 +864,8 @@
         <category>后台开发</category>
       </categories>
       <tags>
-        <tag>基础储备</tag>
         <tag>Java</tag>
+        <tag>基础储备</tag>
         <tag>解决方案</tag>
       </tags>
   </entry>
@@ -853,8 +888,8 @@
         <category>计算机基础</category>
       </categories>
       <tags>
-        <tag>基础储备</tag>
         <tag>Java</tag>
+        <tag>基础储备</tag>
         <tag>JVM</tag>
       </tags>
   </entry>
@@ -937,8 +972,8 @@
         <category>Java基础</category>
       </categories>
       <tags>
-        <tag>基础储备</tag>
         <tag>Java</tag>
+        <tag>基础储备</tag>
         <tag>JVM</tag>
       </tags>
   </entry>
@@ -950,8 +985,8 @@
         <category>Java基础</category>
       </categories>
       <tags>
-        <tag>基础储备</tag>
         <tag>Java</tag>
+        <tag>基础储备</tag>
         <tag>JVM</tag>
       </tags>
   </entry>
@@ -963,8 +998,8 @@
         <category>Java基础</category>
       </categories>
       <tags>
-        <tag>基础储备</tag>
         <tag>Java</tag>
+        <tag>基础储备</tag>
         <tag>JVM</tag>
       </tags>
   </entry>
@@ -976,8 +1011,8 @@
         <category>Java基础</category>
       </categories>
       <tags>
-        <tag>基础储备</tag>
         <tag>Java</tag>
+        <tag>基础储备</tag>
         <tag>JVM</tag>
       </tags>
   </entry>
@@ -989,8 +1024,8 @@
         <category>Java基础</category>
       </categories>
       <tags>
-        <tag>基础储备</tag>
         <tag>Java</tag>
+        <tag>基础储备</tag>
       </tags>
   </entry>
   <entry>
@@ -1001,8 +1036,8 @@
         <category>Java基础</category>
       </categories>
       <tags>
-        <tag>基础储备</tag>
         <tag>Java</tag>
+        <tag>基础储备</tag>
         <tag>JVM</tag>
       </tags>
   </entry>
@@ -1014,8 +1049,8 @@
         <category>Java基础</category>
       </categories>
       <tags>
-        <tag>基础储备</tag>
         <tag>Java</tag>
+        <tag>基础储备</tag>
       </tags>
   </entry>
   <entry>
@@ -1026,8 +1061,8 @@
         <category>Java基础</category>
       </categories>
       <tags>
-        <tag>基础储备</tag>
         <tag>Java</tag>
+        <tag>基础储备</tag>
       </tags>
   </entry>
   <entry>
@@ -1038,8 +1073,8 @@
         <category>Java基础</category>
       </categories>
       <tags>
-        <tag>基础储备</tag>
         <tag>Java</tag>
+        <tag>基础储备</tag>
       </tags>
   </entry>
   <entry>
@@ -1050,8 +1085,8 @@
         <category>Java基础</category>
       </categories>
       <tags>
-        <tag>基础储备</tag>
         <tag>Java</tag>
+        <tag>基础储备</tag>
       </tags>
   </entry>
   <entry>
@@ -1062,8 +1097,8 @@
         <category>Java基础</category>
       </categories>
       <tags>
-        <tag>基础储备</tag>
         <tag>Java</tag>
+        <tag>基础储备</tag>
       </tags>
   </entry>
   <entry>
@@ -1074,8 +1109,8 @@
         <category>Java基础</category>
       </categories>
       <tags>
-        <tag>基础储备</tag>
         <tag>Java</tag>
+        <tag>基础储备</tag>
       </tags>
   </entry>
   <entry>
@@ -1086,8 +1121,8 @@
         <category>Java基础</category>
       </categories>
       <tags>
-        <tag>基础储备</tag>
         <tag>Java</tag>
+        <tag>基础储备</tag>
       </tags>
   </entry>
   <entry>
@@ -1098,8 +1133,8 @@
         <category>Java基础</category>
       </categories>
       <tags>
-        <tag>基础储备</tag>
         <tag>Java</tag>
+        <tag>基础储备</tag>
       </tags>
   </entry>
   <entry>
@@ -1110,8 +1145,8 @@
         <category>Java基础</category>
       </categories>
       <tags>
-        <tag>基础储备</tag>
         <tag>Java</tag>
+        <tag>基础储备</tag>
       </tags>
   </entry>
   <entry>
@@ -1122,8 +1157,8 @@
         <category>Java基础</category>
       </categories>
       <tags>
-        <tag>基础储备</tag>
         <tag>Java</tag>
+        <tag>基础储备</tag>
       </tags>
   </entry>
   <entry>

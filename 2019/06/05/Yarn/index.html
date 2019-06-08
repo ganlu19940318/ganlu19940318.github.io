@@ -1,0 +1,1312 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-CN">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=6.4.1" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=6.4.1">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=6.4.1">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=6.4.1">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=6.4.1" color="#222">
+
+
+
+
+
+
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '6.4.1',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="keywords" content="Yarn,Hadoop">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Yarn">
+<meta property="og:url" content="http://ganlu19940318.github.io/2019/06/05/Yarn/index.html">
+<meta property="og:site_name" content="glennlgan的个人博客">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="https://blogpictures-1257055754.cos.ap-guangzhou.myqcloud.com/TIM%E6%88%AA%E5%9B%BE20190608003309.jpg">
+<meta property="og:image" content="https://blogpictures-1257055754.cos.ap-guangzhou.myqcloud.com/TIM%E6%88%AA%E5%9B%BE20190608003320.jpg">
+<meta property="og:image" content="https://blogpictures-1257055754.cos.ap-guangzhou.myqcloud.com/20160315144119726">
+<meta property="og:image" content="https://blogpictures-1257055754.cos.ap-guangzhou.myqcloud.com/TIM%E6%88%AA%E5%9B%BE20190608005345.jpg">
+<meta property="og:image" content="https://blogpictures-1257055754.cos.ap-guangzhou.myqcloud.com/TIM%E6%88%AA%E5%9B%BE20190608005742.jpg">
+<meta property="og:updated_time" content="2019-06-08T03:45:50.109Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Yarn">
+<meta name="twitter:image" content="https://blogpictures-1257055754.cos.ap-guangzhou.myqcloud.com/TIM%E6%88%AA%E5%9B%BE20190608003309.jpg">
+
+
+
+
+
+
+  <link rel="canonical" href="http://ganlu19940318.github.io/2019/06/05/Yarn/"/>
+
+
+
+<script type="text/javascript" id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>Yarn | glennlgan的个人博客</title>
+  
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style type="text/css">
+    .use-motion .motion-element,
+    .use-motion .brand,
+    .use-motion .menu-item,
+    .sidebar-inner,
+    .use-motion .post-block,
+    .use-motion .pagination,
+    .use-motion .comments,
+    .use-motion .post-header,
+    .use-motion .post-body,
+    .use-motion .collection-title { opacity: initial; }
+
+    .use-motion .logo,
+    .use-motion .site-title,
+    .use-motion .site-subtitle {
+      opacity: initial;
+      top: initial;
+    }
+
+    .use-motion {
+      .logo-line-before i { left: initial; }
+      .logo-line-after i { right: initial; }
+    }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">glennlgan的个人博客</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+      
+        <p class="site-subtitle">记录学习点滴</p>
+      
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="切换导航栏">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-home">
+    <a href="/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-home"></i> <br />首页</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+    <a href="/archives/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />归档</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-categories">
+    <a href="/categories/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-th"></i> <br />分类</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-tags">
+    <a href="/tags/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />标签</a>
+  </li>
+
+      
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />搜索</a>
+        </li>
+      
+    </ul>
+  
+
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off"
+             placeholder="搜索..." spellcheck="false"
+             type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+            
+
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://ganlu19940318.github.io/2019/06/05/Yarn/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="glennlgan">
+      <meta itemprop="description" content="不积跬步无以至千里">
+      <meta itemprop="image" content="/uploads/glennlgan.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="glennlgan的个人博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Yarn
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-06-05 08:00:57" itemprop="dateCreated datePublished" datetime="2019-06-05T08:00:57+08:00">2019-06-05</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2019-06-08 11:45:50" itemprop="dateModified" datetime="2019-06-08T11:45:50+08:00">2019-06-08</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/技术储备/" itemprop="url" rel="index"><span itemprop="name">技术储备</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <hr>
+<a id="more"></a>
+<h1 id="0-前言"><a href="#0-前言" class="headerlink" title="0. 前言"></a>0. 前言</h1><p>概念了解参考<a href="https://blogpictures-1257055754.cos.ap-guangzhou.myqcloud.com/638722%20%E6%9E%B6%E6%9E%84%E5%A4%A7%E6%95%B0%E6%8D%AE%20%20%E5%A4%A7%E6%95%B0%E6%8D%AE%E6%8A%80%E6%9C%AF%E5%8F%8A%E7%AE%97%E6%B3%95%E8%A7%A3%E6%9E%90_2015.06.pdf" target="_blank" rel="noopener">&lt;&lt; 架构大数据  大数据技术及算法解析 &gt;&gt;</a><br>深入理解参考<a href="https://blogpictures-1257055754.cos.ap-guangzhou.myqcloud.com/631938%20Hadoop%20YARN%E6%9D%83%E5%A8%81%E6%8C%87%E5%8D%97.pdf" target="_blank" rel="noopener">&lt;&lt; Hadoop Yarn权威指南 &gt;&gt;</a></p>
+<h1 id="1-Hadoop-MapReduce"><a href="#1-Hadoop-MapReduce" class="headerlink" title="1. Hadoop MapReduce"></a>1. Hadoop MapReduce</h1><p>MapReduce是一种用于大规模数据集的并行运算的编程模型.它方便了编程人员在不会分布式并行编程的情况下,将自己的程序运行在分布式系统上.</p>
+<h2 id="1-1-Hadoop-MapReduce第一代-MRv1"><a href="#1-1-Hadoop-MapReduce第一代-MRv1" class="headerlink" title="1.1 Hadoop MapReduce第一代(MRv1)"></a>1.1 Hadoop MapReduce第一代(MRv1)</h2><h3 id="1-1-1-组件图"><a href="#1-1-1-组件图" class="headerlink" title="1.1.1 组件图"></a>1.1.1 组件图</h3><p><img src="https://blogpictures-1257055754.cos.ap-guangzhou.myqcloud.com/TIM%E6%88%AA%E5%9B%BE20190608003309.jpg" alt="组件图"></p>
+<h3 id="1-1-2-存在的问题"><a href="#1-1-2-存在的问题" class="headerlink" title="1.1.2 存在的问题"></a>1.1.2 存在的问题</h3><ol>
+<li>JobTracker是MapReduce的集中处理点,存在单点故障.</li>
+<li>JobTracker完成了太多的任务,造成了过多的资源消耗,当MapReduce作业非常多的时候,会造成很大的内存开销,也增加了JobTracker失败的风险.</li>
+<li>在TaskTracker端,以Map/Reduce Task的数目作为资源的表示过于简单,没有考虑到CPU/内存的占用情况,如果两个大内存消耗的Task被调度到了一起,很容易出现内存不足.</li>
+<li>在TaskTracker端,把资源强化分为Map Task Slot和Reduce Task Slot,如果系统中只有Map Task或者只有Reduce Task,会造成资源的浪费,也就是集群资源利用的问题.</li>
+<li>其他:源代码层面分析时,会发现代码非常难读,常常因为一个class做了太多的事情,代码量达3000多行,造成class的任务不清晰,增加bug修复和版本维护的难度; 从操作的角度来看,MapReduce框架在有任何变化时,都会强制进行系统级别的升级更新.不管用户的喜好,强制让分布式集群系统的每一个用户端同时更新,这些更新会让用户为了验证他们之前的应用程序是不是适用新的Hadoop版本而浪费大量时间.</li>
+</ol>
+<h2 id="1-2-Hadoop-MapReduce第二代-Yarn"><a href="#1-2-Hadoop-MapReduce第二代-Yarn" class="headerlink" title="1.2 Hadoop MapReduce第二代(Yarn)"></a>1.2 Hadoop MapReduce第二代(Yarn)</h2><h3 id="1-2-1-组件图"><a href="#1-2-1-组件图" class="headerlink" title="1.2.1 组件图"></a>1.2.1 组件图</h3><p><img src="https://blogpictures-1257055754.cos.ap-guangzhou.myqcloud.com/TIM%E6%88%AA%E5%9B%BE20190608003320.jpg" alt="组件图"></p>
+<h1 id="2-Yarn的工作流程"><a href="#2-Yarn的工作流程" class="headerlink" title="2. Yarn的工作流程"></a>2. Yarn的工作流程</h1><p><img src="https://blogpictures-1257055754.cos.ap-guangzhou.myqcloud.com/20160315144119726" alt="Yarn的工作流程"></p>
+<p>步骤1: 用户向Yarn提交应用程序,其中包括用户程序、相关文件、启动ApplicationMaster命令、ApplicationMaster程序等.</p>
+<p>步骤2: ResourceManager为该应用程序分配第一个Container,并且与Container所在的NodeManager通信,并且要求该NodeManager在这个Container中启动应用程序对应的ApplicationMaster.</p>
+<p>步骤3: ApplicationMaster首先会向ResourceManager注册,这样用户才可以直接通过ResourceManager查看到应用程序的运行状态,然后它为准备为该应用程序的各个任务申请资源,并监控它们的运行状态直到运行结束,即重复后面4~7步骤.</p>
+<p>步骤4: ApplicationMaster采用轮询的方式通过RPC协议向ResourceManager申请和领取资源.</p>
+<p>步骤5: 一旦ApplicationMaster申请到资源后,便会与申请到的Container所对应的NodeManager进行通信,并且要求它在该Container中启动任务.</p>
+<p>步骤6: 任务启动.NodeManager为要启动的任务配置好运行环境,包括环境变量、JAR包、二进制程序等,并且将启动命令写在一个脚本里,通过该脚本运行任务.</p>
+<p>步骤7: 各个任务通过RPC协议向其对应的ApplicationMaster汇报自己的运行状态和进度,以让ApplicationMaster随时掌握各个任务的运行状态,从而可以再任务运行失败时重启任务.</p>
+<p>步骤8: 应用程序运行完毕后,其对应的ApplicationMaster会向ResourceManager通信,要求注销和关闭自己.</p>
+<h1 id="3-MapReduce的几个阶段"><a href="#3-MapReduce的几个阶段" class="headerlink" title="3. MapReduce的几个阶段"></a>3. MapReduce的几个阶段</h1><p><img src="https://blogpictures-1257055754.cos.ap-guangzhou.myqcloud.com/TIM%E6%88%AA%E5%9B%BE20190608005345.jpg" alt="MapReduce的几个阶段"></p>
+<p>整个流程可以分为 Split, Map, Shuffle, Reduce, Output 五个阶段.</p>
+<h2 id="3-1-Split"><a href="#3-1-Split" class="headerlink" title="3.1 Split"></a>3.1 Split</h2><p>在 Split 阶段会把需要处理的数据划分为不同的切片; 把个切片交给不同 Map 程序进行处理; 切片后数据会被解析为 key-value 对输入到 Map 进行处理.</p>
+<h2 id="3-2-Map"><a href="#3-2-Map" class="headerlink" title="3.2 Map"></a>3.2 Map</h2><p>在 Map 阶段可以对输入的 key-value 对进行处理后再以 key-value 对的形式输出.</p>
+<h2 id="3-3-Shuffle"><a href="#3-3-Shuffle" class="headerlink" title="3.3 Shuffle"></a>3.3 Shuffle</h2><p>shuffle 的目的是保证 Reduce 处理的数据是有序的,并且尽可能的减少时间和资源消耗. Shuffle 过程需要分别在 Map 端和 Reduce 端进行.</p>
+<h3 id="3-3-1-Map-Shuffle"><a href="#3-3-1-Map-Shuffle" class="headerlink" title="3.3.1 Map Shuffle"></a>3.3.1 Map Shuffle</h3><p><img src="https://blogpictures-1257055754.cos.ap-guangzhou.myqcloud.com/TIM%E6%88%AA%E5%9B%BE20190608005742.jpg" alt="MapReduce的几个阶段"></p>
+<p>在 Map 端的 Shuffle 过程是对 Map 的输出结果进行一系列处理,最终得到分区有序的文件.分区指的是需要同一个 Reduce 处理的数据存储在一起;有序指的是同一个分区内的数据按照 key 升序排列.整体流程如下:</p>
+<ol>
+<li><p>Partition: Partition 阶段计算并保存 Map 输出的每对 key-value 需要发送到的 Reduce 编号.</p>
+</li>
+<li><p>Spill: Map 输出的数据需要先输出到一个叫做 kvbuffer 的内存缓冲区, 等缓冲区到达阈值的时候一次性把数据写入硬盘, 这个过程叫做 spill. kvbuffer 的大小默认是 100M, 阈值是 80%. 这样设计的目的是为了提高写数据的效率, 同时保证写数据的时候不会阻塞 Map 的输出.</p>
+</li>
+<li><p>Sort: 在溢写之前会对缓冲区中的数据按照 Partition 和 key 进行升序排列,然后再写入硬盘.排序的结果就是 kvbuffer 中的数据是按照 Partition 聚集在一起,同一 Partition 中的数据按照 key 有序排列.</p>
+</li>
+<li><p>Merge: 如果 Map 的输出数据量很大, 可能会进行好几次 Spill 操作, 产生很多溢写文件. Map 输出完毕后我们还需把所有的 Spill 文件 Merge 为一个文件.最终的合并结果仍然保证数据按照 Partition 聚集在一起,同一 Partition 中的数据按照 key 有序排列.</p>
+</li>
+</ol>
+<h3 id="3-3-2-Reduce-Shuffle"><a href="#3-3-2-Reduce-Shuffle" class="headerlink" title="3.3.2 Reduce Shuffle"></a>3.3.2 Reduce Shuffle</h3><p>在 Reduce 端 Shuffle 的目的是从不同的 Map 端获取数据,进行排序合并后输入给 Reduce.</p>
+<ol>
+<li>copy: Reduce 端会从 Map 端的合并文件中下载对应自己的那一部分数据.如果数据量较小会放在内存中,数据量较大的话会写入磁盘.</li>
+<li>megre &amp;&amp; sort &amp;&amp; grouping: 把来自不同 Map 的数据 边合并 边按照 key 进行排序.把所有 value 按照 key 聚合到一个个的迭代器中, 形成新的 key-value 对. 这些新的 key-value 对会输入给 Reduce 进行处理.</li>
+</ol>
+<h2 id="3-4-Reduce"><a href="#3-4-Reduce" class="headerlink" title="3.4 Reduce"></a>3.4 Reduce</h2><p>在 Reduce 阶段可以对输入的 key-value 对进行处理后再以 key-value 对的形式输出.</p>
+<h1 id="4-参考链接"><a href="#4-参考链接" class="headerlink" title="4. 参考链接"></a>4. 参考链接</h1><p><a href="https://blogpictures-1257055754.cos.ap-guangzhou.myqcloud.com/638722%20%E6%9E%B6%E6%9E%84%E5%A4%A7%E6%95%B0%E6%8D%AE%20%20%E5%A4%A7%E6%95%B0%E6%8D%AE%E6%8A%80%E6%9C%AF%E5%8F%8A%E7%AE%97%E6%B3%95%E8%A7%A3%E6%9E%90_2015.06.pdf" target="_blank" rel="noopener">&lt;&lt; 架构大数据  大数据技术及算法解析 &gt;&gt;</a><br><a href="https://blogpictures-1257055754.cos.ap-guangzhou.myqcloud.com/631938%20Hadoop%20YARN%E6%9D%83%E5%A8%81%E6%8C%87%E5%8D%97.pdf" target="_blank" rel="noopener">&lt;&lt; Hadoop Yarn权威指南 &gt;&gt;</a><br><a href="https://blog.csdn.net/xiushuiguande/article/details/79507956" target="_blank" rel="noopener">MapReduce运行机制</a><br><a href="https://www.cnblogs.com/itboys/p/9184381.html" target="_blank" rel="noopener">Yarn框架和工作流程研究</a></p>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      <div>
+        <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+  <div>谢谢你请我吃糖果!</div>
+  <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+    <span>打赏</span>
+  </button>
+  <div id="QR" style="display: none;">
+
+    
+
+    
+
+    
+      <div id="bitcoin" style="display: inline-block">
+        <img id="bitcoin_qr" src="/uploads/bonus.png" alt="glennlgan 打赏"/>
+        <p>打赏</p>
+      </div>
+    
+
+  </div>
+</div>
+
+      </div>
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Yarn/" rel="tag"># Yarn</a>
+          
+            <a href="/tags/Hadoop/" rel="tag"># Hadoop</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/06/04/gRPC框架/" rel="next" title="gRPC框架">
+                <i class="fa fa-chevron-left"></i> gRPC框架
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/06/05/HDFS/" rel="prev" title="HDFS">
+                HDFS <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+  </div>
+
+
+          </div>
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/uploads/glennlgan.jpg"
+                alt="glennlgan" />
+            
+              <p class="site-author-name" itemprop="name">glennlgan</p>
+              <p class="site-description motion-element" itemprop="description">不积跬步无以至千里</p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">96</span>
+                    <span class="site-state-item-name">日志</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  <a href="/categories/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">14</span>
+                    <span class="site-state-item-name">分类</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  <a href="/tags/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">27</span>
+                    <span class="site-state-item-name">标签</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+            <div class="links-of-author motion-element">
+              
+                <span class="links-of-author-item">
+                  <a href="https://github.com/ganlu19940318" target="_blank" title="GitHub"><i class="fa fa-fw fa-github"></i>GitHub</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="mailto:274671731@qq.com" target="_blank" title="E-Mail"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  
+                </span>
+              
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#0-前言"><span class="nav-text">0. 前言</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#1-Hadoop-MapReduce"><span class="nav-text">1. Hadoop MapReduce</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-1-Hadoop-MapReduce第一代-MRv1"><span class="nav-text">1.1 Hadoop MapReduce第一代(MRv1)</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-1-1-组件图"><span class="nav-text">1.1.1 组件图</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-1-2-存在的问题"><span class="nav-text">1.1.2 存在的问题</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#1-2-Hadoop-MapReduce第二代-Yarn"><span class="nav-text">1.2 Hadoop MapReduce第二代(Yarn)</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-2-1-组件图"><span class="nav-text">1.2.1 组件图</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#2-Yarn的工作流程"><span class="nav-text">2. Yarn的工作流程</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#3-MapReduce的几个阶段"><span class="nav-text">3. MapReduce的几个阶段</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#3-1-Split"><span class="nav-text">3.1 Split</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-2-Map"><span class="nav-text">3.2 Map</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-3-Shuffle"><span class="nav-text">3.3 Shuffle</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#3-3-1-Map-Shuffle"><span class="nav-text">3.3.1 Map Shuffle</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-3-2-Reduce-Shuffle"><span class="nav-text">3.3.2 Reduce Shuffle</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-4-Reduce"><span class="nav-text">3.4 Reduce</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#4-参考链接"><span class="nav-text">4. 参考链接</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; 2018 – <span itemprop="copyrightYear">2019</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">glennlgan</span>
+
+  
+
+  
+</div>
+
+
+
+
+
+
+
+
+
+
+
+        
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+	
+    
+
+    
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=6.4.1"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=6.4.1"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=6.4.1"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=6.4.1"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=6.4.1"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=6.4.1"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=6.4.1"></script>
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  <!-- 代码块复制功能 -->
+  <script type="text/javascript" src="/js/src/clipboard.min.js"></script>  
+  <script type="text/javascript" src="/js/src/clipboard-use.js"></script>
+</body>
+</html>
